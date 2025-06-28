@@ -1,0 +1,31 @@
+#pragma once
+
+#include "engine/ecs/components/component.hpp"
+
+#include "engine/rendering/light/light_manager.hpp"
+
+namespace SHAME::Engine::ECS::Components
+{
+    class Light : public Component{
+        public:
+            Light(Objects::Actor *parent, uint32_t local_id);
+
+            void SetType(Rendering::LightType type);
+            void SetIntensity(float intensity);
+            void SetPosition(glm::vec3 postion);
+            void SetDirection(glm::vec3 direction);
+            void SetRadius(float radius);
+            void SetColor(glm::vec3 color);
+            void SetOuterCutoff(float cutoff);
+            void SetInnerCuttof(float cutoff);
+
+            Rendering::GPULight GetData();
+
+            void Destroy() override{
+                //TODO
+            }
+
+        private:
+            std::shared_ptr<Rendering::GPULight> lightData;
+    };
+}

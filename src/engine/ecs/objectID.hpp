@@ -1,0 +1,105 @@
+#ifndef __OBJ_ID_H
+#define __OBJ_ID_H
+
+#include <string>
+#include <atomic>
+#include <unordered_set>
+#include <map>
+
+namespace SHAME::Engine::ECS
+{
+    namespace Objects{
+        class Object;
+    }
+
+    class ObjectID {
+        public:
+            
+            ObjectID() : packed(0) {}
+            explicit ObjectID(int value) : packed(value) {}
+
+            
+            int GetAsInt() const {
+                return packed;
+            }
+
+            std::string GetAsString() const {
+                return std::to_string(GetAsInt());
+            }
+
+            
+            bool operator==(const ObjectID& other) const { return packed == other.packed; }
+            bool operator!=(const ObjectID& other) const { return !(*this == other); }
+            bool operator<(const ObjectID& other) const { return packed < other.packed; }
+
+            
+            friend class ObjectIDBuilder;
+    
+        private:
+            int packed;
+    };
+    
+    class ObjectIDBuilder {
+        public:
+        ObjectIDBuilder& WithValue(int val) {
+                value = val;
+                generated = false;
+                return *this;
+            }
+        
+            ObjectIDBuilder& Generate() {
+                value = GenerateNextID();
+                generated = true;
+                return *this;
+            }
+        
+            ObjectID Build() const {
+                return ObjectID(value);
+            }
+        
+        private:
+            static int GenerateNextID() {
+                static std::atomic<int> nextId{1};
+                return nextId.fetch_add(1);
+            }
+        
+            int value = 0;
+            bool generated = false;
+    };
+
+    class ObjectIDManager {
+        public:
+
+            static void DestroyID(const ObjectID& id) {
+                availableIDs.insert(id.GetAsInt());
+                ObjectIDMap.erase(id);
+            }
+            
+            static ObjectID GenerateNewID() {
+                if (!availableIDs.empty()) {
+                    int id = *availableIDs.begin();
+                    availableIDs.erase(availableIDs.begin());
+                    return ObjectID(id);
+                }
+                return ObjectID(ObjectIDBuilder().Generate().Build().GetAsInt());
+            }
+
+            static void AssignID(ObjectID id, Objects::Object* obj){
+                ObjectIDMap[id] = obj;
+            }
+        
+            static Objects::Object* GetObjectFromID(ObjectID id){
+                auto it = ObjectIDMap.find(id);
+                if (it != ObjectIDMap.end()) {
+                    return it->second;
+                }
+                return nullptr;
+            }
+
+        private:
+            static std::map<ObjectID, Objects::Object*> ObjectIDMap;
+            static std::unordered_set<int> availableIDs;
+    };
+}
+
+#endif
