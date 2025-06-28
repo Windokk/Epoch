@@ -5,18 +5,17 @@
 #include <unordered_set>
 #include <map>
 
-namespace SHAME::Engine::ECS
+namespace SHAME::Engine::Audio
 {
-    namespace Objects{
-        class Object;
-    }
+    class Sound;
 
-    class ObjectID {
+    class AudioID {
         public:
             
-            ObjectID() : packed(0) {}
-            explicit ObjectID(int value) : packed(value) {}
+            AudioID() : packed(0) {}
+            explicit AudioID(int value) : packed(value) {}
 
+            bool IsValid() const { return packed != 0; }
             
             int GetAsInt() const {
                 return packed;
@@ -27,33 +26,33 @@ namespace SHAME::Engine::ECS
             }
 
             
-            bool operator==(const ObjectID& other) const { return packed == other.packed; }
-            bool operator!=(const ObjectID& other) const { return !(*this == other); }
-            bool operator<(const ObjectID& other) const { return packed < other.packed; }
+            bool operator==(const AudioID& other) const { return packed == other.packed; }
+            bool operator!=(const AudioID& other) const { return !(*this == other); }
+            bool operator<(const AudioID& other) const { return packed < other.packed; }
 
             
-            friend class ObjectIDBuilder;
+            friend class AudioIDBuilder;
     
         private:
             int packed;
     };
     
-    class ObjectIDBuilder {
+    class AudioIDBuilder {
         public:
-        ObjectIDBuilder& WithValue(int val) {
+        AudioIDBuilder& WithValue(int val) {
                 value = val;
                 generated = false;
                 return *this;
             }
         
-            ObjectIDBuilder& Generate() {
+            AudioIDBuilder& Generate() {
                 value = GenerateNextID();
                 generated = true;
                 return *this;
             }
         
-            ObjectID Build() const {
-                return ObjectID(value);
+            AudioID Build() const {
+                return AudioID(value);
             }
         
         private:
@@ -66,37 +65,39 @@ namespace SHAME::Engine::ECS
             bool generated = false;
     };
 
-    class ObjectIDManager {
+    class AudioIDManager {
         public:
 
-            static void DestroyID(const ObjectID& id) {
+            static void DestroyID(const AudioID& id) {
                 availableIDs.insert(id.GetAsInt());
-                ObjectIDMap.erase(id);
+                AudioIDMap.erase(id);
             }
             
-            static ObjectID GenerateNewID() {
+            static AudioID GenerateNewID() {
                 if (!availableIDs.empty()) {
                     int id = *availableIDs.begin();
                     availableIDs.erase(availableIDs.begin());
-                    return ObjectID(id);
+                    return AudioID(id);
                 }
-                return ObjectID(ObjectIDBuilder().Generate().Build().GetAsInt());
+                return AudioID(AudioIDBuilder().Generate().Build().GetAsInt());
             }
 
-            static void AssignID(ObjectID id, Objects::Object* obj){
-                ObjectIDMap[id] = obj;
+            static std::map<AudioID, Sound*> *GetAudioMap() { return &AudioIDMap; }
+
+            static void AssignID(AudioID id, Sound* obj){
+                AudioIDMap[id] = obj;
             }
         
-            static Objects::Object* GetObjectFromID(ObjectID id){
-                auto it = ObjectIDMap.find(id);
-                if (it != ObjectIDMap.end()) {
+            static Sound* GetSoundFromID(AudioID id){
+                auto it = AudioIDMap.find(id);
+                if (it != AudioIDMap.end()) {
                     return it->second;
                 }
                 return nullptr;
             }
 
         private:
-            static std::map<ObjectID, Objects::Object*> ObjectIDMap;
+            static std::map<AudioID, Sound*> AudioIDMap;
             static std::unordered_set<int> availableIDs;
     };
 }

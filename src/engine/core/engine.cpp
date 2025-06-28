@@ -9,10 +9,11 @@ using namespace std::chrono;
 
 namespace SHAME::Engine::Core{
     
-    using namespace Engine::Levels;
+    using namespace Levels;
     using namespace Engine::Rendering;
-    using namespace Engine::Physics;
-    using namespace Engine::Filesystem;
+    using namespace Physics;
+    using namespace Filesystem;
+    using namespace Audio;
 
     EngineInstance::EngineInstance()  
     {
@@ -21,6 +22,7 @@ namespace SHAME::Engine::Core{
         CreateWindow();
         Renderer::CreateRenderingContext(window);
         PhysicsSystem::Init();
+        AudioManager::Init(100.0f);
     }
 
     void EngineInstance::CreateWindow()
@@ -56,6 +58,7 @@ namespace SHAME::Engine::Core{
 
     void EngineInstance::Destroy()
     {
+        AudioManager::Shutdown();
         PhysicsSystem::Shutdown();
         Renderer::DestroyRenderingContext();
         DestroyWindow();
@@ -76,13 +79,14 @@ namespace SHAME::Engine::Core{
 
         Renderer::Render();
         PhysicsSystem::StepSimulation(1.0f / 60.0f);
+        AudioManager::Tick();
 
         lastTime = currentTime;
     }
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)
     {
-
+        
     }
 
 }

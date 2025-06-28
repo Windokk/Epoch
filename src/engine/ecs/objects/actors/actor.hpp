@@ -146,6 +146,10 @@ namespace SHAME::Engine::ECS::Objects{
             level->physicsBodies.push_back(component);
         }
 
+        if constexpr (std::is_base_of<AudioSource, T>::value) {
+            level->audioSources.push_back(component);
+        }
+
         return component;
     }
 }

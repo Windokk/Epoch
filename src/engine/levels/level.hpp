@@ -5,6 +5,7 @@
 #include "engine/rendering/renderer/renderer.hpp"
 
 #include "engine/ecs/components/physics_component.hpp"
+#include "engine/ecs/components/audio_source.hpp"
 
 namespace SHAME::Engine::ECS{
 
@@ -52,6 +53,7 @@ namespace SHAME::Engine::Levels{
         std::vector<ECS::Components::Transform*> transforms;
         std::vector<ECS::Components::ModelComponent*> models;
         std::vector<ECS::Components::PhysicsComponent*> physicsBodies;
+        std::vector<ECS::Components::AudioSource*> audioSources;
         
     };
 

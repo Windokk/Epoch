@@ -8,7 +8,6 @@ namespace SHAME::Engine::Rendering {
     class Camera
     {
         
-        glm::vec3 forward;
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
         glm::mat4 view;
         glm::mat4 projection;
@@ -27,6 +26,7 @@ namespace SHAME::Engine::Rendering {
 
         public :
 
+        glm::vec3 forward;
         bool canInteract = true;
         glm::vec3 position;
         float zoom = 10.0f;

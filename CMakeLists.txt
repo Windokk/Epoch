@@ -12,11 +12,13 @@ if(WIN32)
   set(FREETYPE_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/freetype/freetype-win")
   set(COSEM_PACKER_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/filesystem/packer")
   set(JOLT_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/jolt/jolt-win")
+  set(FMOD_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/fmod/fmod-win")
 elseif(UNIX)
   set(GLFW_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/glfw/glfw-linux")
   set(FREETYPE_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/freetype/freetype-linux")
   set(COSEM_PACKER_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/filesystem/packer/linux")
   set(JOLT_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/jolt/jolt-linux")
+  set(FMOD_LIB_DIR "${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/fmod/fmod-linux")
 endif()
 
 set(RESOURCES_LIB_DIR "${CMAKE_BINARY_DIR}")
@@ -39,8 +41,9 @@ target_link_directories(${PROJECT_NAME} PUBLIC
     ${FREETYPE_LIB_DIR}
     ${COSEM_PACKER_LIB_DIR}
     ${JOLT_LIB_DIR}
+    ${FMOD_LIB_DIR}
   )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE JPH_PROFILE_ENABLED JPH_DEBUG_RENDERER JPH_OBJECT_STREAM)
 
-target_link_libraries(${PROJECT_NAME} freetype CosemPacker Jolt glfw3 -lz opengl32 gdi32 user32 shell32 advapi32)
+target_link_libraries(${PROJECT_NAME} freetype CosemPacker Jolt fmod glfw3 -lz opengl32 gdi32 user32 shell32 advapi32)
