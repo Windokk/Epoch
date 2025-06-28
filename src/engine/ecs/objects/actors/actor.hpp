@@ -60,6 +60,7 @@ namespace SHAME::Engine::ECS::Objects{
 
             void SetLevel(Levels::Level* lvl);
 
+            Transform* transform;
         private:
             Levels::Level* level;
     };
@@ -127,11 +128,17 @@ namespace SHAME::Engine::ECS::Objects{
             throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
+
         T* component = new T(this, this->components.size());
+        
+        if (dynamic_cast<Transform*>(component)) {
+            throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] Can only have one Transform per actor");
+            return nullptr;
+        }
         components.push_back(component);
 
         if constexpr (std::is_base_of<Light, T>::value) {
-        level->lights.push_back(component);
+            level->lights.push_back(component);
         }
 
         if constexpr (std::is_base_of<ModelComponent, T>::value) {

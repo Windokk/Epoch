@@ -9,8 +9,8 @@ namespace SHAME::Engine::ECS::Objects{
     {
         SetName(name);
 
-        Transform* tr = new Transform(this, this->components.size(), glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1));
-        components.push_back(tr);
+        transform = new Transform(this, this->components.size(), glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1));
+        components.push_back(transform);
     }
 
     void Actor::AddChild(Object *o)

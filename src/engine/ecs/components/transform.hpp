@@ -30,8 +30,17 @@ namespace SHAME::Engine::ECS::Components
         void Rotate(glm::quat angle);
         void Scale(glm::vec3 deltaScale);
 
-        glm::vec3 Right() const { return right; };
-        glm::vec3 Up() const { return up; };
+        glm::vec3 GetForward() {
+            return rotation * glm::vec3(0, 0, 1);
+        }
+
+        glm::vec3 GetUp() {
+            return rotation * glm::vec3(0, 1, 0);
+        }
+
+        glm::vec3 GetRight() {
+            return rotation * glm::vec3(1, 0, 0);
+        }
 
         glm::mat4 GetMatrix();
 
@@ -47,9 +56,6 @@ namespace SHAME::Engine::ECS::Components
         glm::vec3 position;
         glm::quat rotation;
         glm::vec3 scale;
-
-        glm::vec3 right = glm::vec3(1, 0, 0);
-        glm::vec3 up = glm::vec3(0, 1, 0);
 
     };
 }

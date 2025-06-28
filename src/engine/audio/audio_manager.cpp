@@ -5,6 +5,8 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 
+#include <cassert>
+
 namespace SHAME::Engine::Audio
 {
     using namespace Filesystem;
@@ -120,6 +122,8 @@ namespace SHAME::Engine::Audio
 
     void AudioManager::Update(glm::vec3 listenerPos, glm::vec2 listenerFacingNormalized, float maxDistance)
     {
+        assertm(maxDistance > 0, "[ERROR]  [ENGINE/AUDIO/AUDIO_MANAGER] : maxDistance can't be >= 0");
+        
         for (const auto& pair : *AudioIDManager::GetAudioMap()) {
             if(pair.second->isPlaying){
                 float pan = glm::sin(glm::orientedAngle(glm::normalize(glm::vec2(pair.second->pos.x - listenerPos.x, pair.second->pos.z - listenerPos.z)), listenerFacingNormalized));

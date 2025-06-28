@@ -3,6 +3,10 @@
 #include <iostream>
 #include <algorithm>
 
+#include "engine/levels/level_manager.hpp"
+
+#include "engine/ecs/objects/actors/actor.hpp"
+
 namespace SHAME::Engine::Rendering{
     
     Camera* Renderer::cam = nullptr;
@@ -14,6 +18,7 @@ namespace SHAME::Engine::Rendering{
     std::shared_ptr<Shader> Renderer::blendShader = nullptr;
     std::shared_ptr<Shader> Renderer::framebufferShader = nullptr;
     LightManager* Renderer::lightman = nullptr;
+    std::shared_ptr<Shader> Renderer::defaultShader = nullptr;
 
     int Renderer::width = 0;
     int Renderer::height = 0;
@@ -57,7 +62,10 @@ namespace SHAME::Engine::Rendering{
         
         glfwGetWindowSize(window, &width, &height);
 
+        //CAMERA
         cam = new Camera(width, height, glm::vec3(0,0,10), glm::vec3(0,0,-1));
+
+        //FRAMBUFFERS
 
         CreateRectGeometry();
 
@@ -65,10 +73,16 @@ namespace SHAME::Engine::Rendering{
         framebufferShader = std::make_shared<Shader>("resources/shaders/fb/framebuffer.vert","resources/shaders/fb/framebuffer.frag");
         viewportBuffer = new FrameBuffer(width, height, framebufferShader);
 
-        lightman = new LightManager();
+        //LIGHTS
 
+        lightman = new LightManager();
         lightman->Update();
+
+        //DEBUG_SHAPES
+
+        defaultShader = std::make_shared<Shader>("resources/shaders/mesh/default.vert","resources/shaders/mesh/default.frag");
     }
+
 
     void Renderer::DestroyRenderingContext()
     {
@@ -126,36 +140,40 @@ namespace SHAME::Engine::Rendering{
   
     void Renderer::DrawScene()
     {
-        
         glEnable(GL_DEPTH_TEST);
-
         glClearColor(0.3f, 0.3f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for(auto& cmd : drawList){
-
+        // --- Main Draw Calls ---
+        for (auto& cmd : drawList) {
             if (!cmd.mat || cmd.indexCount <= 0) continue;
 
             cmd.mat->SetParameter("projectionView", cam->GetMatrix());
             cmd.mat->SetParameter("model", cmd.tr->GetMatrix());
             cmd.mat->SetParameter("lightNB", lightman->GetLightsCount());
-
             cmd.mat->Use();
 
             glBindVertexArray(cmd.VAO);
-
-            glBindBuffer(GL_ARRAY_BUFFER, cmd.VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, cmd.vertices.size() * sizeof(Vertex), cmd.vertices.data());
-
             glPolygonMode(GL_FRONT_AND_BACK, cmd.fillMode);
-
-            glDrawElements(GL_TRIANGLES, cmd.indexCount, GL_UNSIGNED_INT, 0);
-
+            glDrawElements(GL_TRIANGLES, cmd.indexCount, GL_UNSIGNED_INT, nullptr);
             cmd.mat->StopUsing();
         }
-        
-        glBindVertexArray(0);
 
+        // --- Debug Physics Shapes ---
+        defaultShader->Activate();
+        defaultShader->setInt("useTexture", 0);
+        defaultShader->setMat4("projectionView", cam->GetMatrix());
+        defaultShader->setInt("lightNB", lightman->GetLightsCount());
+
+        for (auto& physicBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies) {
+            defaultShader->setMat4("model", physicBody->parent->transform->GetMatrix());
+
+            glBindVertexArray(physicBody->GetDebugShape()->GetVAO());
+            glDrawElements(GL_LINES, physicBody->GetDebugShape()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+        }
+
+        glBindVertexArray(0);
+        defaultShader->Deactivate();
         glDisable(GL_DEPTH_TEST);
     }
 
@@ -179,8 +197,7 @@ namespace SHAME::Engine::Rendering{
             });
     }
 
-    void Renderer::ExecuteRenderPasses()
-    {
+    void Renderer::ExecuteRenderPasses(){
         for (const auto& pass : renderPasses) {
             switch (pass.stage) {
                 case RenderStage::UI:

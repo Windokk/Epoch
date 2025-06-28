@@ -5,6 +5,7 @@
 #include "engine/rendering/camera/camera.hpp"
 #include "engine/rendering/light/light_manager.hpp"
 #include "engine/ecs/components/model_component.hpp"
+#include "engine/rendering/debug/debug.hpp"
 
 namespace SHAME::Engine{
 
@@ -115,6 +116,8 @@ namespace SHAME::Engine{
             static std::shared_ptr<Shader> blendShader;
             static FrameBuffer* viewportBuffer;
             static std::shared_ptr<Shader> framebufferShader;
+
+            static std::shared_ptr<Shader> defaultShader;
 
         };
     }

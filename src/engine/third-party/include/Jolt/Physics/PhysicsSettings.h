@@ -13,7 +13,7 @@ constexpr float cDefaultCollisionTolerance = 1.0e-4f;
 constexpr float cDefaultPenetrationTolerance = 1.0e-4f; ///< Stop when there's less than 1% change
 
 /// How much padding to add around objects
-constexpr float cDefaultConvexRadius = 0.05f;
+constexpr float cDefaultConvexRadius = 0.01f;
 
 /// Used by (Tapered)CapsuleShape to determine when supporting face is an edge rather than a point (unit: meter)
 static constexpr float cCapsuleProjectionSlop = 0.02f;

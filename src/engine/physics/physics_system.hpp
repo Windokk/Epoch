@@ -27,10 +27,9 @@ namespace SHAME::Engine::Physics
     
     enum PhysicsShape{
         SPHERE,
-        CUBE,
+        BOX,
         CAPSULE,
-        CYLINDER,
-        PLANE
+        CYLINDER
     };
 
     static void TraceImpl(const char *inFMT, ...)

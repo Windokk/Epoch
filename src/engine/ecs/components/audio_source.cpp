@@ -8,12 +8,12 @@ namespace SHAME::Engine::ECS::Components{
     void AudioSource::Update()
     {
         if(audioID.IsValid()){
-            Audio::AudioManager::UpdateSound(audioID, parent->GetComponent<ECS::Components::Transform>().GetPosition(), volume);
+            Audio::AudioManager::UpdateSound(audioID, parent->transform->GetPosition(), volume);
         }
         else{
             if(path != nullptr && volume != -1.0f){
                 audioID = Audio::AudioIDManager::GenerateNewID();
-                Audio::AudioManager::CreateSound(audioID, path->full, parent->GetComponent<ECS::Components::Transform>().GetPosition());
+                Audio::AudioManager::CreateSound(audioID, path->full, parent->transform->GetPosition());
 
             }
         }

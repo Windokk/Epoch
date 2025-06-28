@@ -15,62 +15,55 @@ namespace SHAME::Engine::ECS::Components{
         JPH::ShapeRefC shapeRef;
 
         this->scale = scale;
+        this->type = shape;
 
         switch (shape) {
             case Physics::PhysicsShape::SPHERE: {
                 JPH::SphereShapeSettings sphereSettings(scale.x == 0 ? (scale.y == 0 ? scale.z : scale.y) : scale.x);
                 auto shapeResult = sphereSettings.Create();
                 if (shapeResult.HasError()) {
-                    std::cerr << "Failed to create shape: " << shapeResult.GetError() << "\n";
+                    std::cerr << "Failed to create sphere shape: " << shapeResult.GetError() << "\n";
                     return;
                 }
 
                 shapeRef = shapeResult.Get();
+                debugShape = new Rendering::DebugSphere((scale.x == 0 ? (scale.y == 0 ? scale.z : scale.y) : scale.x), COL_RGBA(0, 1, 1, 1));
                 break;
             }
-            case Physics::PhysicsShape::PLANE:{
-                JPH::BoxShapeSettings planeSettings(JPH::Vec3(scale.x, 0.1f, scale.z));
-                auto shapeResult = planeSettings.Create();
-                if (shapeResult.HasError()) { 
-                    std::cerr << "Failed to create shape: " << shapeResult.GetError() << "\n";
-                    return;
-                }
-
-                shapeRef = shapeResult.Get();
-                break;
-            }
-
-            case Physics::PhysicsShape::CUBE:{
+            case Physics::PhysicsShape::BOX:{
                 JPH::BoxShapeSettings boxSettings(JPH::Vec3(scale.x, scale.y, scale.z));
                 auto shapeResult = boxSettings.Create();
                 if (shapeResult.HasError()) { 
-                    std::cerr << "Failed to create shape: " << shapeResult.GetError() << "\n";
+                    std::cerr << "Failed to create cube shape: " << shapeResult.GetError() << "\n";
                     return;
                 }
 
                 shapeRef = shapeResult.Get();
+                debugShape = new Rendering::DebugBox(glm::vec3(scale.x, scale.y, scale.z), COL_RGBA(0, 1, 1, 1));
                 break;
             }
             case Physics::PhysicsShape::CAPSULE: {
                 JPH::CapsuleShapeSettings capsuleSettings(scale.y, scale.x == 0 ? scale.z : scale.x);
                 auto shapeResult = capsuleSettings.Create();
                 if (shapeResult.HasError()) { 
-                    std::cerr << "Failed to create shape: " << shapeResult.GetError() << "\n";
+                    std::cerr << "Failed to create capsule shape: " << shapeResult.GetError() << "\n";
                     return;
                 }
 
                 shapeRef = shapeResult.Get();
+                debugShape = new Rendering::DebugCapsule(scale.y, scale.x == 0 ? scale.z : scale.x, COL_RGBA(0, 1, 1, 1));
                 break;
             }
             case Physics::PhysicsShape::CYLINDER:{
                 JPH::CylinderShapeSettings cylinderSettings(scale.y, scale.x == 0 ? scale.z : scale.x);
                 auto shapeResult = cylinderSettings.Create();
                 if (shapeResult.HasError()) { 
-                    std::cerr << "Failed to create shape: " << shapeResult.GetError() << "\n";
+                    std::cerr << "Failed to create cylinder shape: " << shapeResult.GetError() << "\n";
                     return;
                 }
 
                 shapeRef = shapeResult.Get();
+                debugShape = new Rendering::DebugCylinder(scale.y, scale.x == 0 ? scale.z : scale.x, COL_RGBA(0, 1, 1, 1));
                 break;
             }
 

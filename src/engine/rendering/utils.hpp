@@ -5,6 +5,8 @@
 
 #include "engine/ecs/components/transform.hpp"
 
+#define assertm(exp, msg) assert((void(msg), exp))
+
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
