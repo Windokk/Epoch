@@ -45,5 +45,14 @@ target_link_directories(${PROJECT_NAME} PUBLIC
   )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE JPH_PROFILE_ENABLED JPH_DEBUG_RENDERER JPH_OBJECT_STREAM)
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} freetype CosemPacker Jolt fmod glfw3 -lz opengl32 gdi32 user32 shell32 advapi32)
+elseif(UNIX)
+  find_package(PNG REQUIRED)
+  find_package(BZip2 REQUIRED)
+  find_package(PkgConfig REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} freetype CosemPacker Jolt fmod glfw3 -lz opengl32 gdi32 user32 shell32 advapi32)
+  pkg_check_modules(BROTLI REQUIRED IMPORTED_TARGET libbrotlidec)
+
+  target_link_libraries(${PROJECT_NAME} freetype CosemPacker Jolt fmod glfw3 -lz PNG::PNG BZip2::BZip2 PkgConfig::BROTLI)
+endif()
