@@ -94,7 +94,7 @@ namespace SHAME::Engine::Physics {
         JPH::Body* body = bodyInterface.CreateBody(settings);
         if (body == nullptr)
         {
-            std::cerr << "[ERROR]  [ENGINE/PHYSICS] : Failed to create body!" << std::endl;
+            std::cerr << "[ERROR] [ENGINE/PHYSICS] : Failed to create body!" << std::endl;
             return JPH::BodyID();
         }
 

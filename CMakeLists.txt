@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.28.2)
 
+set(CMAKE_COLOR_MAKEFILE ON)
+
 set(NAME SHA.me)
 project(${NAME} VERSION 1.0.0)
 

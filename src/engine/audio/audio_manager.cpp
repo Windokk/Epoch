@@ -80,7 +80,7 @@ namespace SHAME::Engine::Audio
             AudioIDManager::AssignID(id, sound);
             channels.emplace(id.GetAsString() + "_channel", channel);
         } else {
-            std::cerr << "[ERROR]  [ENGINE/AUDIO/AUDIO_MANAGER] Couldn't load sound: " << path.full << std::endl;
+            std::cerr << "[ERROR] [ENGINE/AUDIO/AUDIO_MANAGER] Couldn't load sound: " << path.full << std::endl;
         }
     }
 
@@ -122,7 +122,7 @@ namespace SHAME::Engine::Audio
 
     void AudioManager::Update(glm::vec3 listenerPos, glm::vec2 listenerFacingNormalized, float maxDistance)
     {
-        assertm(maxDistance > 0, "[ERROR]  [ENGINE/AUDIO/AUDIO_MANAGER] : maxDistance can't be >= 0");
+        assertm(maxDistance > 0, "[ERROR] [ENGINE/AUDIO/AUDIO_MANAGER] : maxDistance can't be >= 0");
         
         for (const auto& pair : *AudioIDManager::GetAudioMap()) {
             if(pair.second->isPlaying){

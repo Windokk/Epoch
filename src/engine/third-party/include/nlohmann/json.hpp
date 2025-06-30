@@ -7962,14 +7962,14 @@ class lexer : public lexer_base<BasicJsonType>
 
     state    | 0        | 1-9      | e E      | +       | -       | .        | anything
     ---------|----------|----------|----------|---------|---------|----------|-----------
-    init     | zero     | any1     | [error]  | [error] | minus   | [error]  | [error]
-    minus    | zero     | any1     | [error]  | [error] | [error] | [error]  | [error]
+    init     | zero     | any1     | [ERROR] | [error] | minus   | [ERROR] | [error]
+    minus    | zero     | any1     | [ERROR] | [error] | [error] | [ERROR] | [error]
     zero     | done     | done     | exponent | done    | done    | decimal1 | done
     any1     | any1     | any1     | exponent | done    | done    | decimal1 | done
-    decimal1 | decimal2 | decimal2 | [error]  | [error] | [error] | [error]  | [error]
+    decimal1 | decimal2 | decimal2 | [ERROR] | [error] | [error] | [ERROR] | [error]
     decimal2 | decimal2 | decimal2 | exponent | done    | done    | done     | done
-    exponent | any2     | any2     | [error]  | sign    | sign    | [error]  | [error]
-    sign     | any2     | any2     | [error]  | [error] | [error] | [error]  | [error]
+    exponent | any2     | any2     | [ERROR] | sign    | sign    | [ERROR] | [error]
+    sign     | any2     | any2     | [ERROR] | [error] | [error] | [ERROR] | [error]
     any2     | any2     | any2     | done     | done    | done    | done     | done
 
     The state machine is realized with one label per state (prefixed with

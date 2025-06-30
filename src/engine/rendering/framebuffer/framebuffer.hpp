@@ -11,7 +11,7 @@ namespace SHAME::Engine::Rendering {
     class FrameBuffer{
     public:
         FrameBuffer(float width, float height, std::shared_ptr<Shader> shader);
-        ~FrameBuffer();
+        void Shutdown();
         unsigned int GetFrameTexture();
         void RescaleFrameBuffer(float width, float height);
         void Draw(unsigned int VAO);

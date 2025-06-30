@@ -70,7 +70,7 @@ namespace SHAME::Engine::ECS::Objects{
     template <typename T>
     bool Actor::HasComponent() {
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] T must inherit from Component");
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
         for (Component* component : components) {
@@ -84,7 +84,7 @@ namespace SHAME::Engine::ECS::Objects{
     template <typename T>
     std::vector<T*> Actor::GetComponents(){
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] T must inherit from Component");
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
         std::vector<T*> list;
@@ -101,7 +101,7 @@ namespace SHAME::Engine::ECS::Objects{
     template <typename T>
     T& Actor::GetComponent(int k) {
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] T must inherit from Component");
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
         int n = 0;
@@ -118,21 +118,21 @@ namespace SHAME::Engine::ECS::Objects{
             }
         }
         throw std::runtime_error(
-            std::string("[ERROR]  [ENGINE/ECS/ACTOR] : Failed to retrieve Component of type ") + typeid(T).name());
+            std::string("[ERROR] [ENGINE/ECS/ACTOR] : Failed to retrieve Component of type ") + typeid(T).name());
     }
 
     template <typename T>
     T* Actor::AddComponent()
     {
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] T must inherit from Component");
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
 
         T* component = new T(this, this->components.size());
         
         if (dynamic_cast<Transform*>(component)) {
-            throw std::runtime_error("[ERROR]  [ENGINE/ECS/ACTOR] Can only have one Transform per actor");
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] Can only have one Transform per actor");
             return nullptr;
         }
         components.push_back(component);

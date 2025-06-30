@@ -57,8 +57,8 @@ namespace SHAME::Engine{
                 return instance;
             }
 
-            static void CreateRenderingContext(GLFWwindow *window);
-            static void DestroyRenderingContext();
+            static void Init(GLFWwindow *window);
+            static void Shutdown();
             static void Render();
 
             static void Submit(DrawCommand cmd, bool replace);

@@ -29,14 +29,14 @@ namespace SHAME::Engine::Rendering {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            std::cout << "[ERROR]  [ENGINE/RENDERING/FRAMEBUFFER] : Framebuffer is not complete!" << std::endl;
+            std::cout << "[ERROR] [ENGINE/RENDERING/FRAMEBUFFER] : Framebuffer is not complete!" << std::endl;
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
 
-    FrameBuffer::~FrameBuffer()
+    void FrameBuffer::Shutdown()
     {
         glDeleteFramebuffers(1, &fbo);
         glDeleteTextures(1, &texture);

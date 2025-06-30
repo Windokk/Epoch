@@ -20,7 +20,7 @@ namespace SHAME::Engine::Core{
         FileManager::InitializeSession();
 
         CreateWindow();
-        Renderer::CreateRenderingContext(window);
+        Renderer::Init(window);
         PhysicsSystem::Init();
         AudioManager::Init(100.0f);
     }
@@ -36,7 +36,7 @@ namespace SHAME::Engine::Core{
         if (window == NULL)
         {
             glfwTerminate();
-            throw std::runtime_error("[ERROR] [FATAL] [ENGINE/CORE] : Failed to create GLFW window");
+            throw std::runtime_error("[ERROR] [ENGINE/CORE] : Failed to create GLFW window");
         }
 
         glfwSetWindowUserPointer(window, this);
@@ -47,12 +47,13 @@ namespace SHAME::Engine::Core{
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            throw std::runtime_error("[ERROR] [FATAL] [ENGINE/CORE] : Failed to initialize GLAD");
+            throw std::runtime_error("[ERROR] [ENGINE/CORE] : Failed to initialize GLAD");
         }
     }
 
     void EngineInstance::DestroyWindow()
     {
+        glfwDestroyWindow(window);
         glfwTerminate();
     }
 
@@ -60,7 +61,8 @@ namespace SHAME::Engine::Core{
     {
         AudioManager::Shutdown();
         PhysicsSystem::Shutdown();
-        Renderer::DestroyRenderingContext();
+        LevelManager::UnloadAllLevels();
+        Renderer::Shutdown();
         DestroyWindow();
     }
 
@@ -71,11 +73,11 @@ namespace SHAME::Engine::Core{
         // Use floating-point duration in milliseconds
         std::chrono::duration<float, std::milli> duration = currentTime - lastTime;
         float ms = duration.count();
-
+        /*
         if (ms > 0.0f)
             std::cout << (1000.0f / ms) << " FPS" << std::endl;
         else
-            std::cout << "Very fast frame (<1ms), can't compute FPS accurately" << std::endl;
+            std::cout << "Very fast frame (<1ms), can't compute FPS accurately" << std::endl;*/
 
         Renderer::Render();
         PhysicsSystem::StepSimulation(1.0f / 60.0f);

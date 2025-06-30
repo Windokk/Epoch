@@ -22,7 +22,7 @@ namespace SHAME::Engine::Levels{
                 if (index >= 0 && index < levelBuffer.size()) {
                     return levelBuffer[index].get();
                 } else {
-                    throw std::runtime_error("[ERROR]  [LEVELS] Invalid index. Unable to unload level.");
+                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index. Unable to unload level.");
                 }
             }
 
@@ -30,7 +30,7 @@ namespace SHAME::Engine::Levels{
                 if (index >= 0 && index < levelBuffer.size()) {
                     levelBuffer.erase(levelBuffer.begin() + index);
                 } else {
-                    throw std::runtime_error("[ERROR]  [LEVELS] Invalid index. Unable to unload level.");
+                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index. Unable to unload level.");
                 }
             }
         

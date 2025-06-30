@@ -10,7 +10,7 @@ namespace SHAME::Engine::Rendering{
             case GL_FLOAT_VEC4: return glm::vec4(0.0f);
             case GL_FLOAT_MAT4: return glm::mat4(1.0f);
             case GL_SAMPLER_2D: return static_cast<Texture*>(nullptr);;
-            default: throw std::runtime_error("[ERROR]  [ENGINE/RENDERING/MATERIAL] : Failed to query default variable type");
+            default: throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MATERIAL] : Failed to query default variable type");
         }
     }
 

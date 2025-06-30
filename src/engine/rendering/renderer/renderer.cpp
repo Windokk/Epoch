@@ -56,7 +56,7 @@ namespace SHAME::Engine::Rendering{
 
     }
 
-    void Renderer::CreateRenderingContext(GLFWwindow *window)
+    void Renderer::Init(GLFWwindow *window)
     {
         GetInstance().window = window;
         
@@ -84,9 +84,12 @@ namespace SHAME::Engine::Rendering{
     }
 
 
-    void Renderer::DestroyRenderingContext()
+    void Renderer::Shutdown()
     {
-        
+        for(RenderPass& renderPass : renderPasses){
+            renderPass.target->Shutdown();
+        }
+        viewportBuffer->Shutdown();
     }
 
     void Renderer::Render()
@@ -207,7 +210,7 @@ namespace SHAME::Engine::Rendering{
 
                 case RenderStage::PostProcess:
                     if(!pass.target)
-                        throw std::runtime_error("[ERROR]  [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
+                        throw std::runtime_error("[ERROR] [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
 
                     pass.target->Bind();
                     viewportBuffer->Draw(rectVAO);
@@ -234,7 +237,7 @@ namespace SHAME::Engine::Rendering{
                 case RenderStage::Debug:
                 default:
                     if(!pass.target)
-                        throw std::runtime_error("[ERROR]  [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
+                        throw std::runtime_error("[ERROR] [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
                     pass.target->Bind();
                     pass.callback();
                     pass.target->Unbind();

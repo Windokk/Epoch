@@ -34,12 +34,12 @@ namespace SHAME::Engine::Rendering::UI{
             );
     
         } else {
-            throw std::runtime_error("[ERROR]  [RENDERING/UI/FONT] Couldn't find font : " + std::string(path));
+            throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Couldn't find font : " + std::string(path));
             return;
         }
     
         if (error) {
-            throw std::runtime_error("[ERROR]  [RENDERING/UI/FONT] Couldn't load font : " + std::string(path));
+            throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Couldn't load font : " + std::string(path));
             return;
         }
         else {
@@ -55,7 +55,7 @@ namespace SHAME::Engine::Rendering::UI{
                 // Load character glyph 
                 if (FT_Load_Char(face, c, FT_LOAD_RENDER))
                 {
-                    throw std::runtime_error("[ERROR]  [RENDERING/UI/FONT] Couldn't load glyph");
+                    throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Couldn't load glyph");
                     continue;
                 }
                 // generate texture
