@@ -7,6 +7,8 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
+#include "engine/core/engine.hpp"
+
 namespace SHAME::Engine::Rendering{
     
     Camera* Renderer::cam = nullptr;
@@ -17,11 +19,10 @@ namespace SHAME::Engine::Rendering{
     FrameBuffer* Renderer::viewportBuffer = nullptr;
     std::shared_ptr<Shader> Renderer::blendShader = nullptr;
     std::shared_ptr<Shader> Renderer::framebufferShader = nullptr;
-    LightManager* Renderer::lightman = nullptr;
+    LightManager* Renderer::lightMan = nullptr;
     std::shared_ptr<Shader> Renderer::defaultShader = nullptr;
-
-    int Renderer::width = 0;
-    int Renderer::height = 0;
+    RendererSettings Renderer::settings{};
+    ShadowManager* Renderer::shadowMan = nullptr;
 
     void Renderer::CreateRectGeometry()
     {
@@ -56,33 +57,42 @@ namespace SHAME::Engine::Rendering{
 
     }
 
-    void Renderer::Init(GLFWwindow *window)
+    void Renderer::Init(GLFWwindow *window, RendererSettings settings)
     {
-        GetInstance().window = window;
+        Renderer::settings = settings;
+
+        Renderer::window = window;
         
-        glfwGetWindowSize(window, &width, &height);
+        glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
+
+        glViewport(0, 0, settings.windowWidth, settings.windowHeight);
 
         //CAMERA
-        cam = new Camera(width, height, glm::vec3(0,0,10), glm::vec3(0,0,-1));
+        cam = new Camera(settings.windowWidth, settings.windowHeight, glm::vec3(0,0,10), glm::vec3(0,0,-1));
 
         //FRAMBUFFERS
-
         CreateRectGeometry();
-
-        blendShader = std::make_shared<Shader>("resources/shaders/fb/framebuffer.vert","resources/shaders/fb/blend.frag");
-        framebufferShader = std::make_shared<Shader>("resources/shaders/fb/framebuffer.vert","resources/shaders/fb/framebuffer.frag");
-        viewportBuffer = new FrameBuffer(width, height, framebufferShader);
+        blendShader = std::make_shared<Shader>("engine_resources/shaders/fb/framebuffer.vert","engine_resources/shaders/fb/blend.frag");
+        framebufferShader = std::make_shared<Shader>("engine_resources/shaders/fb/framebuffer.vert","engine_resources/shaders/fb/framebuffer.frag");
+        viewportBuffer = new FrameBuffer(settings.windowWidth, settings.windowHeight, framebufferShader);
 
         //LIGHTS
-
-        lightman = new LightManager();
-        lightman->Update();
+        lightMan = new LightManager();
+        lightMan->Update(-1);
 
         //DEBUG_SHAPES
+        defaultShader = std::make_shared<Shader>("engine_resources/shaders/mesh/default.vert","engine_resources/shaders/mesh/default.frag");
 
-        defaultShader = std::make_shared<Shader>("resources/shaders/mesh/default.vert","resources/shaders/mesh/default.frag");
+        //MULTISAMPLING
+        if(settings.antiAliasingLevel>0){
+            glfwWindowHint(GLFW_SAMPLES, settings.antiAliasingLevel);
+            glEnable(GL_MULTISAMPLE);
+        }
+
+        //SHADOWS
+        shadowMan = new ShadowManager();
+        shadowMan->Init(1024);
     }
-
 
     void Renderer::Shutdown()
     {
@@ -129,6 +139,12 @@ namespace SHAME::Engine::Rendering{
         cam->UpdateMatrix(0.01f, 1000.0f);
         if(cam->canInteract) cam->Inputs(window);
 
+        if(settings.enableShadows){
+            shadowMan->RenderShadowMaps(Levels::LevelManager::GetLevelAt(0)->meshes);
+            glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
+            glViewport(0, 0, Renderer::settings.windowWidth, Renderer::settings.windowHeight);
+        }
+
         viewportBuffer->Bind();
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -144,16 +160,18 @@ namespace SHAME::Engine::Rendering{
     void Renderer::DrawScene()
     {
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.3f, 0.3f, 1.0f, 1.0f);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // --- Main Draw Calls ---
         for (auto& cmd : drawList) {
             if (!cmd.mat || cmd.indexCount <= 0) continue;
 
+            if(settings.enableShadows)
+                shadowMan->BindShadowMaps(cmd.mat);
             cmd.mat->SetParameter("projectionView", cam->GetMatrix());
             cmd.mat->SetParameter("model", cmd.tr->GetMatrix());
-            cmd.mat->SetParameter("lightNB", lightman->GetLightsCount());
+            cmd.mat->SetParameter("lightNB", lightMan->GetLightsCount());
             cmd.mat->Use();
 
             glBindVertexArray(cmd.VAO);
@@ -162,11 +180,14 @@ namespace SHAME::Engine::Rendering{
             cmd.mat->StopUsing();
         }
 
+        if(!Renderer::settings.showDebugShapes)
+            return;
+
         // --- Debug Physics Shapes ---
         defaultShader->Activate();
         defaultShader->setInt("useTexture", 0);
         defaultShader->setMat4("projectionView", cam->GetMatrix());
-        defaultShader->setInt("lightNB", lightman->GetLightsCount());
+        defaultShader->setInt("lightNB", lightMan->GetLightsCount());
 
         for (auto& physicBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies) {
             defaultShader->setMat4("model", physicBody->parent->transform->GetMatrix());
@@ -176,7 +197,7 @@ namespace SHAME::Engine::Rendering{
         }
 
         glBindVertexArray(0);
-        defaultShader->Deactivate();
+        glUseProgram(0);
         glDisable(GL_DEPTH_TEST);
     }
 
@@ -188,6 +209,10 @@ namespace SHAME::Engine::Rendering{
             }
 
         viewportBuffer->RescaleFrameBuffer(width, height);
+
+        glViewport(0, 0, width, height);
+
+        cam->UpdateSize(width, height);
     }
 
     void Renderer::AddRenderPass(RenderStage stage, std::function<void()> callback, std::shared_ptr<FrameBuffer> fb, bool appendToViewport, BlendMode blendMode)
@@ -203,14 +228,17 @@ namespace SHAME::Engine::Rendering{
     void Renderer::ExecuteRenderPasses(){
         for (const auto& pass : renderPasses) {
             switch (pass.stage) {
-                case RenderStage::UI:
+                case RenderStage::UI:{
                     // No FBO
                     pass.callback();
                     break;
-
-                case RenderStage::PostProcess:
+                }
+                case RenderStage::PostProcess:{
                     if(!pass.target)
                         throw std::runtime_error("[ERROR] [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
+
+                    if(!Renderer::settings.enablePostProcessing)
+                        break;
 
                     pass.target->Bind();
                     viewportBuffer->Draw(rectVAO);
@@ -224,18 +252,15 @@ namespace SHAME::Engine::Rendering{
 
                     if(pass.appendToViewport){
                         viewportBuffer->Unbind();
-                    
                         viewportBuffer->Draw(rectVAO);
-
                     }
 
-
                     break;
-
+                }
                 case RenderStage::Background:
                 case RenderStage::Scene:
                 case RenderStage::Debug:
-                default:
+                default:{
                     if(!pass.target)
                         throw std::runtime_error("[ERROR] [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
                     pass.target->Bind();
@@ -246,7 +271,7 @@ namespace SHAME::Engine::Rendering{
                     if(pass.appendToViewport){
                         viewportBuffer->Bind();
 
-                        glClearColor(0.3f, 0.3f, 1.0f, 1.0f);
+                        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
                         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                         
                         blendShader->Activate();
@@ -282,9 +307,32 @@ namespace SHAME::Engine::Rendering{
                     }
 
                     break;
+                }
             }
         }
 
+    }
+
+    void Renderer::ToggleFullscreen()
+    {
+        const bool fullscreen = glfwGetWindowMonitor(window) != nullptr;
+        if(fullscreen) {
+            // Restore the window position and size.
+            glfwSetWindowMonitor(window, nullptr, settings.windowPosX, settings.windowPosY, settings.windowWidth, settings.windowHeight, 0);
+            // Check the window position and size (if we are on a screen smaller than the initial size).
+            glfwGetWindowPos(window, &settings.windowPosX, &settings.windowPosY);
+            glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
+            RescaleFramebuffers(settings.windowWidth, settings.windowHeight);
+        } else {
+            // Backup the window current frame.
+            glfwGetWindowPos(window, &settings.windowPosX, &settings.windowPosY);
+            glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
+            // Move to fullscreen on the primary monitor.
+            GLFWmonitor * monitor	= glfwGetPrimaryMonitor();
+            const GLFWvidmode * mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+            RescaleFramebuffers(mode->width, mode->height);
+        }
     }
 
     void Renderer::EndFrame()

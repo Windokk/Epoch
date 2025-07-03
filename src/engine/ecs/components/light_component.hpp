@@ -18,14 +18,16 @@ namespace SHAME::Engine::ECS::Components
             void SetColor(glm::vec3 color);
             void SetOuterCutoff(float cutoff);
             void SetInnerCuttof(float cutoff);
+            void SetLightIndex(int index);
 
-            Rendering::GPULight GetData();
+            Rendering::LightData GetData();
 
             void Destroy() override{
                 //TODO
             }
 
         private:
-            std::shared_ptr<Rendering::GPULight> lightData;
+            int lightIndex = -1;
+            std::shared_ptr<Rendering::LightData> lightData;
     };
 }

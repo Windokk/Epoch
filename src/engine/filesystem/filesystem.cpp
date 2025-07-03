@@ -6,7 +6,7 @@ namespace SHAME::Engine::Filesystem{
 
     Path FileManager::root = Path("");
 
-    void FileManager::InitializeSession(std::string rootPath)
+    void FileManager::Init(std::string rootPath)
     {
         if(rootPath == ""){
             root = Path(std::filesystem::current_path().string());

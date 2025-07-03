@@ -23,12 +23,14 @@ namespace SHAME::Engine::ECS::Components
         const glm::vec3& GetScale() const { return scale; };
 
         void SetPosition(glm::vec3 position);
-        void SetRotation(glm::quat rotation);
+        void SetRotation(glm::vec3 rotation);
         void SetScale(glm::vec3 scale);
 
         void Translate(glm::vec3 deltaPosition);
-        void Rotate(glm::quat angle);
+        void Rotate(glm::vec3 angle);
         void Scale(glm::vec3 deltaScale);
+
+        void UpdateMeshReferencesInLevel();
 
         glm::vec3 GetForward() {
             return rotation * glm::vec3(0, 0, 1);

@@ -20,11 +20,12 @@ namespace SHAME::Engine::ECS{
     }
 }
 
+namespace SHAME::Engine::Rendering{
+    class Renderer;
+    class Mesh;
+}
+
 namespace SHAME::Engine::Levels{
- 
-    namespace Rendering{
-        class Renderer;
-    }
 
     class Level{
 
@@ -54,6 +55,8 @@ namespace SHAME::Engine::Levels{
         std::vector<ECS::Components::ModelComponent*> models;
         std::vector<ECS::Components::PhysicsComponent*> physicsBodies;
         std::vector<ECS::Components::AudioSource*> audioSources;
+
+        std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh*>> meshes;
         
     };
 

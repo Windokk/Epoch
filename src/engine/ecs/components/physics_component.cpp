@@ -93,6 +93,6 @@ namespace SHAME::Engine::ECS::Components{
         JPH::Quat rot = Physics::PhysicsSystem::m_physicsSystem.GetBodyInterface().GetRotation(mBodyID);
 
         this->parent->GetComponent<Transform>().SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
-        this->parent->GetComponent<Transform>().SetRotation(glm::quat(glm::vec3(rot.GetEulerAngles().GetX(), rot.GetEulerAngles().GetY(), rot.GetEulerAngles().GetZ())));
+        this->parent->GetComponent<Transform>().SetRotation(glm::vec3(rot.GetEulerAngles().GetX(), rot.GetEulerAngles().GetY(), rot.GetEulerAngles().GetZ()));
     }
 }

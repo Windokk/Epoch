@@ -6,6 +6,7 @@
 #include "engine/rendering/light/light_manager.hpp"
 #include "engine/ecs/components/model_component.hpp"
 #include "engine/rendering/debug/debug.hpp"
+#include "engine/rendering/shadow/shadow_manager.hpp"
 
 namespace SHAME::Engine{
 
@@ -14,6 +15,21 @@ namespace SHAME::Engine{
     }
 
     namespace Rendering {
+
+        class Renderer;
+
+        struct RendererSettings{
+            bool showDebugShapes = false;
+            int antiAliasingLevel = 4;
+            //TODO : bool enableStatsOverlay = false;
+            bool enableShadows = true;
+            bool enablePostProcessing = true;
+            private:
+                int windowPosX, windowPosY, windowWidth, windowHeight= 0;
+                bool fullscreen = false;
+            friend class SHAME::Engine::Rendering::Renderer;
+
+        };
 
         enum class RenderStage {
             Background,
@@ -57,7 +73,7 @@ namespace SHAME::Engine{
                 return instance;
             }
 
-            static void Init(GLFWwindow *window);
+            static void Init(GLFWwindow *window, RendererSettings settings = {});
             static void Shutdown();
             static void Render();
 
@@ -81,13 +97,21 @@ namespace SHAME::Engine{
 
             static Camera &GetCamera() { return *cam; }
 
-            static int GetHeight() { glfwGetWindowSize(window, &width, &height); return height; }
+            static int GetCurrentHeight() { int height; glfwGetWindowSize(window, nullptr, &height); return height; }
 
-            static int GetWidth() { glfwGetWindowSize(window, &width, &height); return width; }
+            static int GetCurrentWidth() { int width; glfwGetWindowSize(window, &width, nullptr); return width; }
+
+            static bool GetCurrentFullscreen() { return settings.fullscreen; }
+
+            static void ToggleFullscreen();
 
             static unsigned int GetViewportTextureID() { return viewportBuffer->GetFrameTexture(); }
 
-            static LightManager* lightman;
+            static LightManager* lightMan;
+
+            static ShadowManager* shadowMan;
+
+            static GLuint GetRectVAO();
 
             private:
 
@@ -100,8 +124,6 @@ namespace SHAME::Engine{
 
             static void BeginFrame();
             static void EndFrame();
-
-            static int width, height;
 
             static Camera* cam;
 
@@ -118,6 +140,8 @@ namespace SHAME::Engine{
             static std::shared_ptr<Shader> framebufferShader;
 
             static std::shared_ptr<Shader> defaultShader;
+
+            static RendererSettings settings;
 
         };
     }

@@ -86,7 +86,7 @@ namespace SHAME::Engine::Filesystem{
             FileManager(FileManager&&) = delete;
             FileManager& operator=(FileManager&&) = delete;
             
-            static void InitializeSession(std::string rootPath = "");
+            static void Init(std::string rootPath = "");
 
             // File and directory browsing
             static FileInfo GetFileInfos(const Path& path);

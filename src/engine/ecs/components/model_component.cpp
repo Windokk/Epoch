@@ -15,8 +15,18 @@ namespace SHAME::Engine::ECS::Components{
     {
         this->mesh = mesh;
         this->Update();
+        UpdateReferenceInLevel();
     }
     
+    void ModelComponent::UpdateReferenceInLevel()
+    {
+        if (!parent || !parent->level || !mesh)
+        {
+            return;
+        }
+        parent->level->meshes[parent->GetComponentIDInScene(local_id)] = { parent->transform->GetMatrix(), mesh.get() };
+    }
+
     void ModelComponent::SetMaterial(std::shared_ptr<Rendering::Material> material)
     {
         this->mat = material;

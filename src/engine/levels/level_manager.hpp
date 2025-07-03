@@ -14,31 +14,41 @@ namespace SHAME::Engine::Levels{
             LevelManager(const LevelManager&) = delete;
             LevelManager& operator=(const LevelManager&) = delete;
             
+            /// @brief Load a level
+            /// @param lvl The pointer to the level
             static void LoadLevel(std::unique_ptr<Level> lvl) {
                 levelBuffer.push_back(std::move(lvl));
             }
 
+            /// @brief Getter for a loaded level
+            /// @param index The index of the level to retrieve
+            /// @return A pointer to the level loaded at "index"
             static Level* GetLevelAt(int index){
                 if (index >= 0 && index < levelBuffer.size()) {
                     return levelBuffer[index].get();
                 } else {
-                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index. Unable to unload level.");
+                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index (out of bounds). Unable to retrieve level.");
                 }
             }
 
+            /// @brief Unload a loaded level
+            /// @param index The index of the level to unload
             static void UnLoadLevel(int index){
                 if (index >= 0 && index < levelBuffer.size()) {
                     levelBuffer.erase(levelBuffer.begin() + index);
                 } else {
-                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index. Unable to unload level.");
+                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index (out of bounds). Unable to unload level.");
                 }
             }
         
+            /// @brief Unload all loaded levels
             static void UnloadAllLevels() {
                 levelBuffer.clear();
             }
         
             
+            /// @brief Getter for the total number loaded level
+            /// @return The length of the level buffer
             static int GetLoadedLevelCount() {
                 return levelBuffer.size();
             }

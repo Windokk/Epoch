@@ -20,17 +20,17 @@ namespace SHAME::Engine::Rendering {
                type == GL_SAMPLER_2D_RECT || type == GL_SAMPLER_2D_RECT_SHADOW;
     }
 
-    Shader::Shader(const char* vertexFile, const char* fragmentFile)
+    /// @brief Constructor that build a Shader Program from 2 (vert and frag) or 3 (vert, frag and geom) different shaders path
+    Shader::Shader(const std::string vertexFilePath, const std::string fragmentFilePath, const std::string geometryFilePath)
     {
-
-        if (vertexFile != "" && fragmentFile != "") {
+        if (vertexFilePath != "" && fragmentFilePath != "") {
 		
-            this->vertexFile = vertexFile;
-            this->fragmentFile = fragmentFile;
+            this->vertexFilePath = vertexFilePath;
+            this->fragmentFilePath = fragmentFilePath;
 
             // Read vertexFile and fragmentFile and store the strings
-            std::string vertexCode = FileManager::ReadFile(Path(vertexFile));
-            std::string fragmentCode = FileManager::ReadFile(Path(fragmentFile));
+            std::string vertexCode = FileManager::ReadFile(Path(vertexFilePath));
+            std::string fragmentCode = FileManager::ReadFile(Path(fragmentFilePath));
     
             // Convert the shader source strings into character arrays
             const char* vertexSource = vertexCode.c_str();
@@ -54,22 +54,38 @@ namespace SHAME::Engine::Rendering {
             // Checks if Shader compiled succesfully
             CompileErrors(fragmentShader, "FRAGMENT");
     
-            // Create Shader Program Object and get its reference
+            GLuint geometryShader = 0;
+            bool hasGeometry = !geometryFilePath.empty();
+
+            if (hasGeometry) {
+                this->geometryFilePath = geometryFilePath;
+                std::string geometryCode = FileManager::ReadFile(Path(geometryFilePath));
+                const char* geometrySource = geometryCode.c_str();
+
+                geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+                glShaderSource(geometryShader, 1, &geometrySource, NULL);
+                glCompileShader(geometryShader);
+                CompileErrors(geometryShader, "GEOMETRY");
+            }
+
             ID = glCreateProgram();
-            // Attach the Vertex and Fragment Shaders to the Shader Program
             glAttachShader(ID, vertexShader);
             glAttachShader(ID, fragmentShader);
-            // Wrap-up/Link all the shaders together into the Shader Program
+            if (hasGeometry)
+                glAttachShader(ID, geometryShader);
+
             glLinkProgram(ID);
-            // Checks if Shaders linked succesfully
             CompileErrors(ID, "PROGRAM");
-    
-            // Delete the now useless Vertex and Fragment Shader objects
+
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
+            if (hasGeometry)
+                glDeleteShader(geometryShader);
         }
     }
 
+    /// @brief Getter for the uniforms names and types of the shader
+    /// @return A std::vector of uniforms
     std::vector<UniformInfo> Shader::GetActiveUniforms() {
         std::vector<UniformInfo> uniforms;
     
@@ -99,21 +115,25 @@ namespace SHAME::Engine::Rendering {
         return uniforms;
     }
 
-    void Shader::Cleanup()
-    {
-        glDeleteProgram(ID);
-    }
-
+    /// @brief Activates the Shader Program (bind)
     void Shader::Activate()
     {
         glUseProgram(ID);
     }
 
+    /// @brief Deactivates the Shader Program (unbind)
     void Shader::Deactivate()
     {
         glUseProgram(0);
     }
 
+    /// @brief Deletes the Shader Program
+    void Shader::Cleanup()
+    {
+        glDeleteProgram(ID);
+    }
+
+    /// @brief Checks if the different Shaders have compiled properly
     void Shader::CompileErrors(unsigned int shader, const char* type)
     {
         // Stores status of compilation

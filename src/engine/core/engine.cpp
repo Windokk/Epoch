@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-#include "engine/filesystem/filesystem.hpp"
 
 using namespace std::chrono;
 
@@ -14,15 +13,17 @@ namespace SHAME::Engine::Core{
     using namespace Physics;
     using namespace Filesystem;
     using namespace Audio;
+    using namespace Input;
 
-    EngineInstance::EngineInstance()  
+    EngineInstance::EngineInstance(EngineCreationSettings settings)  
     {
-        FileManager::InitializeSession();
-
+        this->settings = settings;
         CreateWindow();
+        FileManager::Init(settings.rootPath);
         Renderer::Init(window);
         PhysicsSystem::Init();
         AudioManager::Init(100.0f);
+        InputManager::Init(window);
     }
 
     void EngineInstance::CreateWindow()
@@ -32,7 +33,15 @@ namespace SHAME::Engine::Core{
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(800, 800, "SHA.me", NULL, NULL);
+        if(settings.fullscreen){
+            GLFWmonitor* primary = glfwGetPrimaryMonitor();
+            const GLFWvidmode* mode = glfwGetVideoMode(primary);
+            window = glfwCreateWindow(mode->width, mode->height, "SHA.me", primary, nullptr);
+        }
+        else{
+            window = glfwCreateWindow(settings.windowWidth, settings.windowHeight, "SHA.me", NULL, NULL);
+        }
+        
         if (window == NULL)
         {
             glfwTerminate();
@@ -41,7 +50,7 @@ namespace SHAME::Engine::Core{
 
         glfwSetWindowUserPointer(window, this);
         glfwMakeContextCurrent(window);
-        glfwSetFramebufferSizeCallback(window, OnWindowResize);
+        glfwSetWindowSizeCallback(window, OnWindowResize);
         glfwSwapInterval(1);
         
 
@@ -59,6 +68,7 @@ namespace SHAME::Engine::Core{
 
     void EngineInstance::Destroy()
     {
+        InputManager::Shutdown();
         AudioManager::Shutdown();
         PhysicsSystem::Shutdown();
         LevelManager::UnloadAllLevels();
@@ -80,15 +90,15 @@ namespace SHAME::Engine::Core{
             std::cout << "Very fast frame (<1ms), can't compute FPS accurately" << std::endl;*/
 
         Renderer::Render();
-        PhysicsSystem::StepSimulation(1.0f / 60.0f);
+        //PhysicsSystem::StepSimulation(1.0f / 60.0f);
         AudioManager::Tick();
+        InputManager::Tick();
 
         lastTime = currentTime;
     }
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)
     {
-        
     }
 
 }

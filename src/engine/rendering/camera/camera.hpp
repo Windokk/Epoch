@@ -29,7 +29,6 @@ namespace SHAME::Engine::Rendering {
         glm::vec3 forward;
         bool canInteract = true;
         glm::vec3 position;
-        float zoom = 10.0f;
 
         glm::mat4 GetView()
         {
@@ -54,6 +53,6 @@ namespace SHAME::Engine::Rendering {
 
         glm::mat4 GetMatrix();
 
-        void Inputs(GLFWwindow* window, float speed = 0.6f);
+        void Inputs(GLFWwindow* window, float speed = 0.4f);
     };
 }

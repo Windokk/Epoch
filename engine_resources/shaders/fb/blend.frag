@@ -1,7 +1,7 @@
 #version 430 core
-out vec4 FragColor;
+out vec4 fragColor;
 
-in vec2 TexCoords;
+in vec2 texCoords;
 
 uniform sampler2D texA;
 uniform sampler2D texB;
@@ -25,8 +25,8 @@ vec4 blendNormal(vec4 a, vec4 b) {
 
 void main()
 {
-    vec4 colorA = texture(texA, TexCoords);
-    vec4 colorB = texture(texB, TexCoords);
+    vec4 colorA = texture(texA, texCoords);
+    vec4 colorB = texture(texB, texCoords);
 
     vec4 result;
 
@@ -46,5 +46,5 @@ void main()
             break;
     }
 
-    FragColor = result;
+    fragColor = result;
 }

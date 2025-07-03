@@ -1,4 +1,5 @@
 #include "material.hpp"
+#include <iostream>
 
 namespace SHAME::Engine::Rendering{
 
@@ -9,8 +10,10 @@ namespace SHAME::Engine::Rendering{
             case GL_FLOAT_VEC3: return glm::vec3(0.0f);
             case GL_FLOAT_VEC4: return glm::vec4(0.0f);
             case GL_FLOAT_MAT4: return glm::mat4(1.0f);
-            case GL_SAMPLER_2D: return static_cast<Texture*>(nullptr);;
-            default: throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MATERIAL] : Failed to query default variable type");
+            case GL_SAMPLER_2D: return static_cast<Texture*>(nullptr);
+            case GL_SAMPLER_CUBE: return 0;
+            case GL_SAMPLER_CUBE_MAP_ARRAY: return 0;
+            default: throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MATERIAL] : Failed to query default variable type : "+std::to_string(type));
         }
     }
 

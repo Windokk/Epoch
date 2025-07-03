@@ -36,23 +36,26 @@ namespace SHAME::Engine::ECS::Components{
 		if(oldpos != position){
 			Rendering::Renderer::ReorderDrawList();
 		}
+		UpdateMeshReferencesInLevel();
     }
 
-    void Transform::SetRotation(glm::quat rotation)
+    void Transform::SetRotation(glm::vec3 rotation)
     {
-        this->rotation = rotation;
 
+		this->rotation = glm::radians(rotation) * this->rotation;
 		
 		if(parent->HasComponent<Light>()){
 			for(auto& light : parent->GetComponents<Light>()){
-				light->SetDirection(glm::eulerAngles(this->rotation));
+				light->SetDirection(-this->GetForward());
 			}
 		}
+		UpdateMeshReferencesInLevel();
     }
 
     void Transform::SetScale(glm::vec3 scale)
     {
         this->scale = scale;
+		UpdateMeshReferencesInLevel();
     }
 
     void Transform::Translate(glm::vec3 deltaPosition)
@@ -68,24 +71,36 @@ namespace SHAME::Engine::ECS::Components{
 		if(deltaPosition.z != 0){
 			Rendering::Renderer::ReorderDrawList();
 		}
+		UpdateMeshReferencesInLevel();
     }
 
-    void Transform::Rotate(glm::quat angle)
+    void Transform::Rotate(glm::vec3 angle)
     {
-        this->rotation = angle * this->rotation;
+        this->rotation = glm::radians(angle) * this->rotation;
 
 		
 		if(parent->HasComponent<Light>()){
 			for(auto& light : parent->GetComponents<Light>()){
-				light->SetDirection(glm::eulerAngles(this->rotation));
+				light->SetDirection(-this->GetForward());
 			}
 		}
+		UpdateMeshReferencesInLevel();
     }
 
     void Transform::Scale(glm::vec3 deltaScale)
     {
         this->scale += deltaScale;
+		UpdateMeshReferencesInLevel();
     }
+
+	void Transform::UpdateMeshReferencesInLevel()
+	{
+		if(parent->HasComponent<ECS::Components::ModelComponent>()){
+			for(ECS::Components::ModelComponent* comp : parent->GetComponents<ECS::Components::ModelComponent>()){
+				comp->UpdateReferenceInLevel();
+			}
+		}
+	}
 
     glm::mat4 Transform::GetMatrix()
     {
@@ -178,7 +193,7 @@ namespace SHAME::Engine::ECS::Components{
 
 			if(parent->HasComponent<Light>()){
 				for(auto& light : parent->GetComponents<Light>()){
-					light->SetDirection(glm::eulerAngles(this->rotation));
+					light->SetDirection(-this->GetForward());
 				}
 			}
 		}
