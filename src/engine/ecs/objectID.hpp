@@ -4,6 +4,8 @@
 #include <atomic>
 #include <unordered_set>
 #include <map>
+#include <cstddef>
+#include <functional>
 
 namespace SHAME::Engine::ECS
 {
@@ -98,5 +100,14 @@ namespace SHAME::Engine::ECS
         private:
             static std::map<ObjectID, Objects::Object*> ObjectIDMap;
             static std::unordered_set<int> availableIDs;
+    };
+}
+
+namespace std {
+    template<>
+    struct hash<SHAME::Engine::ECS::ObjectID> {
+        std::size_t operator()(const SHAME::Engine::ECS::ObjectID& id) const noexcept {
+            return std::hash<int>{}(id.GetAsInt());
+        }
     };
 }

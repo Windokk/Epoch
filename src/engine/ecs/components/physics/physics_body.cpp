@@ -1,21 +1,27 @@
-#include "physics_component.hpp"
+#include "physics_body.hpp"
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
 #include <iostream>
 
 namespace SHAME::Engine::ECS::Components{
-    PhysicsComponent::PhysicsComponent(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
+    PhysicsBody::PhysicsBody(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {
         
     }
 
-    void PhysicsComponent::CreateBody(Physics::PhysicsShape shape, glm::vec3 scale, EMotionType motionType)
+    void PhysicsBody::Update(Physics::PhysicsShape shape, glm::vec3 scale, EMotionType motionType)
+    {
+        Physics::PhysicsSystem::RemoveBody(mBodyID);
+        CreateBody(shape, scale, motionType);
+    }
+
+    void PhysicsBody::CreateBody(Physics::PhysicsShape shape, glm::vec3 scale, EMotionType motionType)
     {
         JPH::ShapeRefC shapeRef;
 
         this->scale = scale;
-        this->type = shape;
+        this->shape = shape;
 
         switch (shape) {
             case Physics::PhysicsShape::SPHERE: {
@@ -68,7 +74,7 @@ namespace SHAME::Engine::ECS::Components{
             }
 
             default:
-                std::cerr << "Unsupported shape type!\n";
+                throw std::runtime_error("[ERROR] [ENGINE/ECS/COMPONENTS/PHYSICS_BODY] : Unsupported shape type!");
                 return;
         }
 
@@ -79,20 +85,23 @@ namespace SHAME::Engine::ECS::Components{
         JPH::BodyCreationSettings settings(
             shapeRef,
             JPH::RVec3(pos.x, pos.y, pos.z),        // position
-            JPH::Quat(rot.x, rot.y, rot.z, rot.w),                 // rotation
-            motionType,              // motion type
+            JPH::Quat(rot.x, rot.y, rot.z, rot.w),  // rotation
+            motionType,                             // motion type
             1
         );
 
-        mBodyID = Physics::PhysicsSystem::CreateBody(settings);
+        mBodyID = Physics::PhysicsSystem::CreateBody(settings, this);
     }
 
-    void PhysicsComponent::Update(){
+    void PhysicsBody::Tick(){
 
-        JPH::RVec3 pos = Physics::PhysicsSystem::m_physicsSystem.GetBodyInterface().GetCenterOfMassPosition(mBodyID);
-        JPH::Quat rot = Physics::PhysicsSystem::m_physicsSystem.GetBodyInterface().GetRotation(mBodyID);
+        if(!activated)
+            return;
 
-        this->parent->GetComponent<Transform>().SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
-        this->parent->GetComponent<Transform>().SetRotation(glm::vec3(rot.GetEulerAngles().GetX(), rot.GetEulerAngles().GetY(), rot.GetEulerAngles().GetZ()));
+        JPH::RVec3 pos = Physics::PhysicsSystem::GetBodyInterface().GetCenterOfMassPosition(mBodyID);
+        JPH::Vec3 rot = Physics::PhysicsSystem::GetBodyInterface().GetRotation(mBodyID).GetEulerAngles();
+        
+        this->parent->transform->SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
+        this->parent->transform->SetRotation(glm::vec3(glm::degrees(rot.GetX()), glm::degrees(rot.GetY()), glm::degrees(rot.GetZ())));
     }
 }

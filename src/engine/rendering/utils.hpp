@@ -3,10 +3,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "engine/ecs/components/transform.hpp"
+#include "engine/ecs/components/core/transform.hpp"
 
-#define assertm(exp, msg) assert((void(msg), exp))
-
+//3D
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
@@ -14,6 +13,13 @@ struct Vertex {
     glm::vec2 texCoord;
 };
 
+struct SimpleVertex{
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec4 color;
+};
+
+//Colors
 struct COL_RGB{
     COL_RGB() = default;
     COL_RGB(float r, float g, float b){
@@ -168,7 +174,6 @@ struct COL_RGB{
 
         float components[3] = {0.0f, 0.0f ,0.0f};
 };
-
 struct COL_RGBA{    
     COL_RGBA() = default;
 
@@ -370,3 +375,4 @@ struct COL_RGBA{
 
         float components[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 };
+

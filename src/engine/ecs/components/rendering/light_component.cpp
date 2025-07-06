@@ -1,7 +1,7 @@
 #include "light_component.hpp"
 
 #include "engine/rendering/renderer/renderer.hpp"
-#include "engine/ecs/components/transform.hpp"
+#include "engine/ecs/components/core/transform.hpp"
 #include "engine/ecs/objects/actors/actor.hpp"
 
 namespace SHAME::Engine::ECS::Components{
@@ -20,6 +20,9 @@ namespace SHAME::Engine::ECS::Components{
     /// @param type The new type
     void Light::SetType(Rendering::LightType type)
     {
+        if(!activated)
+            return;
+
         lightData->type = (int)type;
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -28,6 +31,9 @@ namespace SHAME::Engine::ECS::Components{
     /// @param intensity The new intensity
     void Light::SetIntensity(float intensity)
     {
+        if(!activated)
+            return;
+
         lightData->intensity = intensity;
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -36,6 +42,9 @@ namespace SHAME::Engine::ECS::Components{
     /// @param postion The new position (in world units)
     void Light::SetPosition(glm::vec3 postion)
     {
+        if(!activated)
+            return;
+
         lightData->position = postion;
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -44,15 +53,20 @@ namespace SHAME::Engine::ECS::Components{
     /// @param direction The new direction (normalized)
     void Light::SetDirection(glm::vec3 direction)
     {
+        if(!activated)
+            return;
+
         lightData->direction = direction;
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
-
     
     /// @brief Set the radius of the light (Only for spot and point lights)
     /// @param radius The new radius (in world units)
     void Light::SetRadius(float radius)
     {
+        if(!activated)
+            return;
+
         lightData->radius = radius;
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -61,6 +75,9 @@ namespace SHAME::Engine::ECS::Components{
     /// @param color The new color
     void Light::SetColor(glm::vec3 color)
     {
+        if(!activated)
+            return;
+
         lightData->color = color;
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -69,6 +86,9 @@ namespace SHAME::Engine::ECS::Components{
     /// @param cutoff The new cutoff, in degrees
     void Light::SetOuterCutoff(float cutoff)
     {
+        if(!activated)
+            return;
+
         lightData->outerCutoff = glm::cos(glm::radians(cutoff));
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -77,6 +97,9 @@ namespace SHAME::Engine::ECS::Components{
     /// @param cutoff The new cutoff, in degrees
     void Light::SetInnerCuttof(float cutoff)
     {
+        if(!activated)
+            return;
+
         lightData->innerCutoff = glm::cos(glm::radians(cutoff));
         Rendering::Renderer::lightMan->Update(lightIndex);
     }
@@ -85,7 +108,7 @@ namespace SHAME::Engine::ECS::Components{
     /// @param index This new light's index
     void Light::SetLightIndex(int index)
     {
-        if(lightIndex != -1)
+        if(lightIndex != -1 || !activated)
             return;
         
         Rendering::Renderer::lightMan->AddLight(index, lightData);

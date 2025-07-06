@@ -8,14 +8,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine/ecs/components/component.hpp"
+#include "engine/ecs/components/core/component.hpp"
 
 namespace SHAME::Engine::ECS::Components
 {
     class Transform : public Component{
 
         public:
-        Transform(Objects::Actor *parent, uint32_t local_id, glm::vec3 position, glm::quat rotation, glm::vec3 scale);
         Transform(Objects::Actor *parent, uint32_t local_id);
 
         const glm::vec3& GetPosition() const { return position; };
@@ -44,20 +43,17 @@ namespace SHAME::Engine::ECS::Components
             return rotation * glm::vec3(1, 0, 0);
         }
 
-        glm::mat4 GetMatrix();
+        glm::mat4 GetTransformMatrix();
 
-        bool SetFromMatrix(const glm::mat4 &m);
+        bool SetFromTransformMatrix(const glm::mat4 &m);
 
         void Destroy() override{
             //TODO
         }
 
         private:
-
-
-        glm::vec3 position;
-        glm::quat rotation;
-        glm::vec3 scale;
-
+            glm::vec3 position;
+            glm::quat rotation;
+            glm::vec3 scale;
     };
 }

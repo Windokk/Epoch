@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/ecs/components/component.hpp"
+#include "engine/ecs/components/core/component.hpp"
 
 #include "engine/rendering/light/light_manager.hpp"
 

@@ -4,8 +4,10 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 
-#include "engine/ecs/components/physics_component.hpp"
-#include "engine/ecs/components/audio_source.hpp"
+#include "engine/ecs/components/physics/physics_body.hpp"
+#include "engine/ecs/components/audio/audio_source.hpp"
+#include "engine/ecs/components/rendering/camera.hpp"
+#include "engine/ecs/components/core/script.hpp"
 
 namespace SHAME::Engine::ECS{
 
@@ -38,7 +40,6 @@ namespace SHAME::Engine::Levels{
 
         void Save(const std::string& filepath);
 
-        void Render(Rendering::Renderer& renderer);
         void Clear();
 
         void AddActor(ECS::Objects::Actor* a);
@@ -52,9 +53,11 @@ namespace SHAME::Engine::Levels{
 
         std::vector<ECS::Components::Light*> lights;
         std::vector<ECS::Components::Transform*> transforms;
-        std::vector<ECS::Components::ModelComponent*> models;
-        std::vector<ECS::Components::PhysicsComponent*> physicsBodies;
+        std::vector<ECS::Components::Model*> models;
+        std::vector<ECS::Components::PhysicsBody*> physicsBodies;
         std::vector<ECS::Components::AudioSource*> audioSources;
+        std::vector<ECS::Components::Camera*> cameras;
+        std::vector<ECS::Components::Script*> scripts;
 
         std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh*>> meshes;
         

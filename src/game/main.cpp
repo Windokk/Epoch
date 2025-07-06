@@ -10,6 +10,7 @@ void RenderPassMain() {
     Rendering::Renderer::DrawScene();
 }
 
+
 int main(int argc, char *argv[]) {
 
     Core::EngineInstance engine{};
@@ -21,7 +22,7 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Rendering::Shader> fbShader = std::make_shared<Rendering::Shader>("engine_resources/shaders/fb/framebuffer.vert", "engine_resources/shaders/fb/framebuffer.frag");
     Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetCurrentHeight()), fbShader};
 
-    std::shared_ptr<Rendering::Material> mat = std::make_shared<Rendering::Material>(std::make_shared<Rendering::Shader>("engine_resources/shaders/mesh/default.vert", "engine_resources/shaders/mesh/default.frag"));
+    std::shared_ptr<Rendering::Material> mat = std::make_shared<Rendering::Material>(std::make_shared<Rendering::Shader>("engine_resources/shaders/mesh/mesh.vert", "engine_resources/shaders/mesh/mesh.frag"));
 
     Rendering::Texture* texture = new Rendering::Texture(Filesystem::Path("engine_resources/textures/white.png"));
 
@@ -30,20 +31,20 @@ int main(int argc, char *argv[]) {
 
     Actor* actor1 = new Actor("obj1");
     Levels::LevelManager::GetLevelAt(0)->AddActor(actor1);
-    actor1->AddComponent<ModelComponent>();
+    actor1->AddComponent<Model>();
     std::shared_ptr<Rendering::Mesh> mesh = std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/sphere.obj"));
-    actor1->GetComponent<ModelComponent>().SetMaterial(mat);
-    actor1->GetComponent<ModelComponent>().SetMesh(mesh);
-    actor1->AddComponent<PhysicsComponent>()->CreateBody(Physics::SPHERE, glm::vec3(1,1,1), JPH::EMotionType::Dynamic);
-
+    actor1->GetComponent<Model>().SetMaterial(mat);
+    actor1->GetComponent<Model>().SetMesh(mesh);
+    actor1->AddComponent<PhysicsBody>()->CreateBody(Physics::SPHERE, glm::vec3(1,1,1), JPH::EMotionType::Dynamic);
 
     Actor* actor2 = new Actor("obj2");
     Levels::LevelManager::GetLevelAt(0)->AddActor(actor2);
     actor2->transform->SetPosition(glm::vec3(0, -10, 0));
-    actor2->transform->Scale(glm::vec3(10,1,10));
-    actor2->AddComponent<PhysicsComponent>()->CreateBody(Physics::BOX, glm::vec3(10, 0.02f, 10), JPH::EMotionType::Static);
-    actor2->AddComponent<ModelComponent>()->SetMesh(std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/plane.obj")));
-    actor2->GetComponent<ModelComponent>().SetMaterial(mat);
+    actor2->transform->SetRotation(glm::vec3(0, 0, 10));
+    actor2->transform->SetScale(glm::vec3(10,10,10));
+    actor2->AddComponent<PhysicsBody>()->CreateBody(Physics::BOX, glm::vec3(10, 0.02f, 10), JPH::EMotionType::Static);
+    actor2->AddComponent<Model>()->SetMesh(std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/plane.obj")));
+    actor2->GetComponent<Model>().SetMaterial(mat);
     actor2->AddComponent<AudioSource>()->SetPath("engine_resources/sounds/TownTheme.mp3");
     actor2->GetComponent<AudioSource>().SetVolume(10.0f);
 
@@ -63,7 +64,11 @@ int main(int argc, char *argv[]) {
     Levels::LevelManager::GetLevelAt(0)->AddActor(actor5);
     actor5->transform->SetPosition(glm::vec3(2, 10, 2));
     actor5->AddComponent<Light>()->SetType(LightType::Point);
-    actor5->GetComponent<Light>().SetColor(COL_RGB(1, 0, 0));
+
+    Actor* actor6 = new Actor("camera");
+    Levels::LevelManager::GetLevelAt(0)->AddActor(actor6);
+    actor6->AddComponent<Camera>();
+    actor6->transform->SetPosition(glm::vec3(0,0,-40));
 
     Rendering::Renderer::AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
 
@@ -71,7 +76,7 @@ int main(int argc, char *argv[]) {
     {
         engine.Run();
 
-        if(glfwGetKey(engine.GetGLFWWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(InputManager::WasKeyPressed(KEY_ESCAPE))
         {
             break;
         }

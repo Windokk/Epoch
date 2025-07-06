@@ -2,11 +2,15 @@
 
 #include "engine/ecs/objects/object.hpp"
 
-#include "engine/ecs/components/transform.hpp"
-#include "engine/ecs/components/light_component.hpp"
-#include "engine/ecs/components/physics_component.hpp"
+#include "engine/ecs/components/core/transform.hpp"
+#include "engine/ecs/components/rendering/light_component.hpp"
+#include "engine/ecs/components/physics/physics_body.hpp"
+
+#include "engine/rendering/camera/camera_manager.hpp"
 
 #include "engine/levels/level.hpp"
+
+#include "engine/events/event_system.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -141,7 +145,7 @@ namespace SHAME::Engine::ECS::Objects{
             level->lights.push_back(component);
         }
 
-        if constexpr (std::is_base_of<ModelComponent, T>::value) {
+        if constexpr (std::is_base_of<Model, T>::value) {
             level->models.push_back(component);
         }
 
@@ -149,12 +153,31 @@ namespace SHAME::Engine::ECS::Objects{
             level->transforms.push_back(component);
         }
 
-        if constexpr (std::is_base_of<PhysicsComponent, T>::value) {
+        if constexpr (std::is_base_of<PhysicsBody, T>::value) {
             level->physicsBodies.push_back(component);
         }
 
         if constexpr (std::is_base_of<AudioSource, T>::value) {
             level->audioSources.push_back(component);
+        }
+
+        if constexpr (std::is_base_of<Script, T>::value) {
+            level->scripts.push_back(component);
+            Events::EventDispatcher::GetInstance().subscribeToComponent<Events::ContactAddedEvent>(GetComponentIDInScene(components.size()-1), [component](const Events::ContactAddedEvent& event) {
+                component->OnContactAdded(event);
+            });
+            Events::EventDispatcher::GetInstance().subscribeToComponent<Events::ContactPersistedEvent>(GetComponentIDInScene(components.size()-1), [component](const Events::ContactPersistedEvent& event) {
+                component->OnContactPersisted(event);
+            });
+            Events::EventDispatcher::GetInstance().subscribeToComponent<Events::ContactRemovedEvent>(GetComponentIDInScene(components.size()-1), [component](const Events::ContactRemovedEvent& event) {
+                component->OnContactEnded(event);
+            });
+        }
+
+        if constexpr (std::is_base_of<Camera, T>::value) {
+            level->cameras.push_back(component);
+            component->Init(Rendering::Renderer::GetCurrentWidth(), Rendering::Renderer::GetCurrentHeight(), 0.1f, 100.0f);
+            Rendering::CameraManager::AddCamera(name, std::make_shared<Camera>(*component));
         }
 
         return component;

@@ -4,16 +4,9 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 #include "engine/ecs/objects/actors/actor.hpp"
-#include "engine/ecs/components/light_component.hpp"
+#include "engine/ecs/components/rendering/light_component.hpp"
 
 namespace SHAME::Engine::ECS::Components{
-    
-    Transform::Transform(Objects::Actor *parent, uint32_t local_id, glm::vec3 position, glm::quat rotation, glm::vec3 scale) : Component(parent, local_id)
-    {
-        this->position = position;
-        this->rotation = rotation;
-        this->scale = scale;
-    }
 
     Transform::Transform(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {
@@ -24,6 +17,9 @@ namespace SHAME::Engine::ECS::Components{
 
     void Transform::SetPosition(glm::vec3 position)
     {
+        if(!activated)
+            return;
+
 		glm::vec3 oldpos = this->position;
         this->position = position;
 
@@ -41,8 +37,10 @@ namespace SHAME::Engine::ECS::Components{
 
     void Transform::SetRotation(glm::vec3 rotation)
     {
+        if(!activated)
+            return;
 
-		this->rotation = glm::radians(rotation) * this->rotation;
+		this->rotation = glm::quat(glm::radians(rotation));
 		
 		if(parent->HasComponent<Light>()){
 			for(auto& light : parent->GetComponents<Light>()){
@@ -54,12 +52,18 @@ namespace SHAME::Engine::ECS::Components{
 
     void Transform::SetScale(glm::vec3 scale)
     {
+        if(!activated)
+            return;
+
         this->scale = scale;
 		UpdateMeshReferencesInLevel();
     }
 
     void Transform::Translate(glm::vec3 deltaPosition)
     {
+        if(!activated)
+            return;
+
         this->position += deltaPosition;
 
 		if(parent->HasComponent<Light>()){
@@ -76,6 +80,9 @@ namespace SHAME::Engine::ECS::Components{
 
     void Transform::Rotate(glm::vec3 angle)
     {
+        if(!activated)
+            return;
+
         this->rotation = glm::radians(angle) * this->rotation;
 
 		
@@ -89,28 +96,37 @@ namespace SHAME::Engine::ECS::Components{
 
     void Transform::Scale(glm::vec3 deltaScale)
     {
+        if(!activated)
+            return;
+
         this->scale += deltaScale;
 		UpdateMeshReferencesInLevel();
     }
 
 	void Transform::UpdateMeshReferencesInLevel()
 	{
-		if(parent->HasComponent<ECS::Components::ModelComponent>()){
-			for(ECS::Components::ModelComponent* comp : parent->GetComponents<ECS::Components::ModelComponent>()){
+        if(!activated)
+            return;
+
+		if(parent->HasComponent<ECS::Components::Model>()){
+			for(ECS::Components::Model* comp : parent->GetComponents<ECS::Components::Model>()){
 				comp->UpdateReferenceInLevel();
 			}
 		}
 	}
 
-    glm::mat4 Transform::GetMatrix()
+    glm::mat4 Transform::GetTransformMatrix()
     {
         return glm::translate(glm::mat4(1.0f), position)
             * glm::toMat4(rotation)
             * glm::scale(glm::mat4(1.0f), scale);
     }
 
-    bool Transform::SetFromMatrix(const glm::mat4& m)
+    bool Transform::SetFromTransformMatrix(const glm::mat4& m)
     {
+        if(!activated)
+            return false;
+
         // From glm::decompose in matrix_decompose.inl
 		using T = float;
 

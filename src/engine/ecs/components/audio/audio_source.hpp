@@ -2,7 +2,7 @@
 
 #include "engine/audio/audio_manager.hpp"
 
-#include "engine/ecs/components/component.hpp"
+#include "engine/ecs/components/core/component.hpp"
 
 #include "engine/rendering/utils.hpp"
 
@@ -25,5 +25,12 @@ namespace SHAME::Engine::ECS::Components
             void Pause();
             void RemoveSound();
             void Update();
+
+            void DeActivate() override
+            {
+                Component::DeActivate();
+
+                Pause();
+            }
     };
 }

@@ -15,12 +15,19 @@
 
 #include <iostream>
 #include <cstdarg>
+#include <unordered_map>
+
+#include "engine/rendering/utils.hpp"
 
 using namespace JPH;
 
 using namespace JPH::literals;
 
 using namespace std;
+
+namespace SHAME::Engine::ECS::Components{
+    class PhysicsBody;
+}
 
 namespace SHAME::Engine::Physics
 {
@@ -134,14 +141,14 @@ namespace SHAME::Engine::Physics
     #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
 
     private:
-        BroadPhaseLayer					mObjectToBroadPhase[Layers::NUM_LAYERS];
+        BroadPhaseLayer	mObjectToBroadPhase[Layers::NUM_LAYERS];
     };
 
     /// Class that determines if an object layer can collide with a broadphase layer
     class ObjectVsBroadPhaseLayerFilterImpl : public ObjectVsBroadPhaseLayerFilter
     {
     public:
-        virtual bool				ShouldCollide(ObjectLayer inLayer1, BroadPhaseLayer inLayer2) const override
+        virtual bool ShouldCollide(ObjectLayer inLayer1, BroadPhaseLayer inLayer2) const override
         {
             switch (inLayer1)
             {
@@ -156,49 +163,21 @@ namespace SHAME::Engine::Physics
         }
     };
 
-    // An example contact listener
-    class MyContactListener : public ContactListener
+    class PhysicsBodyActivationListener : public BodyActivationListener
     {
     public:
-        // See: ContactListener
-        virtual ValidateResult	OnContactValidate(const Body &inBody1, const Body &inBody2, RVec3Arg inBaseOffset, const CollideShapeResult &inCollisionResult) override
+        virtual void OnBodyActivated(const BodyID &inBodyID, uint64 inBodyUserData) override
         {
-            //cout << "Contact validate callback" << endl;
-
-            // Allows you to ignore a contact before it is created (using layers to not make objects collide is cheaper!)
-            return ValidateResult::AcceptAllContactsForThisBodyPair;
+            //TODO
         }
 
-        virtual void			OnContactAdded(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
+        virtual void OnBodyDeactivated(const BodyID &inBodyID, uint64 inBodyUserData) override
         {
-            //cout << "A contact was added" << endl;
-        }
-
-        virtual void			OnContactPersisted(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
-        {
-            //cout << "A contact was persisted" << endl;
-        }
-
-        virtual void			OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
-        {
-            //cout << "A contact was removed" << endl;
+            //TODO
         }
     };
 
-    // An example activation listener
-    class MyBodyActivationListener : public BodyActivationListener
-    {
-    public:
-        virtual void		OnBodyActivated(const BodyID &inBodyID, uint64 inBodyUserData) override
-        {
-            //cout << "A body got activated" << endl;
-        }
-
-        virtual void		OnBodyDeactivated(const BodyID &inBodyID, uint64 inBodyUserData) override
-        {
-            //cout << "A body went to sleep" << endl;
-        }
-    };
+    class PhysicsContactListener;
     
     class PhysicsSystem {
     public:
@@ -207,18 +186,28 @@ namespace SHAME::Engine::Physics
             return instance;
         }
 
-        static void Init();
+        static void Init(glm::vec3 gravity);
         static void Shutdown();
+
+        static void OnContactAdded(const Body &body1, const Body &body2, const ContactManifold &contactManifold, ContactSettings &contactSettings);
+        static void OnContactPersisted(const Body &body1, const Body &body2, const ContactManifold &contactManifold, ContactSettings &contactSettings);
+        static void OnContactRemoved(const SubShapeIDPair &pair);
 
         static void StepSimulation(float deltaTime);
 
-        static JPH::BodyID CreateBody(const JPH::BodyCreationSettings& settings, JPH::EActivation activation = JPH::EActivation::Activate);
+        static JPH::BodyID CreateBody(const JPH::BodyCreationSettings& settings, ECS::Components::PhysicsBody* component, JPH::EActivation activation = JPH::EActivation::Activate);
         static void RemoveBody(JPH::BodyID id);
 
-        static JPH::PhysicsSystem m_physicsSystem;
+        static JPH::BodyInterface& GetBodyInterface() {
+            if(!initialized)
+                throw std::runtime_error("[ERROR] [ENGINE/PHYSICS] : Physics system is not yet initialized");
+            return m_physicsSystem.GetBodyInterface();
+        }
+
+        static std::unordered_map<JPH::BodyID, ECS::Components::PhysicsBody*> bodyIDToComponentMap;
 
     private:
-
+    
         PhysicsSystem() = default;
         ~PhysicsSystem() = default;
         PhysicsSystem(const PhysicsSystem&) = delete;
@@ -227,12 +216,41 @@ namespace SHAME::Engine::Physics
         static JPH::TempAllocatorImpl* m_tempAllocator;
         static JPH::JobSystem* m_jobSystem;
 
+        static JPH::PhysicsSystem m_physicsSystem;
+
         static ObjectLayerPairFilterImpl m_objectLayerFilter;
         static ObjectVsBroadPhaseLayerFilterImpl m_objectVsBroadphase;
         static BPLayerInterfaceImpl m_broadPhaseLayer;
 
-        static MyContactListener m_contactListener;
-        static MyBodyActivationListener m_activationListener;
+        static PhysicsContactListener m_contactListener;
+        static PhysicsBodyActivationListener m_activationListener;
+
+        static bool initialized;
+    };
+
+
+    class PhysicsContactListener : public ContactListener
+    {
+    public:
+        virtual ValidateResult OnContactValidate(const Body &inBody1, const Body &inBody2, RVec3Arg inBaseOffset, const CollideShapeResult &inCollisionResult) override
+        {
+            return ValidateResult::AcceptAllContactsForThisBodyPair;
+        }
+
+        virtual void OnContactAdded(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
+        {
+            Physics::PhysicsSystem::OnContactAdded(inBody1, inBody2, inManifold, ioSettings);
+        }
+
+        virtual void OnContactPersisted(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
+        {
+            Physics::PhysicsSystem::OnContactPersisted(inBody1, inBody2, inManifold, ioSettings);
+        }
+
+        virtual void OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
+        {
+            Physics::PhysicsSystem::OnContactRemoved(inSubShapePair);
+        }
     };
 
 }

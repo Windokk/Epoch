@@ -11,10 +11,16 @@
 namespace SHAME::Engine::Core {
     
     struct EngineCreationSettings{
+        //WINDOW
         int windowWidth = 800;
         int windowHeight = 800;
         bool fullscreen = false;
+
+        //FILESYSTEM
         std::string rootPath = "";
+
+        //PHYSICS
+        glm::vec3 gravity = glm::vec3(0, -9.81f, 0);
     };
 
     class EngineInstance{

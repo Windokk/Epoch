@@ -1,15 +1,19 @@
 #include "audio_manager.hpp"
 
-#include "engine/rendering/utils.hpp"
+#include "engine/ecs/objects/actors/actor.hpp"
+
 #include "engine/levels/level_manager.hpp"
 
+#include "engine/rendering/utils.hpp"
 #include "engine/rendering/renderer/renderer.hpp"
+#include "engine/rendering/camera/camera_manager.hpp"
 
 #include <cassert>
 
 namespace SHAME::Engine::Audio
 {
     using namespace Filesystem;
+    using namespace Rendering;
 
     FMOD_RESULT F_CALLBACK OnSoundStopped(FMOD_CHANNELCONTROL* chanControl,
                                       FMOD_CHANNELCONTROL_TYPE controlType,
@@ -122,7 +126,9 @@ namespace SHAME::Engine::Audio
 
     void AudioManager::Update(glm::vec3 listenerPos, glm::vec2 listenerFacingNormalized, float maxDistance)
     {
-        assertm(maxDistance > 0, "[ERROR] [ENGINE/AUDIO/AUDIO_MANAGER] : maxDistance can't be >= 0");
+        if(maxDistance <= 0){
+            throw std::runtime_error("[ERROR] [ENGINE/AUDIO/AUDIO_MANAGER] : maxDistance can't be >= 0");
+        }
         
         for (const auto& pair : *AudioIDManager::GetAudioMap()) {
             if(pair.second->isPlaying){
@@ -159,7 +165,12 @@ namespace SHAME::Engine::Audio
         for(auto& source : Levels::LevelManager::GetLevelAt(0)->audioSources){
             source->Update();
         }
-        Rendering::Camera cam = Rendering::Renderer::GetCamera();
-        AudioManager::Update(cam.position, glm::normalize(glm::vec2(cam.forward.x, cam.forward.z)), 100.0f);
+
+        std::shared_ptr<ECS::Components::Camera> cam = CameraManager::GetActiveCamera();
+
+        if(cam == nullptr)
+            return;
+
+        AudioManager::Update(cam->parent->transform->GetPosition(), glm::normalize(glm::vec2(cam->parent->transform->GetForward().x, cam->parent->transform->GetForward().z)), 100.0f);
     }
 }

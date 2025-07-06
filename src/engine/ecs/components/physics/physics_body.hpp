@@ -13,7 +13,7 @@
 
 #include "engine/physics/physics_system.hpp"
 
-#include "engine/ecs/components/component.hpp"
+#include "engine/ecs/components/core/component.hpp"
 
 #include "engine/rendering/utils.hpp"
 
@@ -22,19 +22,39 @@
 namespace SHAME::Engine::ECS::Components
 {
 
-    class PhysicsComponent : public Component {
+    class PhysicsBody : public Component {
         private:
-        JPH::BodyID mBodyID = JPH::BodyID();  // default invalid ID
-        Physics::PhysicsShape type;
+        JPH::BodyID mBodyID = JPH::BodyID();
+        Physics::PhysicsShape shape;
         glm::vec3 scale;
         Rendering::DebugShape* debugShape = nullptr;
 
         public:
-            PhysicsComponent(Objects::Actor *parent, uint32_t local_id);
+            PhysicsBody(Objects::Actor *parent, uint32_t local_id);
 
             void CreateBody(Physics::PhysicsShape shape, glm::vec3 scale, EMotionType motionType);
 
-            void Update();
+            void Update(Physics::PhysicsShape shape, glm::vec3 scale, EMotionType motionType);
+
+            void Tick();
+
+            void OnContactAdded(const PhysicsBody &other, const ContactManifold &contact, ContactSettings &settings);
+            void OnContactPersisted(const PhysicsBody &other, const ContactManifold &contact, ContactSettings &settings);
+            void OnContactRemove(const PhysicsBody &other, const ContactManifold &contact, ContactSettings &settings);
+
+            void Activate() override
+            {
+                Component::Activate();
+
+                Physics::PhysicsSystem::GetBodyInterface().ActivateBody(mBodyID);
+            }
+
+            void DeActivate() override
+            {
+                Component::DeActivate();
+
+                Physics::PhysicsSystem::GetBodyInterface().DeactivateBody(mBodyID);
+            }
 
             void RemoveBody() {
                 if (!mBodyID.IsInvalid()) {
@@ -43,7 +63,7 @@ namespace SHAME::Engine::ECS::Components
                 }
             }
             
-            Physics::PhysicsShape GetType() { return type; }
+            Physics::PhysicsShape GetShapeType() { return shape; }
             Rendering::DebugShape* GetDebugShape()  { return debugShape; }
             JPH::BodyID GetBodyID() const { return mBodyID; }
     };

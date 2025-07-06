@@ -9,9 +9,10 @@
 
 #include "engine/core/engine.hpp"
 
+#include "engine/rendering/camera/camera_manager.hpp"
+
 namespace SHAME::Engine::Rendering{
     
-    Camera* Renderer::cam = nullptr;
     GLFWwindow* Renderer::window = nullptr;
     std::vector<DrawCommand> Renderer::drawList = {};
     unsigned int  Renderer::rectVAO,  Renderer::rectVBO = -1;
@@ -67,9 +68,6 @@ namespace SHAME::Engine::Rendering{
 
         glViewport(0, 0, settings.windowWidth, settings.windowHeight);
 
-        //CAMERA
-        cam = new Camera(settings.windowWidth, settings.windowHeight, glm::vec3(0,0,10), glm::vec3(0,0,-1));
-
         //FRAMBUFFERS
         CreateRectGeometry();
         blendShader = std::make_shared<Shader>("engine_resources/shaders/fb/framebuffer.vert","engine_resources/shaders/fb/blend.frag");
@@ -81,7 +79,7 @@ namespace SHAME::Engine::Rendering{
         lightMan->Update(-1);
 
         //DEBUG_SHAPES
-        defaultShader = std::make_shared<Shader>("engine_resources/shaders/mesh/default.vert","engine_resources/shaders/mesh/default.frag");
+        defaultShader = std::make_shared<Shader>("engine_resources/shaders/default/default.vert","engine_resources/shaders/default/default.frag");
 
         //MULTISAMPLING
         if(settings.antiAliasingLevel>0){
@@ -104,9 +102,11 @@ namespace SHAME::Engine::Rendering{
 
     void Renderer::Render()
     {
-        BeginFrame();
+        if(CameraManager::GetActiveCamera() != nullptr){
+            BeginFrame();
 
-        ExecuteRenderPasses();
+            ExecuteRenderPasses();
+        }
         
         EndFrame();
     }
@@ -129,15 +129,18 @@ namespace SHAME::Engine::Rendering{
 
     void Renderer::ReorderDrawList()
     {
-        std::sort(drawList.begin(), drawList.end(), [](const DrawCommand& a, const DrawCommand& b) {
-            return a.tr->GetPosition().z < b.tr->GetPosition().z;
-        });
+        drawList.erase(
+            std::remove_if(drawList.begin(), drawList.end(),
+                [](const DrawCommand& cmd) {
+                    return cmd.tr == nullptr;
+                }),
+            drawList.end()
+        );
     }
 
     void Renderer::BeginFrame()
     {
-        cam->UpdateMatrix(0.01f, 1000.0f);
-        if(cam->canInteract) cam->Inputs(window);
+        CameraManager::Tick();
 
         if(settings.enableShadows){
             shadowMan->RenderShadowMaps(Levels::LevelManager::GetLevelAt(0)->meshes);
@@ -169,8 +172,8 @@ namespace SHAME::Engine::Rendering{
 
             if(settings.enableShadows)
                 shadowMan->BindShadowMaps(cmd.mat);
-            cmd.mat->SetParameter("projectionView", cam->GetMatrix());
-            cmd.mat->SetParameter("model", cmd.tr->GetMatrix());
+            cmd.mat->SetParameter("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
+            cmd.mat->SetParameter("model", cmd.tr->GetTransformMatrix());
             cmd.mat->SetParameter("lightNB", lightMan->GetLightsCount());
             cmd.mat->Use();
 
@@ -185,12 +188,16 @@ namespace SHAME::Engine::Rendering{
 
         // --- Debug Physics Shapes ---
         defaultShader->Activate();
-        defaultShader->setInt("useTexture", 0);
-        defaultShader->setMat4("projectionView", cam->GetMatrix());
-        defaultShader->setInt("lightNB", lightMan->GetLightsCount());
+        defaultShader->setMat4("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
 
         for (auto& physicBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies) {
-            defaultShader->setMat4("model", physicBody->parent->transform->GetMatrix());
+
+            glm::vec3 pos = physicBody->parent->transform->GetPosition();
+            glm::quat rot = physicBody->parent->transform->GetRotation();
+
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot);
+
+            defaultShader->setMat4("model", model);
 
             glBindVertexArray(physicBody->GetDebugShape()->GetVAO());
             glDrawElements(GL_LINES, physicBody->GetDebugShape()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
@@ -212,7 +219,7 @@ namespace SHAME::Engine::Rendering{
 
         glViewport(0, 0, width, height);
 
-        cam->UpdateSize(width, height);
+        CameraManager::UpdateSize(width, height);
     }
 
     void Renderer::AddRenderPass(RenderStage stage, std::function<void()> callback, std::shared_ptr<FrameBuffer> fb, bool appendToViewport, BlendMode blendMode)

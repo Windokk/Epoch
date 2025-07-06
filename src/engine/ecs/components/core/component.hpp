@@ -19,8 +19,13 @@ namespace SHAME::Engine::ECS{
 
                 uint32_t local_id;
 
-                private:
-                
+                virtual void Activate() { activated = true; }
+                virtual void DeActivate() { activated = false; }
+
+            private:
+
+            protected:
+                bool activated = true;
 
         };
     }

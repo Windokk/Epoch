@@ -14,6 +14,7 @@ namespace SHAME::Engine::Core{
     using namespace Filesystem;
     using namespace Audio;
     using namespace Input;
+    using namespace Events;
 
     EngineInstance::EngineInstance(EngineCreationSettings settings)  
     {
@@ -21,9 +22,10 @@ namespace SHAME::Engine::Core{
         CreateWindow();
         FileManager::Init(settings.rootPath);
         Renderer::Init(window);
-        PhysicsSystem::Init();
+        PhysicsSystem::Init(settings.gravity);
         AudioManager::Init(100.0f);
         InputManager::Init(window);
+        EventDispatcher::GetInstance();
     }
 
     void EngineInstance::CreateWindow()
@@ -83,17 +85,16 @@ namespace SHAME::Engine::Core{
         // Use floating-point duration in milliseconds
         std::chrono::duration<float, std::milli> duration = currentTime - lastTime;
         float ms = duration.count();
-        /*
-        if (ms > 0.0f)
+        
+        /*if (ms > 0.0f)
             std::cout << (1000.0f / ms) << " FPS" << std::endl;
         else
             std::cout << "Very fast frame (<1ms), can't compute FPS accurately" << std::endl;*/
 
+        PhysicsSystem::StepSimulation(1.0f / 60.0f);
         Renderer::Render();
-        //PhysicsSystem::StepSimulation(1.0f / 60.0f);
         AudioManager::Tick();
         InputManager::Tick();
-
         lastTime = currentTime;
     }
 

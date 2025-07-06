@@ -4,8 +4,8 @@
 #include "engine/ecs/objectID.hpp"
 #include "engine/ecs/objects/actors/actor.hpp"
 
-#include "engine/ecs/components/light_component.hpp"
-#include "engine/ecs/components/model_component.hpp"
+#include "engine/ecs/components/rendering/light_component.hpp"
+#include "engine/ecs/components/rendering/model_component.hpp"
 
 namespace SHAME::Engine::Levels{
 
@@ -19,14 +19,11 @@ namespace SHAME::Engine::Levels{
 
     }
 
-    void Level::Render(Rendering::Renderer& renderer)
-    {
-
-    }
-
     void Level::Clear()
     {
-        
+        for(auto& actor : rootActors){
+            RemoveActor(actor->GetID(), true);
+        }
     }
 
     void Level::AddActor(ECS::Objects::Actor* a)

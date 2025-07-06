@@ -7,33 +7,43 @@
 namespace SHAME::Engine::ECS::Components{
     
 
-    ModelComponent::ModelComponent(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
+    Model::Model(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {
     }
 
-    void ModelComponent::SetMesh(std::shared_ptr<Rendering::Mesh> mesh)
+    void Model::SetMesh(std::shared_ptr<Rendering::Mesh> mesh)
     {
+        if(!activated)
+            return;
+
         this->mesh = mesh;
         this->Update();
         UpdateReferenceInLevel();
     }
     
-    void ModelComponent::UpdateReferenceInLevel()
+    void Model::UpdateReferenceInLevel()
     {
-        if (!parent || !parent->level || !mesh)
+        if (!parent || !parent->level || !mesh || !activated)
         {
             return;
         }
-        parent->level->meshes[parent->GetComponentIDInScene(local_id)] = { parent->transform->GetMatrix(), mesh.get() };
+        parent->level->meshes[parent->GetComponentIDInScene(local_id)] = { parent->transform->GetTransformMatrix(), mesh.get() };
     }
 
-    void ModelComponent::SetMaterial(std::shared_ptr<Rendering::Material> material)
+    void Model::SetMaterial(std::shared_ptr<Rendering::Material> material)
     {
+        if(!activated)
+            return;
+            
         this->mat = material;
         this->Update();
     }
 
-    void ModelComponent::Update(){
+    void Model::Update(){
+
+        if(!activated)
+            return;
+
         if (mat != nullptr && mesh != nullptr){
             Rendering::DrawCommand cmd;
             

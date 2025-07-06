@@ -100,23 +100,23 @@ namespace SHAME::Engine::Input
     #define KEY_F23                312
     #define KEY_F24                313
     #define KEY_F25                314
-    #define KEY_KP_0               320
-    #define KEY_KP_1               321
-    #define KEY_KP_2               322
-    #define KEY_KP_3               323
-    #define KEY_KP_4               324
-    #define KEY_KP_5               325
-    #define KEY_KP_6               326
-    #define KEY_KP_7               327
-    #define KEY_KP_8               328
-    #define KEY_KP_9               329
-    #define KEY_KP_DECIMAL         330
-    #define KEY_KP_DIVIDE          331
-    #define KEY_KP_MULTIPLY        332
-    #define KEY_KP_SUBTRACT        333
-    #define KEY_KP_ADD             334
-    #define KEY_KP_ENTER           335
-    #define KEY_KP_EQUAL           336
+    #define KEY_KEYPAD_0               320
+    #define KEY_KEYPAD_1               321
+    #define KEY_KEYPAD_2               322
+    #define KEY_KEYPAD_3               323
+    #define KEY_KEYPAD_4               324
+    #define KEY_KEYPAD_5               325
+    #define KEY_KEYPAD_6               326
+    #define KEY_KEYPAD_7               327
+    #define KEY_KEYPAD_8               328
+    #define KEY_KEYPAD_9               329
+    #define KEY_KEYPAD_DECIMAL         330
+    #define KEY_KEYPAD_DIVIDE          331
+    #define KEY_KEYPAD_MULTIPLY        332
+    #define KEY_KEYPAD_SUBTRACT        333
+    #define KEY_KEYPAD_ADD             334
+    #define KEY_KEYPAD_ENTER           335
+    #define KEY_KEYPAD_EQUAL           336
     #define KEY_LEFT_SHIFT         340
     #define KEY_LEFT_CONTROL       341
     #define KEY_LEFT_ALT           342

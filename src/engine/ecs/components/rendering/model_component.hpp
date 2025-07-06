@@ -1,14 +1,14 @@
 #pragma once
 
-#include "engine/rendering/mesh/mesh.hpp"
+#include "engine/ecs/components/core/component.hpp"
 
-#include "engine/ecs/components/component.hpp"
+#include "engine/rendering/mesh/mesh.hpp"
 
 namespace SHAME::Engine::ECS::Components
 {
-    class ModelComponent : public Component{
+    class Model : public Component{
         public:
-            ModelComponent(Objects::Actor *parent, uint32_t local_id);
+            Model(Objects::Actor *parent, uint32_t local_id);
 
             public:
             void Update();

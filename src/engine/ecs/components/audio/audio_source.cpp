@@ -7,7 +7,7 @@ namespace SHAME::Engine::ECS::Components{
     
     void AudioSource::Update()
     {
-        if(audioID.IsValid()){
+        if(audioID.IsValid() && activated){
             Audio::AudioManager::UpdateSound(audioID, parent->transform->GetPosition(), volume);
         }
         else{
@@ -37,6 +37,9 @@ namespace SHAME::Engine::ECS::Components{
 
     void AudioSource::Play()
     {
+        if(!activated)
+            return;
+
         Audio::AudioManager::PlaySound(this->audioID, this->volume);
     }
 

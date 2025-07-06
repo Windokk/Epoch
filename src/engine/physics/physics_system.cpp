@@ -2,6 +2,10 @@
 
 #include "engine/levels/level_manager.hpp"
 
+#include "engine/ecs/components/physics/physics_body.hpp"
+
+#include "engine/ecs/objects/actors/actor.hpp"
+
 namespace SHAME::Engine::Physics {
 
     // Constants
@@ -20,10 +24,14 @@ namespace SHAME::Engine::Physics {
     ObjectVsBroadPhaseLayerFilterImpl PhysicsSystem::m_objectVsBroadphase;
     BPLayerInterfaceImpl PhysicsSystem::m_broadPhaseLayer;
 
-    MyContactListener PhysicsSystem::m_contactListener;
-    MyBodyActivationListener PhysicsSystem::m_activationListener;
+    PhysicsContactListener PhysicsSystem::m_contactListener;
+    PhysicsBodyActivationListener PhysicsSystem::m_activationListener;
 
-    void PhysicsSystem::Init()
+    std::unordered_map<JPH::BodyID, ECS::Components::PhysicsBody*> PhysicsSystem::bodyIDToComponentMap;
+
+    bool PhysicsSystem::initialized = false;
+
+    void PhysicsSystem::Init(glm::vec3 gravity)
     {
         JPH::RegisterDefaultAllocator();
 
@@ -58,6 +66,9 @@ namespace SHAME::Engine::Physics {
 
         m_physicsSystem.SetBodyActivationListener(&m_activationListener);
         m_physicsSystem.SetContactListener(&m_contactListener);
+        m_physicsSystem.SetGravity(JPH::Vec3Arg(gravity.x, gravity.y, gravity.z));
+
+        Physics::PhysicsSystem::initialized = true;
     }
 
     void PhysicsSystem::Shutdown()
@@ -77,16 +88,86 @@ namespace SHAME::Engine::Physics {
         JPH::Factory::sInstance = nullptr;
     }
 
+    void PhysicsSystem::OnContactAdded(const Body &body1, const Body &body2, const ContactManifold &contactManifold, ContactSettings &contactSettings)
+    {   
+        ECS::Components::PhysicsBody* comp1 = bodyIDToComponentMap[body1.GetID()];
+        ECS::Components::PhysicsBody* comp2 = bodyIDToComponentMap[body2.GetID()];
+
+        if(!comp1 || !comp2)
+            return;
+
+        for(auto& script : comp1->parent->GetComponents<ECS::Components::Script>()){
+            Events::EventDispatcher::GetInstance().emitToComponent(
+                script->parent->GetComponentIDInScene(script->local_id),
+                Events::ContactAddedEvent(*comp2, contactManifold, contactSettings, ECS::ObjectID(0))
+            );
+        }
+
+        for(auto& script : comp2->parent->GetComponents<ECS::Components::Script>()){
+            Events::EventDispatcher::GetInstance().emitToComponent(
+                script->parent->GetComponentIDInScene(script->local_id),
+                Events::ContactAddedEvent(*comp1, contactManifold, contactSettings, ECS::ObjectID(0))
+            );
+        }
+    }
+
+    void PhysicsSystem::OnContactPersisted(const Body &body1, const Body &body2, const ContactManifold &contactManifold, ContactSettings &contactSettings)
+    {
+        ECS::Components::PhysicsBody* comp1 = bodyIDToComponentMap[body1.GetID()];
+        ECS::Components::PhysicsBody* comp2 = bodyIDToComponentMap[body2.GetID()];
+
+        if(!comp1 || !comp2)
+            return;
+
+        for(auto& script : comp1->parent->GetComponents<ECS::Components::Script>()){
+            Events::EventDispatcher::GetInstance().emitToComponent(
+                script->parent->GetComponentIDInScene(script->local_id),
+                Events::ContactPersistedEvent(*comp2, contactManifold, contactSettings, ECS::ObjectID(0))
+            );
+        }
+
+        for(auto& script : comp2->parent->GetComponents<ECS::Components::Script>()){
+            Events::EventDispatcher::GetInstance().emitToComponent(
+                script->parent->GetComponentIDInScene(script->local_id),
+                Events::ContactPersistedEvent(*comp1, contactManifold, contactSettings, ECS::ObjectID(0))
+            );
+        }
+    }
+    
+    void PhysicsSystem::OnContactRemoved(const SubShapeIDPair &pair)
+    {
+        ECS::Components::PhysicsBody* comp1 = bodyIDToComponentMap[pair.GetBody1ID()];
+        ECS::Components::PhysicsBody* comp2 = bodyIDToComponentMap[pair.GetBody2ID()];
+
+        if(!comp1 || !comp2)
+            return;
+
+        for(auto& script : comp1->parent->GetComponents<ECS::Components::Script>()){
+            Events::EventDispatcher::GetInstance().emitToComponent(
+                script->parent->GetComponentIDInScene(script->local_id),
+                Events::ContactRemovedEvent(*comp2, ECS::ObjectID(0))
+            );
+        }
+
+        for(auto& script : comp2->parent->GetComponents<ECS::Components::Script>()){
+            Events::EventDispatcher::GetInstance().emitToComponent(
+                script->parent->GetComponentIDInScene(script->local_id),
+                Events::ContactRemovedEvent(*comp1, ECS::ObjectID(0))
+            );
+        }
+
+    }
+
     void PhysicsSystem::StepSimulation(float deltaTime)
     {
         m_physicsSystem.Update(deltaTime, 1, m_tempAllocator, m_jobSystem);
         
         for (auto& physicsBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies){
-            physicsBody->Update();
+            physicsBody->Tick();
         }
     }
 
-    JPH::BodyID PhysicsSystem::CreateBody(const JPH::BodyCreationSettings &settings, JPH::EActivation activation)
+    JPH::BodyID PhysicsSystem::CreateBody(const JPH::BodyCreationSettings &settings, ECS::Components::PhysicsBody *component, JPH::EActivation activation)
     {
         JPH::BodyInterface& bodyInterface = m_physicsSystem.GetBodyInterface();
 
@@ -100,6 +181,7 @@ namespace SHAME::Engine::Physics {
 
         // Add to worlds
         bodyInterface.AddBody(body->GetID(), activation);
+        bodyIDToComponentMap.emplace(body->GetID(), component);
         return body->GetID();
     }
 

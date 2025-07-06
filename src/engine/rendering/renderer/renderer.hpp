@@ -2,9 +2,8 @@
 
 #include "engine/rendering/material/material.hpp"
 #include "engine/rendering/framebuffer/framebuffer.hpp"
-#include "engine/rendering/camera/camera.hpp"
 #include "engine/rendering/light/light_manager.hpp"
-#include "engine/ecs/components/model_component.hpp"
+#include "engine/ecs/components/rendering/model_component.hpp"
 #include "engine/rendering/debug/debug.hpp"
 #include "engine/rendering/shadow/shadow_manager.hpp"
 
@@ -19,7 +18,7 @@ namespace SHAME::Engine{
         class Renderer;
 
         struct RendererSettings{
-            bool showDebugShapes = false;
+            bool showDebugShapes = true;
             int antiAliasingLevel = 4;
             //TODO : bool enableStatsOverlay = false;
             bool enableShadows = true;
@@ -95,8 +94,6 @@ namespace SHAME::Engine{
             
             static void ExecuteRenderPasses();
 
-            static Camera &GetCamera() { return *cam; }
-
             static int GetCurrentHeight() { int height; glfwGetWindowSize(window, nullptr, &height); return height; }
 
             static int GetCurrentWidth() { int width; glfwGetWindowSize(window, &width, nullptr); return width; }
@@ -124,8 +121,6 @@ namespace SHAME::Engine{
 
             static void BeginFrame();
             static void EndFrame();
-
-            static Camera* cam;
 
             static GLFWwindow *window;
 

@@ -9,7 +9,7 @@ namespace SHAME::Engine::ECS::Objects{
     {
         SetName(name);
 
-        transform = new Transform(this, this->components.size(), glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1));
+        transform = new Transform(this, this->components.size());
         components.push_back(transform);
     }
 
