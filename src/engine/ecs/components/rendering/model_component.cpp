@@ -20,6 +20,12 @@ namespace SHAME::Engine::ECS::Components{
         this->Update();
         UpdateReferenceInLevel();
     }
+
+    void Model::SetMeshAndMaterialFromPath(Filesystem::Path* path)
+    {
+        //this->mat = std::make_shared<Rendering::Material>(path);
+        //this->mesh = std::make_shared<Rendering::Mesh>(path);
+    }
     
     void Model::UpdateReferenceInLevel()
     {

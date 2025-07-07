@@ -13,11 +13,6 @@ struct Vertex {
     glm::vec2 texCoord;
 };
 
-struct SimpleVertex{
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec4 color;
-};
 
 //Colors
 struct COL_RGB{

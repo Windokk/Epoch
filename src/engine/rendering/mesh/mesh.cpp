@@ -1,6 +1,6 @@
 #include "mesh.hpp"
 
-#include "tiny_obj_loader/tiny_obj_loader.h"
+#include <ufbx/ufbx.h>
 
 #include "engine/rendering/renderer/renderer.hpp"
 
@@ -8,9 +8,9 @@
 
 namespace SHAME::Engine::Rendering{
     
-    Mesh::Mesh(const Filesystem::Path &path)
+    Mesh::Mesh(const Filesystem::Path &path, COL_RGBA diffuse)
     {
-        LoadMesh(path);
+        LoadMesh(path, diffuse);
     }
 
     Mesh::~Mesh()
@@ -20,51 +20,72 @@ namespace SHAME::Engine::Rendering{
         glDeleteBuffers(1, &EBO);
     }
 
-    bool Mesh::LoadMesh(const Filesystem::Path &path)
+    bool Mesh::LoadMesh(const Filesystem::Path &path, COL_RGBA diffuse)
     {
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string warn, err;
+        ufbx_load_opts opts = { 0 }; // Optional, pass NULL for defaults
+        ufbx_error error; // Optional, pass NULL if you don't care about errors
+        const std::string filePath = path.full;
+        ufbx_scene *scene = ufbx_load_file(filePath.c_str(), &opts, &error);
+        if (!scene) {
+            throw std::runtime_error(
+                "[ERROR] [ENGINE/RENDERING/MESH] : Failed to load " + path.full + " : " +
+                (error.description.data ? error.description.data : "Unknown error"));
+            return false;
+        }
 
-        bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.full.c_str());
-        if (!warn.empty()) std::cout << "TinyObjLoader warning: " << warn << std::endl;
-        if (!err.empty()) std::cerr << "TinyObjLoader error: " << err << std::endl;
-        if (!ret) return false;
+        std::vector<uint32_t> indices;
 
-        std::vector<unsigned int> indices;
+        if (scene->meshes.count > 1) {
+            ufbx_free_scene(scene);
+            throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MESH] : Engine doesn't support multiple meshes yet.");
+        }
 
-        for (const auto& shape : shapes) {
-            for (const auto& index : shape.mesh.indices) {
-                Vertex vertex{};
+        ufbx_mesh* mesh = scene->meshes.data[0];
 
-                vertex.position = {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
-                };
 
-                if (index.normal_index >= 0) {
-                    vertex.normal = {
-                        attrib.normals[3 * index.normal_index + 0],
-                        attrib.normals[3 * index.normal_index + 1],
-                        attrib.normals[3 * index.normal_index + 2]
-                    };
+        for (size_t i = 0; i < mesh->num_faces; i++) {
+            ufbx_face face = mesh->faces.data[i];
+
+            size_t start = face.index_begin;
+            size_t count = face.num_indices;
+
+            // For each triangle in the fan: (0, j, j+1)
+            for (size_t j = 1; j + 1 < count; j++) {
+                Vertex verts[3];
+
+                for (int k = 0; k < 3; k++) {
+                    size_t vertex_index = start + (k == 0 ? 0 : j + k - 1);
+
+                    Vertex vertex{};
+                    ufbx_vec3 pos = ufbx_get_vertex_vec3(&mesh->vertex_position, vertex_index);
+                    vertex.position = { pos.x, pos.y, pos.z };
+
+                    if (mesh->vertex_normal.exists) {
+                        ufbx_vec3 normal = ufbx_get_vertex_vec3(&mesh->vertex_normal, vertex_index);
+                        vertex.normal = { normal.x, normal.y, normal.z };
+                    }
+
+                    if (mesh->vertex_uv.exists) {
+                        ufbx_vec2 uv = ufbx_get_vertex_vec2(&mesh->vertex_uv, vertex_index);
+                        vertex.texCoord = { uv.x, uv.y };
+                    }
+
+                    vertex.color = diffuse;
+
+                    // Push vertex and record index
+                    verts[k] = vertex;
                 }
 
-                if (index.texcoord_index >= 0) {
-                    vertex.texCoord = {
-                        attrib.texcoords[2 * index.texcoord_index + 0],
-                        attrib.texcoords[2 * index.texcoord_index + 1]
-                    };
+                // Push the triangle vertices and indices (no deduplication)
+                for (int k = 0; k < 3; ++k) {
+                    vertices.push_back(verts[k]);
+                    indices.push_back(static_cast<unsigned int>(vertices.size() - 1));
                 }
-
-                vertex.color = glm::vec4(1,1,1,1);
-
-                vertices.push_back(vertex);
-                indices.push_back(static_cast<unsigned int>(indices.size()));
             }
         }
+        
+
+        ufbx_free_scene(scene);
 
         indexCount = indices.size();
 

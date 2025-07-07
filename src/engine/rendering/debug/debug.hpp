@@ -14,7 +14,7 @@ namespace SHAME::Engine::Rendering{
 
         protected:
             GLuint VAO, VBO, EBO;
-            std::vector<SimpleVertex> vertices;
+            std::vector<Vertex> vertices;
             int indexCount;
     };
  

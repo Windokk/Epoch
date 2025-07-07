@@ -21,7 +21,7 @@ namespace SHAME::Engine::Rendering{
     std::shared_ptr<Shader> Renderer::blendShader = nullptr;
     std::shared_ptr<Shader> Renderer::framebufferShader = nullptr;
     LightManager* Renderer::lightMan = nullptr;
-    std::shared_ptr<Shader> Renderer::defaultShader = nullptr;
+    std::shared_ptr<Shader> Renderer::unlitShader = nullptr;
     RendererSettings Renderer::settings{};
     ShadowManager* Renderer::shadowMan = nullptr;
 
@@ -79,7 +79,7 @@ namespace SHAME::Engine::Rendering{
         lightMan->Update(-1);
 
         //DEBUG_SHAPES
-        defaultShader = std::make_shared<Shader>("engine_resources/shaders/default/default.vert","engine_resources/shaders/default/default.frag");
+        unlitShader = std::make_shared<Shader>("engine_resources/shaders/mesh/default.vert","engine_resources/shaders/mesh/unlit.frag");
 
         //MULTISAMPLING
         if(settings.antiAliasingLevel>0){
@@ -187,8 +187,8 @@ namespace SHAME::Engine::Rendering{
             return;
 
         // --- Debug Physics Shapes ---
-        defaultShader->Activate();
-        defaultShader->setMat4("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
+        unlitShader->Activate();
+        unlitShader->setMat4("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
 
         for (auto& physicBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies) {
 
@@ -197,7 +197,7 @@ namespace SHAME::Engine::Rendering{
 
             glm::mat4 model = glm::translate(glm::mat4(1.0f), pos) * glm::toMat4(rot);
 
-            defaultShader->setMat4("model", model);
+            unlitShader->setMat4("model", model);
 
             glBindVertexArray(physicBody->GetDebugShape()->GetVAO());
             glDrawElements(GL_LINES, physicBody->GetDebugShape()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);

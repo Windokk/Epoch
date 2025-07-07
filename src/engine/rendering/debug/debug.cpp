@@ -5,26 +5,26 @@ namespace SHAME::Engine::Rendering{
     constexpr int LAT_SEGMENTS = 12;
     constexpr int LONG_SEGMENTS = 24;
 
-    void SetupGLBuffers(GLuint &VAO, GLuint &VBO, GLuint &EBO, const std::vector<SimpleVertex> &vertices, const std::vector<GLuint> &indices) {
+    void SetupGLBuffers(GLuint &VAO, GLuint &VBO, GLuint &EBO, const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices) {
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
         glGenBuffers(1, &VBO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(SimpleVertex), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
         glGenBuffers(1, &EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0); // position
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*)offsetof(SimpleVertex, position));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
         glEnableVertexAttribArray(1); // normal
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*)offsetof(SimpleVertex, normal));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
         glEnableVertexAttribArray(2); // color
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*)offsetof(SimpleVertex, color));
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
         glBindVertexArray(0);
     }
@@ -48,6 +48,7 @@ namespace SHAME::Engine::Rendering{
             vertices[i].position = worldPos;
             vertices[i].normal = glm::normalize(worldPos);
             vertices[i].color = color;
+            vertices[i].texCoord = glm::vec2(0,0);
         }
 
         std::vector<GLuint> indices = {
@@ -76,7 +77,7 @@ namespace SHAME::Engine::Rendering{
                 glm::vec3 normal = glm::vec3(cosP * sinT, cosT, sinP * sinT);
                 glm::vec3 pos = radius * normal;
 
-                vertices.push_back({ pos, normal, color });
+                vertices.push_back({ pos, normal, color, glm::vec2(0,0) });
             }
         }
 
@@ -119,8 +120,8 @@ namespace SHAME::Engine::Rendering{
         for (int i = 0; i <= SEGMENTS; ++i) {
             glm::vec3 dir = glm::vec3(cosTable[i], 0.0f, sinTable[i]);
 
-            vertices.push_back({ dir * radius + glm::vec3(0, -halfHeight, 0), glm::normalize(dir), color });
-            vertices.push_back({ dir * radius + glm::vec3(0,  halfHeight, 0), glm::normalize(dir), color });
+            vertices.push_back({ dir * radius + glm::vec3(0, -halfHeight, 0), glm::normalize(dir), color, glm::vec2(0,0) });
+            vertices.push_back({ dir * radius + glm::vec3(0,  halfHeight, 0), glm::normalize(dir), color, glm::vec2(0,0)  });
         }
 
         for (int i = 0; i < SEGMENTS; ++i) {
@@ -148,7 +149,7 @@ namespace SHAME::Engine::Rendering{
 
                     glm::vec3 normal = glm::vec3(x * r, y, z * r);
                     glm::vec3 pos = radius * normal + glm::vec3(0, yOffset, 0);
-                    vertices.push_back({ pos, glm::normalize(normal), color });
+                    vertices.push_back({ pos, glm::normalize(normal), color, glm::vec2(0,0) });
                 }
             }
 
@@ -190,9 +191,9 @@ namespace SHAME::Engine::Rendering{
             glm::vec3 dir = glm::vec3(x, 0, z);
 
             // bottom ring
-            vertices.push_back({ dir * radius + glm::vec3(0, -halfHeight, 0), dir, color});
+            vertices.push_back({ dir * radius + glm::vec3(0, -halfHeight, 0), dir, color, glm::vec2(0,0)});
             // top ring
-            vertices.push_back({ dir * radius + glm::vec3(0, +halfHeight, 0), dir, color});
+            vertices.push_back({ dir * radius + glm::vec3(0, +halfHeight, 0), dir, color, glm::vec2(0,0)});
         }
 
         // Index generation

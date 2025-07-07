@@ -84,7 +84,7 @@ namespace SHAME::Engine::Core{
 
         // Use floating-point duration in milliseconds
         std::chrono::duration<float, std::milli> duration = currentTime - lastTime;
-        float ms = duration.count();
+        deltaTime = duration.count();
         
         /*if (ms > 0.0f)
             std::cout << (1000.0f / ms) << " FPS" << std::endl;

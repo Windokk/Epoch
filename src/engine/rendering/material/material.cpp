@@ -1,5 +1,9 @@
 #include "material.hpp"
+
 #include <iostream>
+
+
+#include "engine/filesystem/filesystem.hpp"
 
 namespace SHAME::Engine::Rendering{
 
@@ -17,8 +21,20 @@ namespace SHAME::Engine::Rendering{
         }
     }
 
-    Material::Material(std::shared_ptr<Shader> shader)
+    Material::Material(Filesystem::Path* objPath, bool castShadows){
+
+        this->castShadows = castShadows;
+
+        
+
+        
+
+        //Init();
+    }
+
+    Material::Material(std::shared_ptr<Shader> shader, bool castShadows)
     {
+        this->castShadows = castShadows;
         Init(shader);
     }
  
@@ -32,20 +48,20 @@ namespace SHAME::Engine::Rendering{
         }
     }
 
-    Texture* Material::GetTexture(int index)
+    Texture *Material::GetTexture(TextureType type)
     {
-        std::vector<Texture*> textures;
-
         for (const auto& [name, value] : parameters)
         {
             if (std::holds_alternative<Texture*>(value))
             {
                 Texture* val = std::get<Texture*>(value);
-                textures.push_back(val);
+                if(val && val->GetInfos()->type == type){
+                    return val;
+                }
             }
         }
-        
-        return textures[index];
+
+        return nullptr;
     }
 
     void Material::Use()

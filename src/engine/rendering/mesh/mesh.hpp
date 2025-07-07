@@ -8,7 +8,7 @@ namespace SHAME::Engine::Rendering{
 
     class Mesh {
         public:
-            Mesh(const Filesystem::Path& path);
+            Mesh(const Filesystem::Path& path, COL_RGBA diffuse = COL_RGBA(1,1,1,1));
             ~Mesh();
 
             void Draw() const;
@@ -20,7 +20,7 @@ namespace SHAME::Engine::Rendering{
             size_t indexCount;
             std::vector<Vertex> vertices;
 
-            bool LoadMesh(const Filesystem::Path& path);
+            bool LoadMesh(const Filesystem::Path& path, COL_RGBA diffuse);
     };
     
 }

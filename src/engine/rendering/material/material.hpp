@@ -14,26 +14,24 @@ namespace SHAME::Engine::Rendering {
     class Material{
 
         public:
-        Material(std::shared_ptr<Shader> shader);
-        Material() = default;
-        void Init(std::shared_ptr<Shader> shader);
+            Material(Filesystem::Path *objPath, bool castShadows);
+            Material(std::shared_ptr<Shader> shader, bool castShadows);
+            void Init(std::shared_ptr<Shader> shader);
 
-        void SetParameter(const std::string& name, const UniformValue& value){
-            parameters[name] = value;
-        }
+            void SetParameter(const std::string &name, const UniformValue &value)
+            {
+                parameters[name] = value;
+            }
     
-        std::unordered_map<std::string, UniformValue>* GetParameters() { return &parameters; };
-
-        Texture* GetTexture(int index);
-
-        void Use();
-
-        void StopUsing();
-        
-        std::shared_ptr<Shader> shader;
+            std::unordered_map<std::string, UniformValue>* GetParameters() { return &parameters; };
+            Texture* GetTexture(TextureType type);
+            void Use();
+            void StopUsing();
+            std::shared_ptr<Shader> shader;
+            bool castShadows = true;
 
         private:
-        std::unordered_map<std::string, UniformValue> parameters;
+            std::unordered_map<std::string, UniformValue> parameters;
 
     };
 

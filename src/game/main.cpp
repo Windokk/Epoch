@@ -22,17 +22,18 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Rendering::Shader> fbShader = std::make_shared<Rendering::Shader>("engine_resources/shaders/fb/framebuffer.vert", "engine_resources/shaders/fb/framebuffer.frag");
     Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetCurrentHeight()), fbShader};
 
-    std::shared_ptr<Rendering::Material> mat = std::make_shared<Rendering::Material>(std::make_shared<Rendering::Shader>("engine_resources/shaders/mesh/mesh.vert", "engine_resources/shaders/mesh/mesh.frag"));
+    std::shared_ptr<Rendering::Shader> litShader = std::make_shared<Rendering::Shader>("engine_resources/shaders/mesh/default.vert", "engine_resources/shaders/mesh/lit.frag");
+
+    std::shared_ptr<Rendering::Material> mat = std::make_shared<Rendering::Material>(litShader, true);
 
     Rendering::Texture* texture = new Rendering::Texture(Filesystem::Path("engine_resources/textures/white.png"));
 
-    mat->SetParameter("texture1", texture);
-    mat->SetParameter("useTexture", 1);
-
+    mat->SetParameter("diffuse", texture);
+    
     Actor* actor1 = new Actor("obj1");
     Levels::LevelManager::GetLevelAt(0)->AddActor(actor1);
     actor1->AddComponent<Model>();
-    std::shared_ptr<Rendering::Mesh> mesh = std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/sphere.obj"));
+    std::shared_ptr<Rendering::Mesh> mesh = std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/sphere.fbx"));
     actor1->GetComponent<Model>().SetMaterial(mat);
     actor1->GetComponent<Model>().SetMesh(mesh);
     actor1->AddComponent<PhysicsBody>()->CreateBody(Physics::SPHERE, glm::vec3(1,1,1), JPH::EMotionType::Dynamic);
@@ -43,10 +44,15 @@ int main(int argc, char *argv[]) {
     actor2->transform->SetRotation(glm::vec3(0, 0, 10));
     actor2->transform->SetScale(glm::vec3(10,10,10));
     actor2->AddComponent<PhysicsBody>()->CreateBody(Physics::BOX, glm::vec3(10, 0.02f, 10), JPH::EMotionType::Static);
-    actor2->AddComponent<Model>()->SetMesh(std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/plane.obj")));
+    actor2->AddComponent<Model>()->SetMesh(std::make_shared<Rendering::Mesh>(Filesystem::Path("engine_resources/models/plane.fbx")));
     actor2->GetComponent<Model>().SetMaterial(mat);
     actor2->AddComponent<AudioSource>()->SetPath("engine_resources/sounds/TownTheme.mp3");
     actor2->GetComponent<AudioSource>().SetVolume(10.0f);
+
+    Actor* rubikscube = new Actor("rubik's cube");
+    Levels::LevelManager::GetLevelAt(0)->AddActor(rubikscube);
+    actor2->transform->SetPosition(glm::vec3(2, 0, 0));
+    //actor2->AddComponent<Model>()->SetMeshAndMaterialFromPath(new Filesystem::Path("engine_resources/models/rubik's_cube.fbx"));
 
     Actor* actor3 = new Actor("obj3");
     Levels::LevelManager::GetLevelAt(0)->AddActor(actor3);

@@ -29,6 +29,7 @@ file(GLOB_RECURSE SOURCES
   ${CMAKE_SOURCE_DIR}/src/game/main.cpp
   ${CMAKE_SOURCE_DIR}/src/engine/**.cpp
   ${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/glad.c
+  ${CMAKE_SOURCE_DIR}/src/engine/third-party/lib/ufbx.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

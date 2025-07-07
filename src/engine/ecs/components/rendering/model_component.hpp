@@ -14,6 +14,7 @@ namespace SHAME::Engine::ECS::Components
             void Update();
 
             void SetMesh(std::shared_ptr<Rendering::Mesh> mesh);
+            void SetMeshAndMaterialFromPath(Filesystem::Path *path);
             void UpdateReferenceInLevel();
             void SetMaterial(std::shared_ptr<Rendering::Material> material);
 

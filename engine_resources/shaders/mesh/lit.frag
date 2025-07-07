@@ -23,8 +23,7 @@ in vec4 color;
 in vec3 worldPos;
 in vec3 worldNormal;
 
-uniform int useTexture;
-uniform sampler2D texture1;
+uniform sampler2D diffuse;
 uniform int lightNB;
 
 // Shadow maps
@@ -163,49 +162,43 @@ vec3 computeSpotLight(Light light, int index, vec3 fragPos, vec3 normal)
 
 void main()
 {
-    if (useTexture == 1)
-    {
-        vec4 baseColor = texture(texture1, texCoord);
-        vec3 normal = normalize(worldNormal);
-        vec3 totalLight = vec3(0.0);
+    vec4 baseColor = texture(diffuse, texCoord);
+    vec3 normal = normalize(worldNormal);
+    vec3 totalLight = vec3(0.0);
 
-        int dirShadowIndex = 0;
-        int pointShadowIndex = 0;
-        int spotShadowIndex = 0;
+    int dirShadowIndex = 0;
+    int pointShadowIndex = 0;
+    int spotShadowIndex = 0;
 
-        for (int i = 0; i < lightNB; ++i) {
-            Light l = lights[i];
+    for (int i = 0; i < lightNB; ++i) {
+        Light l = lights[i];
 
-            if (l.type == 0) { // Directional
-                if (l.castShadow) {
-                    totalLight += computeDirectionalLight(l, dirShadowIndex, worldPos, normal);
-                    dirShadowIndex++;
-                } else {
-                    totalLight += computeDirectionalLight(l, -1, worldPos, normal);
-                }
-            }
-            else if (l.type == 1) { // Point
-                if (l.castShadow) {
-                    totalLight += computePointLight(l, pointShadowIndex, worldPos, normal);
-                    pointShadowIndex++;
-                } else {
-                    totalLight += computePointLight(l, -1, worldPos, normal);
-                }
-            }
-            else if (l.type == 2) { // Spot
-                if (l.castShadow) {
-                    totalLight += computeSpotLight(l, spotShadowIndex, worldPos, normal);
-                    spotShadowIndex++;
-                } else {
-                    totalLight += computeSpotLight(l, -1, worldPos, normal);
-                }
+        if (l.type == 0) { // Directional
+            if (l.castShadow) {
+                totalLight += computeDirectionalLight(l, dirShadowIndex, worldPos, normal);
+                dirShadowIndex++;
+            } else {
+                totalLight += computeDirectionalLight(l, -1, worldPos, normal);
             }
         }
+        else if (l.type == 1) { // Point
+            if (l.castShadow) {
+                totalLight += computePointLight(l, pointShadowIndex, worldPos, normal);
+                pointShadowIndex++;
+            } else {
+                totalLight += computePointLight(l, -1, worldPos, normal);
+            }
+        }
+        else if (l.type == 2) { // Spot
+            if (l.castShadow) {
+                totalLight += computeSpotLight(l, spotShadowIndex, worldPos, normal);
+                spotShadowIndex++;
+            } else {
+                totalLight += computeSpotLight(l, -1, worldPos, normal);
+            }
+        }
+    }
 
-        fragColor = vec4(baseColor.rgb * totalLight, baseColor.a);
-    }
-    else
-    {
-        fragColor = color;
-    }
+    fragColor = vec4(baseColor.rgb * totalLight, baseColor.a);
+    
 }

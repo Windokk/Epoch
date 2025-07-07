@@ -16,10 +16,20 @@ namespace SHAME::Engine::Rendering {
 
     struct DrawCommand;
 
+    enum TextureType{
+        DIFFUSE,
+        AMBIENT,
+        NORMAL,
+        ROUGHNESS,
+        SPECULAR,
+        OTHER
+    };
+
     struct TextureInfos{
         int width, height;         
         int nrChannels;
         std::shared_ptr<Filesystem::Path> filepath;
+        TextureType type = TextureType::OTHER;
     };
 
     class Texture{

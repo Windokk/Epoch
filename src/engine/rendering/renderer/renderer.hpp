@@ -18,7 +18,7 @@ namespace SHAME::Engine{
         class Renderer;
 
         struct RendererSettings{
-            bool showDebugShapes = true;
+            bool showDebugShapes = false;
             int antiAliasingLevel = 4;
             //TODO : bool enableStatsOverlay = false;
             bool enableShadows = true;
@@ -134,7 +134,7 @@ namespace SHAME::Engine{
             static FrameBuffer* viewportBuffer;
             static std::shared_ptr<Shader> framebufferShader;
 
-            static std::shared_ptr<Shader> defaultShader;
+            static std::shared_ptr<Shader> unlitShader;
 
             static RendererSettings settings;
 
