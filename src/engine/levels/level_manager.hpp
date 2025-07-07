@@ -52,6 +52,12 @@ namespace SHAME::Engine::Levels{
             static int GetLoadedLevelCount() {
                 return levelBuffer.size();
             }
+
+            static void Tick() {
+                for(auto& level : levelBuffer){
+                    level->Tick();
+                }
+            }
         
         private:
             LevelManager() {}  // Private constructor to prevent instantiation outside

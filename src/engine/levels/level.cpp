@@ -26,6 +26,13 @@ namespace SHAME::Engine::Levels{
         }
     }
 
+    void Level::Tick()
+    {
+        for(auto& script : scripts){
+            script->Tick();
+        }
+    }
+
     void Level::AddActor(ECS::Objects::Actor* a)
     {
         rootActors.push_back(a);

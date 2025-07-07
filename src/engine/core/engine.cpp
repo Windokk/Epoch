@@ -95,6 +95,7 @@ namespace SHAME::Engine::Core{
         Renderer::Render();
         AudioManager::Tick();
         InputManager::Tick();
+        LevelManager::Tick();
         lastTime = currentTime;
     }
 
