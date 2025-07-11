@@ -11,9 +11,9 @@ namespace SHAME::Engine::Rendering{
     void ShadowManager::Init(int resolution)
     {
         SHADOW_RES = resolution;
-        dirShader = Shader("engine_resources/shaders/shadows/shadow_dir.vert", "engine_resources/shaders/shadows/shadow_dir.frag");
-        pointShader = Shader("engine_resources/shaders/shadows/shadow_point.vert", "engine_resources/shaders/shadows/shadow_point.frag", "engine_resources/shaders/shadows/shadow_point.geom");
-        spotShader = Shader("engine_resources/shaders/shadows/shadow_spot.vert", "engine_resources/shaders/shadows/shadow_spot.frag");
+        dirShader = Shader(Filesystem::Path("engine_resources/shaders/shadows/shadow_dir.vert"), Filesystem::Path("engine_resources/shaders/shadows/shadow_dir.frag"));
+        pointShader = Shader(Filesystem::Path("engine_resources/shaders/shadows/shadow_point.vert"), Filesystem::Path("engine_resources/shaders/shadows/shadow_point.frag"), Filesystem::Path("engine_resources/shaders/shadows/shadow_point.geom"));
+        spotShader = Shader(Filesystem::Path("engine_resources/shaders/shadows/shadow_spot.vert"), Filesystem::Path("engine_resources/shaders/shadows/shadow_spot.frag"));
         shadowMaps.clear();
         pointLightCount = 0;
 
@@ -142,7 +142,7 @@ namespace SHAME::Engine::Rendering{
                     for (auto& mesh : meshes)
                     {
                         pointShader.setMat4("model", mesh.second.first);
-                        mesh.second.second->Draw();
+                        mesh.second.second->DrawWithoutMaterial();
                     }
                 }
                 pointShader.Deactivate();
@@ -161,7 +161,7 @@ namespace SHAME::Engine::Rendering{
                 for (auto mesh : meshes)
                 {
                     dirShader.setMat4("model", mesh.second.first);
-                    mesh.second.second->Draw();
+                    mesh.second.second->DrawWithoutMaterial();
                 }
 
                 dirShader.Deactivate();
@@ -181,7 +181,7 @@ namespace SHAME::Engine::Rendering{
                 for (auto mesh : meshes)
                 {
                     spotShader.setMat4("model", mesh.second.first);
-                    mesh.second.second->Draw();
+                    mesh.second.second->DrawWithoutMaterial();
                 }
 
                 spotShader.Deactivate();

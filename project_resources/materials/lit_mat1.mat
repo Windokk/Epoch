@@ -1,0 +1,7 @@
+{
+    "castShadows":true,
+    "shader":"shaders/lit",
+    "uniforms":[
+        {"albedo":"textures/white.png"}
+    ]
+}

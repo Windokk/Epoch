@@ -6,6 +6,7 @@
 #include <map>
 #include <cstddef>
 #include <functional>
+#include <memory>
 
 namespace SHAME::Engine::ECS
 {
@@ -85,11 +86,11 @@ namespace SHAME::Engine::ECS
                 return ObjectID(ObjectIDBuilder().Generate().Build().GetAsInt());
             }
 
-            static void AssignID(ObjectID id, Objects::Object* obj){
+            static void AssignID(ObjectID id, std::shared_ptr<Objects::Object> obj){
                 ObjectIDMap[id] = obj;
             }
         
-            static Objects::Object* GetObjectFromID(ObjectID id){
+            static std::shared_ptr<Objects::Object> GetObjectFromID(ObjectID id){
                 auto it = ObjectIDMap.find(id);
                 if (it != ObjectIDMap.end()) {
                     return it->second;
@@ -98,7 +99,7 @@ namespace SHAME::Engine::ECS
             }
 
         private:
-            static std::map<ObjectID, Objects::Object*> ObjectIDMap;
+            static std::map<ObjectID, std::shared_ptr<Objects::Object>> ObjectIDMap;
             static std::unordered_set<int> availableIDs;
     };
 }

@@ -60,7 +60,7 @@ namespace SHAME::Engine::ECS::Objects{
             std::string GetName() { return name; }
             void SetName(std::string name) { this->name = name; }
 
-            void AddChild(Object* o) override;
+            void AddChild(std::shared_ptr<Object> o) override;
 
             void SetLevel(Levels::Level* lvl);
 

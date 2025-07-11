@@ -31,7 +31,7 @@ namespace SHAME::Engine::Levels{
 
     class Level{
 
-        std::vector<ECS::Objects::Actor*> rootActors;
+        std::vector<std::shared_ptr<ECS::Objects::Actor>> rootActors;
         std::string name;
         std::string path;
 
@@ -44,11 +44,11 @@ namespace SHAME::Engine::Levels{
 
         void Tick();
 
-        void AddActor(ECS::Objects::Actor* a);
+        void AddActor(std::shared_ptr<ECS::Objects::Actor> a);
         void RemoveActor(ECS::ObjectID id, bool recursive = false);
-        ECS::Objects::Actor* GetActor(ECS::ObjectID id, bool recursive = false);
+        std::shared_ptr<ECS::Objects::Actor> GetActor(ECS::ObjectID id, bool recursive = false);
         std::vector<ECS::ObjectID> GetActorsID(bool recursive = false);
-        std::vector<ECS::Objects::Actor*> GetRootActors() { return rootActors; };
+        std::vector<std::shared_ptr<ECS::Objects::Actor>> GetRootActors() { return rootActors; };
 
         const std::string& GetName() const;
         void SetName(const std::string& name);

@@ -2,6 +2,6 @@
 
 namespace SHAME::Engine::Levels{
 
-    std::vector<std::unique_ptr<Level>> LevelManager::levelBuffer;
+    std::vector<std::shared_ptr<Level>> LevelManager::levelBuffer;
 
 }

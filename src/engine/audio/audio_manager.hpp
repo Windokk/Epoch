@@ -33,7 +33,7 @@ namespace SHAME::Engine::Audio
         static void Init(float masterVolume);
         static void Shutdown();
         static void Tick();
-        static void CreateSound(AudioID id, std::string path_str, glm::vec3 pos);
+        static void CreateSound(AudioID id, Filesystem::Path path, glm::vec3 pos);
         static void RemoveSound(AudioID id);
         static void PlaySound(AudioID id, float volume);
         static void PauseSound(AudioID id);

@@ -54,15 +54,14 @@ namespace SHAME::Engine::Audio
         FMOD_System_Init(system, 512, FMOD_INIT_NORMAL, 0);
     }
 
-    void AudioManager::CreateSound(AudioID id, std::string path_str, glm::vec3 pos)
+    void AudioManager::CreateSound(AudioID id, Filesystem::Path path, glm::vec3 pos)
     {
-        Path path = Path(path_str);
 
-        if (FileManager::Exists(path)) {
+        if (path.Exists()) {
             auto sound = new Sound();
             FMOD_CHANNEL* channel = nullptr;
 
-            std::string file = FileManager::ReadFile(path);             
+            std::string file = path.ReadFile();             
 
             const char* buffer = file.data();
             size_t buffer_size = file.size();

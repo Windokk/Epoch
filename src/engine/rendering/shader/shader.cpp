@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "engine/filesystem/filesystem.hpp"
 
 namespace SHAME::Engine::Rendering {
 
@@ -21,16 +20,16 @@ namespace SHAME::Engine::Rendering {
     }
 
     /// @brief Constructor that build a Shader Program from 2 (vert and frag) or 3 (vert, frag and geom) different shaders path
-    Shader::Shader(const std::string vertexFilePath, const std::string fragmentFilePath, const std::string geometryFilePath)
+    Shader::Shader(const Path vertexFilePath, const Path fragmentFilePath, const Path geometryFilePath)
     {
-        if (vertexFilePath != "" && fragmentFilePath != "") {
+        if (vertexFilePath.full != "" && fragmentFilePath.full != "") {
 		
-            this->vertexFilePath = vertexFilePath;
-            this->fragmentFilePath = fragmentFilePath;
+            this->vertexFilePath = vertexFilePath.full;
+            this->fragmentFilePath = fragmentFilePath.full;
 
             // Read vertexFile and fragmentFile and store the strings
-            std::string vertexCode = FileManager::ReadFile(Path(vertexFilePath));
-            std::string fragmentCode = FileManager::ReadFile(Path(fragmentFilePath));
+            std::string vertexCode = vertexFilePath.ReadFile();
+            std::string fragmentCode = fragmentFilePath.ReadFile();
     
             // Convert the shader source strings into character arrays
             const char* vertexSource = vertexCode.c_str();
@@ -55,11 +54,11 @@ namespace SHAME::Engine::Rendering {
             CompileErrors(fragmentShader, "FRAGMENT");
     
             GLuint geometryShader = 0;
-            bool hasGeometry = !geometryFilePath.empty();
+            bool hasGeometry = !geometryFilePath.full.empty();
 
             if (hasGeometry) {
-                this->geometryFilePath = geometryFilePath;
-                std::string geometryCode = FileManager::ReadFile(Path(geometryFilePath));
+                this->geometryFilePath = geometryFilePath.full;
+                std::string geometryCode = geometryFilePath.ReadFile();
                 const char* geometrySource = geometryCode.c_str();
 
                 geometryShader = glCreateShader(GL_GEOMETRY_SHADER);

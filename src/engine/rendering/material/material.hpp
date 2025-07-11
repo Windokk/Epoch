@@ -9,14 +9,13 @@
 
 namespace SHAME::Engine::Rendering {
 
-    using UniformValue = std::variant<float, int, glm::vec2, glm::vec3, glm::vec4, glm::mat4, Texture*>;
+    using UniformValue = std::variant<float, int, glm::vec2, glm::vec3, glm::vec4, glm::mat4, std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>;
 
     class Material{
 
         public:
-            Material(Filesystem::Path *objPath, bool castShadows);
-            Material(std::shared_ptr<Shader> shader, bool castShadows);
-            void Init(std::shared_ptr<Shader> shader);
+            Material();
+            void Init(std::shared_ptr<Shader> shader, bool castShadows);
 
             void SetParameter(const std::string &name, const UniformValue &value)
             {
@@ -24,7 +23,7 @@ namespace SHAME::Engine::Rendering {
             }
     
             std::unordered_map<std::string, UniformValue>* GetParameters() { return &parameters; };
-            Texture* GetTexture(TextureType type);
+            std::shared_ptr<Texture> GetTexture(TextureType type);
             void Use();
             void StopUsing();
             std::shared_ptr<Shader> shader;

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <ufbx/ufbx.h>
+
 
 #include "engine/filesystem/filesystem.hpp"
 
@@ -14,32 +16,20 @@ namespace SHAME::Engine::Rendering{
             case GL_FLOAT_VEC3: return glm::vec3(0.0f);
             case GL_FLOAT_VEC4: return glm::vec4(0.0f);
             case GL_FLOAT_MAT4: return glm::mat4(1.0f);
-            case GL_SAMPLER_2D: return static_cast<Texture*>(nullptr);
+            case GL_SAMPLER_2D: return std::pair<Rendering::TextureType,std::shared_ptr<Texture>>(Rendering::TextureType::ANY, nullptr);
             case GL_SAMPLER_CUBE: return 0;
             case GL_SAMPLER_CUBE_MAP_ARRAY: return 0;
             default: throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MATERIAL] : Failed to query default variable type : "+std::to_string(type));
         }
     }
 
-    Material::Material(Filesystem::Path* objPath, bool castShadows){
-
-        this->castShadows = castShadows;
-
-        
-
-        
-
-        //Init();
-    }
-
-    Material::Material(std::shared_ptr<Shader> shader, bool castShadows)
+    Material::Material()
     {
-        this->castShadows = castShadows;
-        Init(shader);
     }
  
-    void Material::Init(std::shared_ptr<Shader> shader)
+    void Material::Init(std::shared_ptr<Shader> shader, bool castShadows)
     {
+        this->castShadows = castShadows;
         this->shader = shader;
 
         auto uniforms = this->shader->GetActiveUniforms();
@@ -48,15 +38,16 @@ namespace SHAME::Engine::Rendering{
         }
     }
 
-    Texture *Material::GetTexture(TextureType type)
+
+    std::shared_ptr<Texture> Material::GetTexture(TextureType type)
     {
         for (const auto& [name, value] : parameters)
         {
-            if (std::holds_alternative<Texture*>(value))
+            if (std::holds_alternative<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value))
             {
-                Texture* val = std::get<Texture*>(value);
-                if(val && val->GetInfos()->type == type){
-                    return val;
+                std::pair<Rendering::TextureType,std::shared_ptr<Texture>> val = std::get<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value);
+                if(val.second && val.first == type){
+                    return val.second;
                 }
             }
         }
@@ -87,11 +78,11 @@ namespace SHAME::Engine::Rendering{
             else if (std::holds_alternative<glm::vec4>(value)){
                 shader->setVec4(name, std::get<glm::vec4>(value));
             }
-            else if (std::holds_alternative<glm::mat4>(value))
+            else if (std::holds_alternative<glm::mat4>(value)){
                 shader->setMat4(name, std::get<glm::mat4>(value));
-            else if (std::holds_alternative<Texture*>(value))
-            {
-                Texture* val = std::get<Texture*>(value);
+            }
+            else if (std::holds_alternative<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value)){
+                std::shared_ptr<Texture> val = std::get<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value).second;
                 if (val != nullptr) {
                     val->Bind(textureUnit); // Bind to GL_TEXTURE0 + textureUnit
                     shader->setInt(name, textureUnit);
@@ -110,10 +101,10 @@ namespace SHAME::Engine::Rendering{
             std::visit([&](auto&& val) {
                 using T = std::decay_t<decltype(val)>;
 
-                if constexpr (std::is_same_v<T, Texture*>)
+                if constexpr (std::is_same_v<T, std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>)
                 {
-                    if (val) {
-                        val->UnBind(textureUnit);
+                    if (val.second) {
+                        val.second->UnBind(textureUnit);
                         textureUnit++;
                     }
                 }

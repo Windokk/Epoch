@@ -30,8 +30,8 @@ namespace SHAME::Engine::Rendering{
 
         unsigned char* data = nullptr;
 
-        if (FileManager::Exists(*infos.filepath)) {
-            std::string file = FileManager::ReadFile(*infos.filepath);
+        if (infos.filepath->Exists()) {
+            std::string file = infos.filepath->ReadFile();
             
             stbi_set_flip_vertically_on_load(true);
             data = stbi_load_from_memory(reinterpret_cast<const unsigned char*>(file.data()),

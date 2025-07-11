@@ -6,7 +6,7 @@
 #include "engine/filesystem/filesystem.hpp"
 #include "engine/levels/level_manager.hpp"
 #include "engine/ecs/objects/actors/actor.hpp"
-#include "engine/input/input_manager.hpp"
+#include "engine/inputs/input_manager.hpp"
 
 namespace SHAME::Engine::Core {
     

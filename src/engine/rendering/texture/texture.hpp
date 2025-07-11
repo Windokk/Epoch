@@ -17,19 +17,18 @@ namespace SHAME::Engine::Rendering {
     struct DrawCommand;
 
     enum TextureType{
-        DIFFUSE,
-        AMBIENT,
+        ALBEDO,
         NORMAL,
+        METALLIC,
         ROUGHNESS,
-        SPECULAR,
-        OTHER
+        EMISSION,
+        ANY
     };
 
     struct TextureInfos{
         int width, height;         
         int nrChannels;
         std::shared_ptr<Filesystem::Path> filepath;
-        TextureType type = TextureType::OTHER;
     };
 
     class Texture{

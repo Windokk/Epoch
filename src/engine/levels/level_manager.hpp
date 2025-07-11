@@ -16,8 +16,8 @@ namespace SHAME::Engine::Levels{
             
             /// @brief Load a level
             /// @param lvl The pointer to the level
-            static void LoadLevel(std::unique_ptr<Level> lvl) {
-                levelBuffer.push_back(std::move(lvl));
+            static void LoadLevel(std::shared_ptr<Level> lvl) {
+                levelBuffer.push_back(lvl);
             }
 
             /// @brief Getter for a loaded level
@@ -62,6 +62,6 @@ namespace SHAME::Engine::Levels{
         private:
             LevelManager() {}  // Private constructor to prevent instantiation outside
         
-            static std::vector<std::unique_ptr<Level>> levelBuffer;  // Buffer to store levels
+            static std::vector<std::shared_ptr<Level>> levelBuffer;  // Buffer to store levels
         };
 }

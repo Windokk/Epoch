@@ -1,16 +1,14 @@
 #include "mesh.hpp"
 
-#include <ufbx/ufbx.h>
-
 #include "engine/rendering/renderer/renderer.hpp"
 
 #include <iostream>
 
 namespace SHAME::Engine::Rendering{
     
-    Mesh::Mesh(const Filesystem::Path &path, COL_RGBA diffuse)
+    Mesh::Mesh(const ufbx_mesh* ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse)
     {
-        LoadMesh(path, diffuse);
+        LoadMesh(ufbx_mesh, scene_unit_meters, ufbx_mats, diffuse);
     }
 
     Mesh::~Mesh()
@@ -20,74 +18,84 @@ namespace SHAME::Engine::Rendering{
         glDeleteBuffers(1, &EBO);
     }
 
-    bool Mesh::LoadMesh(const Filesystem::Path &path, COL_RGBA diffuse)
+    bool Mesh::LoadMesh(const ufbx_mesh* ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse)
     {
-        ufbx_load_opts opts = { 0 }; // Optional, pass NULL for defaults
-        ufbx_error error; // Optional, pass NULL if you don't care about errors
-        const std::string filePath = path.full;
-        ufbx_scene *scene = ufbx_load_file(filePath.c_str(), &opts, &error);
-        if (!scene) {
-            throw std::runtime_error(
-                "[ERROR] [ENGINE/RENDERING/MESH] : Failed to load " + path.full + " : " +
-                (error.description.data ? error.description.data : "Unknown error"));
-            return false;
-        }
+        
+        double scene_scale = scene_unit_meters;
 
-        std::vector<uint32_t> indices;
+        struct GroupedTriangles {
+            std::vector<Vertex> verts;
+            std::vector<unsigned int> localIndices;
+        };
 
-        if (scene->meshes.count > 1) {
-            ufbx_free_scene(scene);
-            throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MESH] : Engine doesn't support multiple meshes yet.");
-        }
+        std::unordered_map<ufbx_material*, GroupedTriangles> materialGroups;
 
-        ufbx_mesh* mesh = scene->meshes.data[0];
+        for (size_t i = 0; i < ufbx_mesh->num_faces; i++) {
+            if (ufbx_mesh->face_hole.data[i]) continue;
 
+            ufbx_face face = ufbx_mesh->faces.data[i];
+            uint32_t mat_index = ufbx_mesh->face_material.data[i];
+            ufbx_material* mat = ufbx_mesh->materials[mat_index];
+            if (!mat) mat = ufbx_mats.data[0];
 
-        for (size_t i = 0; i < mesh->num_faces; i++) {
-            ufbx_face face = mesh->faces.data[i];
+            GroupedTriangles& group = materialGroups[mat];
 
             size_t start = face.index_begin;
             size_t count = face.num_indices;
 
-            // For each triangle in the fan: (0, j, j+1)
             for (size_t j = 1; j + 1 < count; j++) {
                 Vertex verts[3];
 
                 for (int k = 0; k < 3; k++) {
                     size_t vertex_index = start + (k == 0 ? 0 : j + k - 1);
+                    Vertex v{};
 
-                    Vertex vertex{};
-                    ufbx_vec3 pos = ufbx_get_vertex_vec3(&mesh->vertex_position, vertex_index);
-                    vertex.position = { pos.x, pos.y, pos.z };
+                    ufbx_vec3 pos = ufbx_get_vertex_vec3(&ufbx_mesh->vertex_position, vertex_index);
+                    pos.x *= scene_scale;
+                    pos.y *= scene_scale;
+                    pos.z *= scene_scale;
+                    v.position = { pos.x, pos.y, pos.z };
 
-                    if (mesh->vertex_normal.exists) {
-                        ufbx_vec3 normal = ufbx_get_vertex_vec3(&mesh->vertex_normal, vertex_index);
-                        vertex.normal = { normal.x, normal.y, normal.z };
+                    if (ufbx_mesh->vertex_normal.exists) {
+                        ufbx_vec3 normal = ufbx_get_vertex_vec3(&ufbx_mesh->vertex_normal, vertex_index);
+                        v.normal = { normal.x, normal.y, normal.z };
                     }
 
-                    if (mesh->vertex_uv.exists) {
-                        ufbx_vec2 uv = ufbx_get_vertex_vec2(&mesh->vertex_uv, vertex_index);
-                        vertex.texCoord = { uv.x, uv.y };
+                    if (ufbx_mesh->vertex_uv.exists) {
+                        ufbx_vec2 uv = ufbx_get_vertex_vec2(&ufbx_mesh->vertex_uv, vertex_index);
+                        v.texCoord = { uv.x, uv.y };
                     }
 
-                    vertex.color = diffuse;
+                    v.color = diffuse;
 
-                    // Push vertex and record index
-                    verts[k] = vertex;
-                }
-
-                // Push the triangle vertices and indices (no deduplication)
-                for (int k = 0; k < 3; ++k) {
-                    vertices.push_back(verts[k]);
-                    indices.push_back(static_cast<unsigned int>(vertices.size() - 1));
+                    group.verts.push_back(v);
+                    group.localIndices.push_back(static_cast<unsigned int>(group.verts.size() - 1));
                 }
             }
         }
-        
 
-        ufbx_free_scene(scene);
+        // Merge grouped geometry into unified VBO/EBO
+        vertices.clear();
+        indices.clear();
+        submeshes.clear();
 
-        indexCount = indices.size();
+        for (auto& [ufbx_mat, group] : materialGroups) {
+            size_t indexOffset = indices.size();
+            size_t indexCount = group.localIndices.size();
+
+            size_t vertexOffset = vertices.size();
+            vertices.insert(vertices.end(), group.verts.begin(), group.verts.end());
+
+            for (auto idx : group.localIndices)
+                indices.push_back(static_cast<unsigned int>(vertexOffset + idx));
+
+            submeshes.push_back(SubMesh{
+                .indexOffset = indexOffset,
+                .indexCount = indexCount
+            });
+        }
+
+        totalIndexCount = indices.size();
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -119,21 +127,32 @@ namespace SHAME::Engine::Rendering{
         return true;
     }
     
-    void Mesh::Draw() const {
+    void Mesh::DrawWithoutMaterial() const {
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indexCount), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(totalIndexCount), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-
-    DrawCommand Mesh::CreateDrawCmd()
+    std::vector<DrawCommand> Mesh::CreateDrawCmds(ECS::Components::Transform *tr, int objectID, std::vector<std::shared_ptr<Material>> mats)
     {
-        DrawCommand cmd{};
+        std::vector<DrawCommand> cmds;
 
-        cmd.VAO = VAO;
-        cmd.indexCount = indexCount;
-        cmd.VBO = VBO;
-        cmd.vertices.insert(cmd.vertices.end(), std::begin(vertices), std::end(vertices));
+        if(mats.size() != submeshes.size()){
+            throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MESH] : Cannot create draw command for meshes with different submeshes and materials count");
+        }
+        
+        for (int i = 0; i < submeshes.size(); i++) {
+            DrawCommand cmd;
+            cmd.indexOffset = static_cast<int>(submeshes[i].indexOffset);
+            cmd.indexCount  = static_cast<int>(submeshes[i].indexCount);
+            cmd.VAO         = VAO;
+            cmd.VBO         = VBO;
+            cmd.mat         = mats[i];
+            cmd.tr          = tr;
+            cmd.id          = objectID;
+            cmd.fillMode    = GL_FILL;
 
-        return cmd;
+            cmds.push_back(std::move(cmd));
+        }
+        return cmds;
     }
 }

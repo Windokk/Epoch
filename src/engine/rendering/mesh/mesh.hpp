@@ -4,23 +4,33 @@
 #include "engine/filesystem/filesystem.hpp"
 #include "engine/rendering/material/material.hpp"
 
+#include <ufbx/ufbx.h>
+
 namespace SHAME::Engine::Rendering{
+
+    struct SubMesh {
+        size_t indexOffset;
+        size_t indexCount;
+    };
 
     class Mesh {
         public:
-            Mesh(const Filesystem::Path& path, COL_RGBA diffuse = COL_RGBA(1,1,1,1));
+            Mesh(const ufbx_mesh *ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse = COL_RGBA(1,1,1,1));
             ~Mesh();
 
-            void Draw() const;
+            void DrawWithoutMaterial() const;
 
-            DrawCommand CreateDrawCmd();
+            std::vector<DrawCommand> CreateDrawCmds(ECS::Components::Transform* tr, int objectID, std::vector<std::shared_ptr<Material>> mats);
 
         private:
             GLuint VAO, VBO, EBO;
-            size_t indexCount;
+            size_t totalIndexCount;
             std::vector<Vertex> vertices;
+            std::vector<GLuint> indices;
+            std::vector<SubMesh> submeshes;
 
-            bool LoadMesh(const Filesystem::Path& path, COL_RGBA diffuse);
+            bool LoadMesh(const ufbx_mesh *ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse);
+
     };
     
 }

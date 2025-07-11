@@ -3,5 +3,5 @@
 namespace SHAME::Engine::ECS
 {
     std::unordered_set<int> ObjectIDManager::availableIDs;
-    std::map<ObjectID, Objects::Object*> ObjectIDManager::ObjectIDMap;
+    std::map<ObjectID, std::shared_ptr<Objects::Object>> ObjectIDManager::ObjectIDMap;
 }

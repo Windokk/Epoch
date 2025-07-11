@@ -14,25 +14,28 @@ namespace SHAME::Engine::Filesystem{
     }
 
 
-    std::vector<FileInfo> FileManager::ListDirectory(const Path &path, bool recursive)
+    std::vector<FileInfo> FileManager::ListDirectory(const Path &path, std::vector<Type> acceptedExtensions, bool includeDirs, bool recursive)
     {
         std::vector<FileInfo> files;
 
         if (!std::filesystem::exists(path.full) || !std::filesystem::is_directory(path.full))
-            throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot list files insiide non-existing directory");
+            throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot list files inside non-existing directory");
 
         auto processEntry = [&](const auto& entry) {
-            const auto& fsPath = entry.path();
+            Path filePath(entry.path().string());
             
-            if (entry.is_directory())
+            if (entry.is_directory() && includeDirs)
             {
-                FileInfo info = GetFileInfos(Path(fsPath.string()));
+                FileInfo info = GetFileInfos(filePath);
                 files.push_back(info);
             }
             else if (entry.is_regular_file())
             {
-                FileInfo info = GetFileInfos(Path(fsPath.string()));
-                files.push_back(info);
+                auto extType = filePath.GetExtensionType();
+                if (acceptedExtensions.empty() ||
+                    std::find(acceptedExtensions.begin(), acceptedExtensions.end(), extType) != acceptedExtensions.end()) {
+                    files.push_back(GetFileInfos(filePath));
+                }
             }
         };
 
@@ -59,95 +62,41 @@ namespace SHAME::Engine::Filesystem{
     FileInfo FileManager::GetFileInfos(const Path &path)
     {
         FileInfo infos;
-        
-
+    
         infos.path = path.full;
-        infos.name = path.Filename(false);
+        infos.name = path.GetFilename(false);
         infos.isDirectory = path.IsDirectory();
-        infos.size = GetFileSize(path);
-        infos.type = GetTypeFromExtensionString(GetExtension(path));
+        infos.size = path.GetFileSize();
+        infos.type = path.GetExtensionType();
 
         return infos;
     }
 
-
-    bool FileManager::Exists(const Path &path)
+    std::string Path::ReadFile() const
     {
-        return std::filesystem::exists(path.full);
-    }
-
-    bool FileManager::IsDirectory(const Path &path)
-    {
-        return path.IsDirectory();
-    }
-
-    int FileManager::GetFileSize(const Path &path)
-    {
-        if (IsPackedResource(path)) {
+        if(IsPacked()){
             CosemUnPacker unpacker;
-            unpacker.OpenArchive(path.GetParentArchive());
-            auto fileIndex = unpacker.GetFileIndex();
-
-            std::string insidePath = path.GetPathInsideArchive();
-
-            if (IsDirectory(path) && !insidePath.empty() && insidePath.back() != '/')
-                insidePath += '/';
-
-            int totalSize = 0;
-
-            for (const auto& entry : fileIndex) {
-                if (entry.path == insidePath || entry.path.compare(0, insidePath.size(), insidePath) == 0) {
-                    totalSize += entry.fileSize;
-                }
-            }
-
-            return static_cast<int>(totalSize);
-        } else {
-            if (IsDirectory(path)) {
-                int totalSize = 0;
-
-                for (const auto& entry : std::filesystem::recursive_directory_iterator(path.full,
-                            std::filesystem::directory_options::skip_permission_denied))
-                {
-                    if (entry.is_regular_file()) {
-                        totalSize += std::filesystem::file_size(entry.path());
-                    }
-                }
-
-                return static_cast<int>(totalSize);
-            } else if (std::filesystem::exists(path.full) && std::filesystem::is_regular_file(path.full)) {
-                return static_cast<int>(std::filesystem::file_size(path.full));
-            } else {
-                throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : File or directory does not exist: " + path.full);
-            }
-        }
-    }
-
-    std::string FileManager::ReadFile(const Path &path)
-    {
-        if(IsPackedResource(path)){
-            CosemUnPacker unpacker;
-            unpacker.OpenArchive(path.GetParentArchive());
-            std::vector<char> characters = unpacker.ExtractFileToMemory(path.GetPathInsideArchive());
+            unpacker.OpenArchive(GetParentArchive());
+            std::vector<char> characters = unpacker.ExtractFileToMemory(GetPathInsideArchive());
             return std::string(characters.begin(), characters.end());
         }
         else{
-            std::ifstream file(path.full, std::ios::binary);
-            if (!file) throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Can't read file at path : " + path.full);
+            std::ifstream file(full, std::ios::binary);
+            if (!file) throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Can't read file at path : " + full);
             std::ostringstream sstream;
             sstream << file.rdbuf();
             return sstream.str();
         }
     }
 
-    bool FileManager::WriteFile(const Path &path, const std::string &content)
+    bool Path::WriteFile(const std::string &content) const
     {
-        if (IsPackedResource(path)) {
+        if (IsPacked()) {
             throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot write to a file inside a .caf archive");
             return false;
         }
     
-        std::ofstream out(path.full, std::ios::trunc); // truncate = overwrite if file exists
+        std::ofstream out(full, std::ios::trunc); // truncate = overwrite if file exists
         if (!out.is_open()) return false;
     
         try {
@@ -159,14 +108,14 @@ namespace SHAME::Engine::Filesystem{
         return true;
     }
 
-    bool FileManager::AppendToFile(const Path &path, const std::string &content)
+    bool Path::AppendToFile(const std::string &content) const
     {
-        if(IsPackedResource(path)){
+        if(IsPacked()){
             throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot create append to file placed in .caf archive");
             return false;
         }
 
-        std::ofstream out(path.full, std::ios::app);
+        std::ofstream out(full, std::ios::app);
         if (!out.is_open()) return false;
         try {
             out << content;
@@ -176,40 +125,10 @@ namespace SHAME::Engine::Filesystem{
         return true;
     }
 
-    std::string FileManager::GetExtension(const Path &path)
+    Type Path::GetExtensionType() const
     {
-        return std::filesystem::path(path.GetAbsolutePath()).extension().string();
-    }
+        std::string str = std::filesystem::path(GetAbsolutePath()).extension().string();
 
-    std::string FileManager::GetTypeString(const Type &type){
-        switch(type){
-            case Type::T_ANIMATION:
-                return "ANIMATION_FILE_TYPE";
-            case Type::T_CONFIG:
-                return "CONFIG_FILE_TYPE";
-            case Type::T_FONT:
-                return "FONT_FILE_TYPE";
-            case Type::T_IMAGE:
-                return "IMAGE_FILE_TYPE";
-            case Type::T_SCENE:
-                return "SCENE_FILE_TYPE";
-            case Type::T_SCRIPT:
-                return "SCRIPT_FILE_TYPE";
-            case Type::T_SHADER:
-                return "SHADER_FILE_TYPE";
-            case Type::T_TEXT:
-                return "TEXT_FILE_TYPE";
-            case Type::T_SOUND:
-                return "SOUND_FILE_TYPE";
-            case Type::T_DIRECTORY:
-                return "DIRECTORY_FILE_TYPE";
-            default:
-                return "DEFAULT_FILE_TYPE";
-        }
-    }
-
-    Type FileManager::GetTypeFromExtensionString(std::string str) {
-        // Convert to lowercase for case-insensitive comparison
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 
         static const std::unordered_map<std::string, Type> extensionMap = {
@@ -221,17 +140,19 @@ namespace SHAME::Engine::Filesystem{
             // Font formats
             {".ttf", Type::T_FONT}, {".otf", Type::T_FONT}, {".fnt", Type::T_FONT},
             // Shader formats
-            {".glsl", Type::T_SHADER}, {".frag", Type::T_SHADER}, {".vert", Type::T_SHADER},
+            {".geom", Type::T_SHADER}, {".frag", Type::T_SHADER}, {".vert", Type::T_SHADER},
             // Text formats
             {".txt", Type::T_TEXT}, {".md", Type::T_TEXT},
             // Script formats
-            {".lua", Type::T_SCRIPT}, {".py", Type::T_SCRIPT}, {".js", Type::T_SCRIPT},
-            // Animation formats
-            {".anim", Type::T_ANIMATION}, {".ani", Type::T_ANIMATION},
-            // Scene formats
-            {".scene", Type::T_SCENE}, {".scn", Type::T_SCENE},
+            {".cpp", Type::T_SCRIPT}, {".hpp", Type::T_SCRIPT},
+            // Model formats
+            {".fbx", Type::T_MODEL},
+            // Material formats
+            {".mat", Type::T_MATERIAL}, {".material", Type::T_MATERIAL},
+            // Level formats
+            {".level", Type::T_LEVEL}, {".lvl", Type::T_LEVEL},
             // Config formats
-            {".json", Type::T_CONFIG}, {".ini", Type::T_CONFIG}, {".cfg", Type::T_CONFIG}, {".yaml", Type::T_CONFIG},
+            {".json", Type::T_CONFIG}, {".ini", Type::T_CONFIG}, {".cfg", Type::T_CONFIG},
             // Directory (fallback, not based on extension)
             {"<directory>", Type::T_DIRECTORY}  // special case if needed
         };
@@ -247,21 +168,6 @@ namespace SHAME::Engine::Filesystem{
         }
 
         return Type::T_TEXT;
-    }
-
-    std::string FileManager::GetFileName(const Path &path, bool withExtension)
-    {
-        std::filesystem::path fsPath = std::filesystem::path(path.GetAbsolutePath());
-
-        if (withExtension)
-            return fsPath.filename().string();
-        else
-            return fsPath.stem().string();
-    }
-
-    std::string FileManager::GetParentPath(const Path &path)
-    {
-        return std::filesystem::path(path.GetAbsolutePath()).parent_path().string();
     }
 
     bool FileManager::IsPathInside(const Path &parent, const Path &child)
@@ -307,11 +213,6 @@ namespace SHAME::Engine::Filesystem{
         root = path;
     }
 
-    bool FileManager::IsPackedResource(const Path &path)
-    {
-        return path.full.find(".caf/") != std::string::npos;
-    }
-
     Path::Path(const std::string &raw)
     {
         full = Normalize(raw);
@@ -335,20 +236,67 @@ namespace SHAME::Engine::Filesystem{
         return abs.string();
     }
 
-    std::string Path::Filename(bool withExtension) const
+    std::string Path::GetFilename(bool withExtension) const
     {
         auto p = std::filesystem::path(full);
         return withExtension ? p.filename().string() : p.stem().string();
     }
 
-    std::string Path::Parent() const
+    std::string Path::GetParent() const
     {
         return std::filesystem::path(full).parent_path().string();
     }
 
+    int Path::GetFileSize() const
+    {
+        if (IsPacked()) {
+            CosemUnPacker unpacker;
+            unpacker.OpenArchive(GetParentArchive());
+            auto fileIndex = unpacker.GetFileIndex();
+
+            std::string insidePath = GetPathInsideArchive();
+
+            if (IsDirectory() && !insidePath.empty() && insidePath.back() != '/')
+                insidePath += '/';
+
+            int totalSize = 0;
+
+            for (const auto& entry : fileIndex) {
+                if (entry.path == insidePath || entry.path.compare(0, insidePath.size(), insidePath) == 0) {
+                    totalSize += entry.fileSize;
+                }
+            }
+
+            return static_cast<int>(totalSize);
+        } else {
+            if (IsDirectory()) {
+                int totalSize = 0;
+
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(full,
+                            std::filesystem::directory_options::skip_permission_denied))
+                {
+                    if (entry.is_regular_file()) {
+                        totalSize += std::filesystem::file_size(entry.path());
+                    }
+                }
+
+                return static_cast<int>(totalSize);
+            } else if (std::filesystem::exists(full) && std::filesystem::is_regular_file(full)) {
+                return static_cast<int>(std::filesystem::file_size(full));
+            } else {
+                throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : File or directory does not exist: " + full);
+            }
+        }
+    }
+
+    Path Path::GetParentPath() const
+    {
+        return Path(GetParent());
+    }
+
     std::string Path::GetParentArchive() const
     {
-        if(!FileManager::IsPackedResource(*this)){
+        if(!IsPacked()){
             throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot get parent archive for a file that is not placed in an archive");
             return "";
         }
@@ -375,13 +323,6 @@ namespace SHAME::Engine::Filesystem{
         if (start >= fullPath.size()) return "";
     
         return fullPath.substr(start);
-    }
-
-    std::string Path::ResourcePath() const
-    {
-        std::size_t pos = full.find(".cosem");
-        if (pos == std::string::npos) return full;
-        return full.substr(0, pos);
     }
 
     bool Path::IsPacked() const

@@ -23,7 +23,7 @@ namespace SHAME::Engine::Rendering::UI{
         Path font_path = Path(path);
 
         if (font_path.Exists()) {
-            std::string fontData = FileManager::ReadFile(font_path);
+            std::string fontData = font_path.ReadFile();
     
             error = FT_New_Memory_Face(
                 ft,                                              // FreeType library instance

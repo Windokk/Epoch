@@ -13,10 +13,10 @@ namespace SHAME::Engine::ECS::Objects{
         components.push_back(transform);
     }
 
-    void Actor::AddChild(Object *o)
+    void Actor::AddChild(std::shared_ptr<Object> o)
     {
         Object::AddChild(o);
-        if (Actor* actorChild = dynamic_cast<Actor*>(o)) {
+        if (std::shared_ptr<Actor> actorChild = std::dynamic_pointer_cast<Actor>(o)) {
             actorChild->SetLevel(this->level);
         }
     }

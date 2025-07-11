@@ -70,8 +70,8 @@ namespace SHAME::Engine::Rendering{
 
         //FRAMBUFFERS
         CreateRectGeometry();
-        blendShader = std::make_shared<Shader>("engine_resources/shaders/fb/framebuffer.vert","engine_resources/shaders/fb/blend.frag");
-        framebufferShader = std::make_shared<Shader>("engine_resources/shaders/fb/framebuffer.vert","engine_resources/shaders/fb/framebuffer.frag");
+        blendShader = std::make_shared<Shader>(Filesystem::Path("engine_resources/shaders/fb/framebuffer.vert"),Filesystem::Path("engine_resources/shaders/fb/blend.frag"));
+        framebufferShader = std::make_shared<Shader>(Filesystem::Path("engine_resources/shaders/fb/framebuffer.vert"),Filesystem::Path("engine_resources/shaders/fb/framebuffer.frag"));
         viewportBuffer = new FrameBuffer(settings.windowWidth, settings.windowHeight, framebufferShader);
 
         //LIGHTS
@@ -79,7 +79,7 @@ namespace SHAME::Engine::Rendering{
         lightMan->Update(-1);
 
         //DEBUG_SHAPES
-        unlitShader = std::make_shared<Shader>("engine_resources/shaders/mesh/default.vert","engine_resources/shaders/mesh/unlit.frag");
+        unlitShader = std::make_shared<Shader>(Filesystem::Path("engine_resources/shaders/mesh/unlit.vert"),Filesystem::Path("engine_resources/shaders/mesh/unlit.frag"), Filesystem::Path(""));
 
         //MULTISAMPLING
         if(settings.antiAliasingLevel>0){
@@ -125,6 +125,10 @@ namespace SHAME::Engine::Rendering{
         }
 
         ReorderDrawList();
+    }
+
+    void Renderer::Submit(std::vector<DrawCommand> cmds, bool replace){
+        
     }
 
     void Renderer::ReorderDrawList()
@@ -176,7 +180,6 @@ namespace SHAME::Engine::Rendering{
             cmd.mat->SetParameter("model", cmd.tr->GetTransformMatrix());
             cmd.mat->SetParameter("lightNB", lightMan->GetLightsCount());
             cmd.mat->Use();
-
             glBindVertexArray(cmd.VAO);
             glPolygonMode(GL_FRONT_AND_BACK, cmd.fillMode);
             glDrawElements(GL_TRIANGLES, cmd.indexCount, GL_UNSIGNED_INT, nullptr);

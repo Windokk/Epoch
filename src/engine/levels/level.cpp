@@ -33,7 +33,7 @@ namespace SHAME::Engine::Levels{
         }
     }
 
-    void Level::AddActor(ECS::Objects::Actor* a)
+    void Level::AddActor(std::shared_ptr<ECS::Objects::Actor> a)
     {
         rootActors.push_back(a);
         a->SetLevel(this);
@@ -50,7 +50,7 @@ namespace SHAME::Engine::Levels{
         }
     }
 
-    ECS::Objects::Actor* Level::GetActor(ECS::ObjectID id, bool recursive)
+    std::shared_ptr<ECS::Objects::Actor> Level::GetActor(ECS::ObjectID id, bool recursive)
     {
         for (auto& actorPtr : rootActors)
         {
@@ -61,7 +61,7 @@ namespace SHAME::Engine::Levels{
                 std::vector<ECS::ObjectID> children = actorPtr->GetChildrenID(true);
 
                 for(auto& _id : children){
-                    ECS::Objects::Actor* child = dynamic_cast<ECS::Objects::Actor*>(ECS::ObjectIDManager::GetObjectFromID(_id));
+                    std::shared_ptr<ECS::Objects::Actor> child = std::dynamic_pointer_cast<ECS::Objects::Actor>(ECS::ObjectIDManager::GetObjectFromID(_id));
                     if(_id == id && child){
                         return child;
                     }

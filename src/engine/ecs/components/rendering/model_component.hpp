@@ -14,19 +14,20 @@ namespace SHAME::Engine::ECS::Components
             void Update();
 
             void SetMesh(std::shared_ptr<Rendering::Mesh> mesh);
-            void SetMeshAndMaterialFromPath(Filesystem::Path *path);
             void UpdateReferenceInLevel();
-            void SetMaterial(std::shared_ptr<Rendering::Material> material);
+            void SetMaterials(std::vector<std::shared_ptr<Rendering::Material>> material);
 
             std::shared_ptr<Rendering::Mesh> GetMesh() { return mesh; }
-            std::shared_ptr<Rendering::Material> GetMaterial() { return mat; }
+            std::vector<std::shared_ptr<Rendering::Material>> GetMaterials() { return materials; }
+
+            int GetMaterialsCount() { return materials.size(); }
 
         private:
 
             bool alreadySubmitted = false;
 
             std::shared_ptr<Rendering::Mesh> mesh;
-            std::shared_ptr<Rendering::Material> mat;
+            std::vector<std::shared_ptr<Rendering::Material>> materials;
 
     };
 }

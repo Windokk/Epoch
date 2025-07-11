@@ -54,10 +54,10 @@ namespace SHAME::Engine{
         };
 
         struct DrawCommand {
+            int indexOffset = 0;
             int indexCount = 0;
             unsigned int VAO;
             unsigned int VBO;
-            std::vector<Vertex> vertices;
             std::shared_ptr<Material> mat;
             ECS::Components::Transform* tr;
             int id;
@@ -77,6 +77,8 @@ namespace SHAME::Engine{
             static void Render();
 
             static void Submit(DrawCommand cmd, bool replace);
+
+            static void Submit(std::vector<DrawCommand> cmds, bool replace);
 
             static void ReorderDrawList();
 

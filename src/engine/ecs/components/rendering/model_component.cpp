@@ -20,12 +20,6 @@ namespace SHAME::Engine::ECS::Components{
         this->Update();
         UpdateReferenceInLevel();
     }
-
-    void Model::SetMeshAndMaterialFromPath(Filesystem::Path* path)
-    {
-        //this->mat = std::make_shared<Rendering::Material>(path);
-        //this->mesh = std::make_shared<Rendering::Mesh>(path);
-    }
     
     void Model::UpdateReferenceInLevel()
     {
@@ -36,12 +30,12 @@ namespace SHAME::Engine::ECS::Components{
         parent->level->meshes[parent->GetComponentIDInScene(local_id)] = { parent->transform->GetTransformMatrix(), mesh.get() };
     }
 
-    void Model::SetMaterial(std::shared_ptr<Rendering::Material> material)
+    void Model::SetMaterials(std::vector<std::shared_ptr<Rendering::Material>> materials)
     {
         if(!activated)
             return;
             
-        this->mat = material;
+        this->materials = materials;
         this->Update();
     }
 
@@ -50,18 +44,13 @@ namespace SHAME::Engine::ECS::Components{
         if(!activated)
             return;
 
-        if (mat != nullptr && mesh != nullptr){
-            Rendering::DrawCommand cmd;
-            
-            Transform& tr = parent->GetComponent<Transform>();
+        if (materials.size() > 0 && mesh != nullptr){
 
-            cmd = mesh->CreateDrawCmd();
+            Transform* tr = &parent->GetComponent<Transform>();
 
-            cmd.mat = this->mat;
-            cmd.id = parent->GetComponentIDInScene(local_id);
-            cmd.tr = &tr;
+            std::vector<Rendering::DrawCommand> cmds = mesh->CreateDrawCmds(tr, parent->GetComponentIDInScene(local_id), this->materials);
 
-            Rendering::Renderer::Submit(cmd, alreadySubmitted);
+            Rendering::Renderer::Submit(cmds, alreadySubmitted);
 
             alreadySubmitted = true;
         }

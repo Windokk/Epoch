@@ -2,6 +2,8 @@
 
 #include "engine/rendering/utils.hpp"
 
+#include "engine/filesystem/filesystem.hpp"
+
 #include <string>
 #include <iostream>
 
@@ -18,8 +20,8 @@ namespace SHAME::Engine::Rendering {
         public:
             // Reference ID of the Shader Program
             GLuint ID;
-            
-            Shader(const std::string vertexFilePath = "", const std::string fragmentFilePath = "", const std::string geometryFilePath = "");
+        
+            Shader(const Filesystem::Path vertexFilePath = Filesystem::Path(""), const Filesystem::Path fragmentFilePath = Filesystem::Path(""), const Filesystem::Path geometryFilePath = Filesystem::Path(""));
 
             std::vector<UniformInfo> GetActiveUniforms();
 
