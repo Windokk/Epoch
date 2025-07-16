@@ -26,7 +26,10 @@ namespace SHAME::Engine::Core{
         AudioManager::Init(100.0f);
         InputManager::Init(window);
         EventDispatcher::GetInstance();
-        Time::TimeManager::GetInstance().Init(0.0166667f, 4 * settings.targetFPS, settings.targetFPS);
+
+        float fixedDelta = 1.0f / 30.0f;
+
+        Time::TimeManager::GetInstance().Init(fixedDelta);
     }
 
     void EngineInstance::CreateWindow()
@@ -113,10 +116,7 @@ namespace SHAME::Engine::Core{
         auto& time = Time::TimeManager::GetInstance();
         time.Tick();
 
-        while (time.ShouldStepPhysics()) {
-            PhysicsSystem::StepSimulation(time.GetFixedDeltaTime());
-            time.ConsumeFixedStep();
-        }
+        PhysicsSystem::StepSimulation(time.GetFixedDeltaTime());
 
         Renderer::Render();
         AudioManager::Tick();
@@ -125,8 +125,6 @@ namespace SHAME::Engine::Core{
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        time.FrameLimit();
 
         std::cout<<time.GetDeltaTime()<<std::endl;
     }

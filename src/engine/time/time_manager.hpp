@@ -21,13 +21,12 @@ namespace SHAME::Engine::Time{
                 return instance;
             }
 
-            void Init(float fixedStep = 1.0f / 60.0f, float maxAccumulated = 0.66f, float targetFPS = 60.0f){
+            void Init(float fixedStep = 1.0f / 60.0f, float maxAccumulated = 4.0f / 60.0f){
                 TimeManager::fixedDeltaTime = fixedStep;
-                TimeManager::maxAccumulatedTime = maxAccumulated;
-                TimeManager::targetFrameTime = 1 / targetFPS;
-                accumulator = 0.0f;
                 deltaTime = 0.0f;
                 TimeManager::lastTime = std::chrono::high_resolution_clock::now();
+                accumulator = 0;
+                maxAccumulatedTime = maxAccumulated;
             }
 
             void Tick() {
@@ -49,17 +48,7 @@ namespace SHAME::Engine::Time{
                 accumulator -= fixedDeltaTime;
             }
 
-            void FrameLimit() {
-                auto now = std::chrono::high_resolution_clock::now();
-                float frameDuration = std::chrono::duration<float>(now - frameStartTime).count();
-                float sleepTime = targetFrameTime - frameDuration;
-                if (sleepTime > 0.0f) {
-                    std::this_thread::sleep_for(std::chrono::duration<float>(sleepTime));
-                }
-            }
-
             float GetFixedDeltaTime() { return fixedDeltaTime; }
-            float GetInterpolationAlpha() { return accumulator / fixedDeltaTime; }
             float GetDeltaTime() { return deltaTime; }
 
             TimeStamp CurrentTime() {
@@ -94,11 +83,10 @@ namespace SHAME::Engine::Time{
             TimeManager& operator=(const TimeManager&) = delete;
 
             float fixedDeltaTime;
-            float maxAccumulatedTime;
-            float targetFrameTime;
-
             float deltaTime;
+
             float accumulator;
+            float maxAccumulatedTime;
 
             std::chrono::high_resolution_clock::time_point lastTime;
             std::chrono::high_resolution_clock::time_point frameStartTime;
