@@ -78,8 +78,8 @@ namespace SHAME::Engine::ECS::Components{
                 return;
         }
 
-        glm::vec3 pos = parent->GetComponent<Transform>().GetPosition();
-        glm::quat rot = parent->GetComponent<Transform>().GetRotation();
+        glm::vec3 pos = parent->transform->GetPosition();
+        glm::quat rot = parent->transform->GetRotation();
         
         // Body settings
         JPH::BodyCreationSettings settings(

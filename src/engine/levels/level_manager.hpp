@@ -17,6 +17,8 @@ namespace SHAME::Engine::Levels{
             /// @brief Load a level
             /// @param lvl The pointer to the level
             static void LoadLevel(std::shared_ptr<Level> lvl) {
+                if(!lvl)
+                    throw std::runtime_error("[ERROR] [LEVELS] Cannot load level (null)");
                 levelBuffer.push_back(lvl);
             }
 

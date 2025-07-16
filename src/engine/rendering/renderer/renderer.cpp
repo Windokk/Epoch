@@ -107,8 +107,6 @@ namespace SHAME::Engine::Rendering{
 
             ExecuteRenderPasses();
         }
-        
-        EndFrame();
     }
 
     void Renderer::Submit(DrawCommand cmd, bool replace)
@@ -127,8 +125,27 @@ namespace SHAME::Engine::Rendering{
         ReorderDrawList();
     }
 
-    void Renderer::Submit(std::vector<DrawCommand> cmds, bool replace){
-        
+    void Renderer::Submit(std::vector<DrawCommand> cmds, bool replace)
+    {
+        if (replace) {
+            for (const auto& cmd : cmds) {
+                bool found = false;
+                for (auto& existingCmd : drawList) {
+                    if (existingCmd.id == cmd.id) {
+                        existingCmd = cmd;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    drawList.push_back(cmd);
+                }
+            }
+        } else {
+            drawList.insert(drawList.end(), cmds.begin(), cmds.end());
+        }
+
+        ReorderDrawList();
     }
 
     void Renderer::ReorderDrawList()
@@ -186,8 +203,12 @@ namespace SHAME::Engine::Rendering{
             cmd.mat->StopUsing();
         }
 
-        if(!Renderer::settings.showDebugShapes)
+        if(!Renderer::settings.showDebugShapes){
+            glBindVertexArray(0);
+            glUseProgram(0);
+            glDisable(GL_DEPTH_TEST);
             return;
+        }
 
         // --- Debug Physics Shapes ---
         unlitShader->Activate();
@@ -343,11 +364,5 @@ namespace SHAME::Engine::Rendering{
             glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
             RescaleFramebuffers(mode->width, mode->height);
         }
-    }
-
-    void Renderer::EndFrame()
-    {
-        glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 }

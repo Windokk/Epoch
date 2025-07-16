@@ -11,11 +11,10 @@ namespace SHAME::Engine::ECS::Components
             Model(Objects::Actor *parent, uint32_t local_id);
 
             public:
-            void Update();
 
             void SetMesh(std::shared_ptr<Rendering::Mesh> mesh);
             void UpdateReferenceInLevel();
-            void SetMaterials(std::vector<std::shared_ptr<Rendering::Material>> material);
+            void SetMaterials(std::vector<std::shared_ptr<Rendering::Material>> &&materials);
 
             std::shared_ptr<Rendering::Mesh> GetMesh() { return mesh; }
             std::vector<std::shared_ptr<Rendering::Material>> GetMaterials() { return materials; }
@@ -23,6 +22,7 @@ namespace SHAME::Engine::ECS::Components
             int GetMaterialsCount() { return materials.size(); }
 
         private:
+            void Update();
 
             bool alreadySubmitted = false;
 

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <stdexcept>
-#include <chrono>
 
 #include "engine/filesystem/filesystem.hpp"
 #include "engine/levels/level_manager.hpp"
 #include "engine/ecs/objects/actors/actor.hpp"
 #include "engine/inputs/input_manager.hpp"
+#include "engine/time/time_manager.hpp"
 
 namespace SHAME::Engine::Core {
     
@@ -15,6 +15,8 @@ namespace SHAME::Engine::Core {
         int windowWidth = 800;
         int windowHeight = 800;
         bool fullscreen = false;
+        bool vsync = true;
+        int targetFPS = 60;
 
         //FILESYSTEM
         std::string rootPath = "";
@@ -41,10 +43,6 @@ namespace SHAME::Engine::Core {
         void DestroyWindow();
 
         GLFWwindow* window;
-
-        float deltaTime;
-
-        std::chrono::_V2::system_clock::time_point lastTime = std::chrono::high_resolution_clock::now();
 
     };
 }

@@ -21,27 +21,26 @@ namespace SHAME::Engine::ECS::Objects{
 
     class Actor : public Object{
         
-        std::vector<Component*> components;        
+        std::vector<std::shared_ptr<Component>> components;        
         std::string name;
         public:
             Actor(std::string name);
-            ~Actor() { for(auto& c : components){ delete c; }}
 
             template <typename T>
             bool HasComponent();
 
             template <typename T>
-            std::vector<T*> GetComponents();
+            std::vector<std::shared_ptr<T>> GetComponents();
 
             template <typename T>
-            T &GetComponent(int k = 0);
+            std::shared_ptr<T> GetComponent(int k = 0);
 
-            const std::vector<Component*>& GetComponents() const {
+            const std::vector<std::shared_ptr<Component>>& GetComponents() const {
                 return components;
             }
 
             template <typename T>
-            T* AddComponent();
+            std::shared_ptr<T> AddComponent();
 
             void Destroy() override {
                 
@@ -64,7 +63,7 @@ namespace SHAME::Engine::ECS::Objects{
 
             void SetLevel(Levels::Level* lvl);
 
-            Transform* transform;
+            std::shared_ptr<Transform> transform;
             Levels::Level* level;
         private:
     };
@@ -77,8 +76,8 @@ namespace SHAME::Engine::ECS::Objects{
             throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
-        for (Component* component : components) {
-            if (dynamic_cast<T*>(component)) {
+        for (const std::shared_ptr<Component>& component : components) {
+            if (dynamic_cast<T*>(component.get())) {
                 return true;
             }
         }
@@ -86,15 +85,15 @@ namespace SHAME::Engine::ECS::Objects{
     }
 
     template <typename T>
-    std::vector<T*> Actor::GetComponents(){
+    std::vector<std::shared_ptr<T>> Actor::GetComponents(){
         if(!std::is_base_of<Component, T>::value){
             throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
-        std::vector<T*> list;
+        std::vector<std::shared_ptr<T>> list;
 
-        for (Component* component : components) {
-            if (T* casted = dynamic_cast<T*>(component)) {
+        for (const auto& component : components) {
+            if (auto casted = std::dynamic_pointer_cast<T>(component)) {
                 list.push_back(casted);
             }
         }
@@ -103,21 +102,21 @@ namespace SHAME::Engine::ECS::Objects{
     } 
 
     template <typename T>
-    T& Actor::GetComponent(int k) {
+    std::shared_ptr<T> Actor::GetComponent(int k) {
         if(!std::is_base_of<Component, T>::value){
             throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
         int n = 0;
 
-        for (auto* component : components) {
-            if (T* casted = dynamic_cast<T*>(component)) {
+        for (auto& component : components) {
+            if (auto casted = std::dynamic_pointer_cast<T>(component)) {
                 if(n != k){
                     n++;
                     continue;
                 }
                 else{
-                    return *casted;
+                    return casted;
                 }
             }
         }
@@ -126,16 +125,16 @@ namespace SHAME::Engine::ECS::Objects{
     }
 
     template <typename T>
-    T* Actor::AddComponent()
+    std::shared_ptr<T> Actor::AddComponent()
     {
         if(!std::is_base_of<Component, T>::value){
             throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
         }
 
-        T* component = new T(this, this->components.size());
+        std::shared_ptr<T> component = std::make_shared<T>(this, components.size());
         
-        if (dynamic_cast<Transform*>(component)) {
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] Can only have one Transform per actor");
+        if (std::is_base_of<Transform, T>::value) {
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] An actor can only have one transform component.");
             return nullptr;
         }
         components.push_back(component);
@@ -176,8 +175,7 @@ namespace SHAME::Engine::ECS::Objects{
 
         if constexpr (std::is_base_of<Camera, T>::value) {
             level->cameras.push_back(component);
-            component->Init(Rendering::Renderer::GetCurrentWidth(), Rendering::Renderer::GetCurrentHeight(), 0.1f, 100.0f);
-            Rendering::CameraManager::AddCamera(name, std::make_shared<Camera>(*component));
+            Rendering::CameraManager::AddCamera(name, component);
         }
 
         return component;

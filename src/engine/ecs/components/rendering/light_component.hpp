@@ -19,6 +19,7 @@ namespace SHAME::Engine::ECS::Components
             void SetOuterCutoff(float cutoff);
             void SetInnerCuttof(float cutoff);
             void SetLightIndex(int index);
+            void SetCastShadow(bool castShadows);
 
             Rendering::LightData GetData();
 

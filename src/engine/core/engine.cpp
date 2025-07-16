@@ -26,6 +26,7 @@ namespace SHAME::Engine::Core{
         AudioManager::Init(100.0f);
         InputManager::Init(window);
         EventDispatcher::GetInstance();
+        Time::TimeManager::GetInstance().Init(0.0166667f, 4 * settings.targetFPS, settings.targetFPS);
     }
 
     void EngineInstance::CreateWindow()
@@ -53,13 +54,43 @@ namespace SHAME::Engine::Core{
         glfwSetWindowUserPointer(window, this);
         glfwMakeContextCurrent(window);
         glfwSetWindowSizeCallback(window, OnWindowResize);
-        glfwSwapInterval(1);
-        
+        glfwSwapInterval(settings.vsync);
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             throw std::runtime_error("[ERROR] [ENGINE/CORE] : Failed to initialize GLAD");
         }
+
+        
+        const GLubyte* renderer = glGetString(GL_RENDERER);     // GPU
+        const GLubyte* vendor   = glGetString(GL_VENDOR);       // GPU vendor
+        const GLubyte* version  = glGetString(GL_VERSION);      // OpenGL version
+
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] ===== System infos =====\n";
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] GPU Vendor: " << vendor << "\n";
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] GPU Renderer: " << renderer << "\n";
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] OpenGL Version: " << version << "\n";
+
+        // GLFW context version (you asked for)
+        int major, minor, rev;
+        glfwGetVersion(&major, &minor, &rev);
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] GLFW Version: " << major << "." << minor << "." << rev << "\n";
+
+        // Monitor and resolution
+        int count;
+        GLFWmonitor** monitors = glfwGetMonitors(&count);
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] Connected Monitors: " << count << "\n";
+
+        for (int i = 0; i < count; ++i) {
+            const GLFWvidmode* mode = glfwGetVideoMode(monitors[i]);
+            std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] Monitor " << i << ": "
+                    << mode->width << "x" << mode->height << " @ " << mode->refreshRate << "Hz\n";
+        }
+        // Window size
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] Window Size: " << width << "x" << height << "\n";
+        
     }
 
     void EngineInstance::DestroyWindow()
@@ -78,25 +109,26 @@ namespace SHAME::Engine::Core{
         DestroyWindow();
     }
 
-    void EngineInstance::Run()
-    {
-        auto currentTime = std::chrono::high_resolution_clock::now();
+    void EngineInstance::Run() {
+        auto& time = Time::TimeManager::GetInstance();
+        time.Tick();
 
-        // Use floating-point duration in milliseconds
-        std::chrono::duration<float, std::milli> duration = currentTime - lastTime;
-        deltaTime = duration.count();
-        
-        /*if (ms > 0.0f)
-            std::cout << (1000.0f / ms) << " FPS" << std::endl;
-        else
-            std::cout << "Very fast frame (<1ms), can't compute FPS accurately" << std::endl;*/
+        while (time.ShouldStepPhysics()) {
+            PhysicsSystem::StepSimulation(time.GetFixedDeltaTime());
+            time.ConsumeFixedStep();
+        }
 
-        PhysicsSystem::StepSimulation(1.0f / 60.0f);
         Renderer::Render();
         AudioManager::Tick();
         InputManager::Tick();
         LevelManager::Tick();
-        lastTime = currentTime;
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
+        time.FrameLimit();
+
+        std::cout<<time.GetDeltaTime()<<std::endl;
     }
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)

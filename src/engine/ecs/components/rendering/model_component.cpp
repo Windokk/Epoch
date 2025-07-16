@@ -30,12 +30,16 @@ namespace SHAME::Engine::ECS::Components{
         parent->level->meshes[parent->GetComponentIDInScene(local_id)] = { parent->transform->GetTransformMatrix(), mesh.get() };
     }
 
-    void Model::SetMaterials(std::vector<std::shared_ptr<Rendering::Material>> materials)
+    void Model::SetMaterials(std::vector<std::shared_ptr<Rendering::Material>>&& materials)
     {
         if(!activated)
             return;
+
+        if (materials.empty()) {
+            throw std::runtime_error("[ERROR] [ENGINE/ECS/MODEL_COMPONENT] : SetMaterials called with empty list");
+        }
             
-        this->materials = materials;
+        this->materials = std::move(materials);
         this->Update();
     }
 
@@ -46,7 +50,7 @@ namespace SHAME::Engine::ECS::Components{
 
         if (materials.size() > 0 && mesh != nullptr){
 
-            Transform* tr = &parent->GetComponent<Transform>();
+            std::shared_ptr<Transform> tr = parent->transform;
 
             std::vector<Rendering::DrawCommand> cmds = mesh->CreateDrawCmds(tr, parent->GetComponentIDInScene(local_id), this->materials);
 

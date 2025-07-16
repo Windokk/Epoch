@@ -26,60 +26,72 @@ namespace SHAME::Engine::Rendering{
         struct GroupedTriangles {
             std::vector<Vertex> verts;
             std::vector<unsigned int> localIndices;
+            std::unordered_map<Vertex, unsigned int> vertexToIndex;
         };
 
         std::unordered_map<ufbx_material*, GroupedTriangles> materialGroups;
 
         for (size_t i = 0; i < ufbx_mesh->num_faces; i++) {
-            if (ufbx_mesh->face_hole.data[i]) continue;
-
             ufbx_face face = ufbx_mesh->faces.data[i];
             uint32_t mat_index = ufbx_mesh->face_material.data[i];
             ufbx_material* mat = ufbx_mesh->materials[mat_index];
             if (!mat) mat = ufbx_mats.data[0];
 
             GroupedTriangles& group = materialGroups[mat];
-
             size_t start = face.index_begin;
             size_t count = face.num_indices;
 
+            // Triangle fan triangulation
             for (size_t j = 1; j + 1 < count; j++) {
-                Vertex verts[3];
+                size_t triIndices[3] = {
+                    start + 0,
+                    start + j,
+                    start + j + 1
+                };
 
                 for (int k = 0; k < 3; k++) {
-                    size_t vertex_index = start + (k == 0 ? 0 : j + k - 1);
+                    size_t vertex_index = triIndices[k];
                     Vertex v{};
 
+                    // Position
                     ufbx_vec3 pos = ufbx_get_vertex_vec3(&ufbx_mesh->vertex_position, vertex_index);
-                    pos.x *= scene_scale;
-                    pos.y *= scene_scale;
-                    pos.z *= scene_scale;
-                    v.position = { pos.x, pos.y, pos.z };
+                    v.position = { pos.x * scene_scale, pos.y * scene_scale, pos.z * scene_scale };
 
+                    // Normal
                     if (ufbx_mesh->vertex_normal.exists) {
                         ufbx_vec3 normal = ufbx_get_vertex_vec3(&ufbx_mesh->vertex_normal, vertex_index);
                         v.normal = { normal.x, normal.y, normal.z };
                     }
 
+                    // UV
                     if (ufbx_mesh->vertex_uv.exists) {
                         ufbx_vec2 uv = ufbx_get_vertex_vec2(&ufbx_mesh->vertex_uv, vertex_index);
                         v.texCoord = { uv.x, uv.y };
                     }
 
+                    // Color
                     v.color = diffuse;
 
-                    group.verts.push_back(v);
-                    group.localIndices.push_back(static_cast<unsigned int>(group.verts.size() - 1));
+                    // Deduplication
+                    auto it = group.vertexToIndex.find(v);
+                    if (it != group.vertexToIndex.end()) {
+                        group.localIndices.push_back(it->second);
+                    } else {
+                        unsigned int newIndex = static_cast<unsigned int>(group.verts.size());
+                        group.verts.push_back(v);
+                        group.localIndices.push_back(newIndex);
+                        group.vertexToIndex[v] = newIndex;
+                    }
                 }
             }
         }
 
-        // Merge grouped geometry into unified VBO/EBO
+        // Merge all material groups into one VBO/EBO
         vertices.clear();
         indices.clear();
         submeshes.clear();
 
-        for (auto& [ufbx_mat, group] : materialGroups) {
+        for (auto& [mat, group] : materialGroups) {
             size_t indexOffset = indices.size();
             size_t indexCount = group.localIndices.size();
 
@@ -132,7 +144,7 @@ namespace SHAME::Engine::Rendering{
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(totalIndexCount), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-    std::vector<DrawCommand> Mesh::CreateDrawCmds(ECS::Components::Transform *tr, int objectID, std::vector<std::shared_ptr<Material>> mats)
+    std::vector<DrawCommand> Mesh::CreateDrawCmds(std::shared_ptr<ECS::Components::Transform> tr, int objectID, std::vector<std::shared_ptr<Material>> mats)
     {
         std::vector<DrawCommand> cmds;
 

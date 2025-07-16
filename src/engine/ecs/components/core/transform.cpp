@@ -109,7 +109,7 @@ namespace SHAME::Engine::ECS::Components{
             return;
 
 		if(parent->HasComponent<ECS::Components::Model>()){
-			for(ECS::Components::Model* comp : parent->GetComponents<ECS::Components::Model>()){
+			for(std::shared_ptr<ECS::Components::Model> comp : parent->GetComponents<ECS::Components::Model>()){
 				comp->UpdateReferenceInLevel();
 			}
 		}

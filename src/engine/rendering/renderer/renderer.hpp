@@ -59,7 +59,7 @@ namespace SHAME::Engine{
             unsigned int VAO;
             unsigned int VBO;
             std::shared_ptr<Material> mat;
-            ECS::Components::Transform* tr;
+            std::shared_ptr<ECS::Components::Transform> tr;
             int id;
             int fillMode = GL_FILL;
         };
@@ -122,7 +122,6 @@ namespace SHAME::Engine{
             Renderer& operator=(const Renderer&) = delete;
 
             static void BeginFrame();
-            static void EndFrame();
 
             static GLFWwindow *window;
 

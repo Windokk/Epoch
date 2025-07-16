@@ -89,6 +89,12 @@ namespace SHAME::Engine::Filesystem{
         }
     }
 
+    std::string Path::WithoutExtension() const
+    {
+        std::filesystem::path p(full);
+        return (p.parent_path() / p.stem()).string();
+    }
+
     bool Path::WriteFile(const std::string &content) const
     {
         if (IsPacked()) {
@@ -221,6 +227,16 @@ namespace SHAME::Engine::Filesystem{
     std::string Path::Normalize(const std::string &raw)
     {
         return std::filesystem::weakly_canonical(raw).string();
+    }
+
+    Path Path::RelativeTo(const Path &other) const
+    {
+        try {
+            std::filesystem::path rel = std::filesystem::relative(full, other.full);
+            return Path(rel.string());
+        } catch (const std::filesystem::filesystem_error& e) {
+            return *this;
+        }
     }
 
     std::string Path::GetExtensionString() const

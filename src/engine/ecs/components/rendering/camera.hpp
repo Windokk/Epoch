@@ -55,8 +55,8 @@ namespace SHAME::Engine::ECS::Components {
             double lockedMouseX = 0.0;
 
             // Store the width and height of the window
-            int width;
-            int height;
+            int width = 0;
+            int height = 0;
 
             float farPlane = 0;
             float nearPlane = 0;

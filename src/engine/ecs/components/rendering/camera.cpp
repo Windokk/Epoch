@@ -36,11 +36,11 @@ namespace SHAME::Engine::ECS::Components {
         view = glm::mat4(1.0f);
         projection = glm::mat4(1.0f);
 
-        Transform* tr = parent->transform;
+        std::shared_ptr<Transform> tr = parent->transform;
 
         view = glm::lookAt(tr->GetPosition(), tr->GetPosition() + tr->GetForward(), tr->GetUp());
 
-        projection = glm::perspective(glm::radians(60.0f), float(width) / float(height), 0.1f, 1000.0f);
+        projection = glm::perspective(glm::radians(60.0f), float(width) / float(height), nearPlane, farPlane);
         cameraMatrix = projection * view;
     }
 

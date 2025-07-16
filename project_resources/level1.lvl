@@ -1,21 +1,13 @@
 {
     "name": "level1",
-    "meshes": [
-        {
-            "rubik's cube": "models/rubik's cube.fbx"
-        },
-        {
-            "sphere": "models/sphere.fbx"
-        },
-        {
-            "plane": "models/plane.fbx"
-        }
-    ],
-    "materials": [
-        {
-            "lit_mat1": "materials/lit_mat1.json"
-        }
-    ],
+    "meshes": {
+        "rubik's cube": "models\\rubik's cube.fbx",
+        "sphere": "models\\sphere.fbx",
+        "plane": "models\\plane.fbx"
+    },
+    "materials": {
+        "lit_mat1": "materials\\lit_mat1"
+    },
     "actors": [
         {
             "name": "obj1",
@@ -43,16 +35,14 @@
                     "type": "model",
                     "active": true,
                     "mesh": "sphere",
-                    "materials": [
-                        {
-                            "0": "lit_mat1"
-                        }
-                    ]
+                    "materials": {
+                        "0": "lit_mat1"
+                    }
                 },
                 {
                     "type": "physics_body",
                     "active": true,
-                    "body_type": "sphere",
+                    "shape": "sphere",
                     "size": {
                         "x": 1,
                         "y": 1,
@@ -87,7 +77,7 @@
                 {
                     "type": "physics_body",
                     "active": true,
-                    "body_type": "box",
+                    "shape": "box",
                     "size": {
                         "x": 10,
                         "y": 0.02,
@@ -99,11 +89,9 @@
                     "type": "model",
                     "active": true,
                     "mesh": "plane",
-                    "materials": [
-                        {
-                            "0": "lit_mat1"
-                        }
-                    ]
+                    "materials": {
+                        "0": "lit_mat1"
+                    }
                 }
             ]
         },

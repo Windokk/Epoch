@@ -42,9 +42,13 @@ namespace SHAME::Engine::Filesystem{
         // Normalize slashes, remove ../, etc.
         static std::string Normalize(const std::string& raw);
     
+        Path RelativeTo(const Path& other) const;
+
         std::string GetExtensionString() const;
 
         std::string ReadFile() const;
+
+        std::string WithoutExtension() const;
 
         bool WriteFile(const std::string &content) const;
 

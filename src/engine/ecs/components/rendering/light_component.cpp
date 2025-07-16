@@ -10,10 +10,10 @@ namespace SHAME::Engine::ECS::Components{
     {
         lightData = std::make_shared<Rendering::LightData>();
 
-        Transform tr = parent->GetComponent<Transform>();
+        stdd:shared_ptr<Transform> tr = parent->transform;
 
-        lightData->position = glm::vec3(tr.GetPosition().x, tr.GetPosition().y, tr.GetPosition().z);
-        lightData->direction = tr.GetForward();
+        lightData->position = glm::vec3(tr->GetPosition().x, tr->GetPosition().y, tr->GetPosition().z);
+        lightData->direction = tr->GetForward();
     }
 
     /// @brief Set the light's type
@@ -114,6 +114,16 @@ namespace SHAME::Engine::ECS::Components{
         Rendering::Renderer::lightMan->AddLight(index, lightData);
         Rendering::Renderer::lightMan->Update(index);
         lightIndex = index;
+    }
+    /// @brief Set wether this light should cast shadows
+    /// @param castShadows true : cast shadows, false : doesn't cast shadows
+    void Light::SetCastShadow(bool castShadows)
+    {
+        if(!activated)
+            return;
+
+        lightData->castShadow = castShadows;
+        Rendering::Renderer::lightMan->Update(lightIndex);
     }
 
     /// @brief Getter for this light component's data

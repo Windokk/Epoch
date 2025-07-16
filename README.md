@@ -57,3 +57,8 @@ A psychological horror game
 - [ ] Skeletal animations
 - [ ] Animation Blending & State Machine
  
+### Time Module
+
+- [x] Global time variables : fixedDeltaTime, deltaTime
+- [x] Global time constants : time
+- [x] Precise time decomposition : milliseconds, second, minutes, hours...

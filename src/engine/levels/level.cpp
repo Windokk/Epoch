@@ -13,11 +13,6 @@ namespace SHAME::Engine::Levels{
     {
         this->name = name;
     }
-    
-    void Level::Save(const std::string &filepath)
-    {
-
-    }
 
     void Level::Clear()
     {

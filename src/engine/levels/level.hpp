@@ -38,8 +38,6 @@ namespace SHAME::Engine::Levels{
         public:
         Level(std::string name);
 
-        void Save(const std::string& filepath);
-
         void Clear();
 
         void Tick();
@@ -53,13 +51,13 @@ namespace SHAME::Engine::Levels{
         const std::string& GetName() const;
         void SetName(const std::string& name);
 
-        std::vector<ECS::Components::Light*> lights;
-        std::vector<ECS::Components::Transform*> transforms;
-        std::vector<ECS::Components::Model*> models;
-        std::vector<ECS::Components::PhysicsBody*> physicsBodies;
-        std::vector<ECS::Components::AudioSource*> audioSources;
-        std::vector<ECS::Components::Camera*> cameras;
-        std::vector<ECS::Components::Script*> scripts;
+        std::vector<std::shared_ptr<ECS::Components::Light>> lights;
+        std::vector<std::shared_ptr<ECS::Components::Transform>> transforms;
+        std::vector<std::shared_ptr<ECS::Components::Model>> models;
+        std::vector<std::shared_ptr<ECS::Components::PhysicsBody>> physicsBodies;
+        std::vector<std::shared_ptr<ECS::Components::AudioSource>> audioSources;
+        std::vector<std::shared_ptr<ECS::Components::Camera>> cameras;
+        std::vector<std::shared_ptr<ECS::Components::Script>> scripts;
 
         std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh*>> meshes;
         

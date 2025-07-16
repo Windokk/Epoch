@@ -20,7 +20,7 @@ namespace SHAME::Engine::Rendering{
 
             void DrawWithoutMaterial() const;
 
-            std::vector<DrawCommand> CreateDrawCmds(ECS::Components::Transform* tr, int objectID, std::vector<std::shared_ptr<Material>> mats);
+            std::vector<DrawCommand> CreateDrawCmds(std::shared_ptr<ECS::Components::Transform> tr, int objectID, std::vector<std::shared_ptr<Material>> mats);
 
         private:
             GLuint VAO, VBO, EBO;
