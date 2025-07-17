@@ -20,7 +20,7 @@ A psychological horror game
 
 - [x] Game as executable, engine as static library
 - [x] Game logic as dynamic library (.dll/.so/.dylib), loaded at runtime
-- [ ] Custom components defined inside game dll, registered and serialized in engine
+- [x] Custom components defined inside game dll, registered and serialized in engine
 
 ### Serialization
 
@@ -48,12 +48,6 @@ A psychological horror game
 - [ ] Sound infos
 - [ ] Scene infos
 - [ ] Hardware infos (CPU, GPU, RAM) (Name, Vendor, Usage...)
-
-### Unified Math Interface
-
-- [ ] Base types : float, int, vec2, vec3, vec4, mat2, mat3, mat4, quat
-- [ ] Physics types : Ray, Frustum geometry
-- [ ] Interpolation : Lerp, Slerp (Custom curves)
 
 ### Animation system
 
