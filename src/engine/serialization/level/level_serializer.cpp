@@ -210,7 +210,7 @@ namespace SHAME::Engine::Serialization{
             else{
                 //Custom component/Inherited component case
                 //Note : The custom component has to be already registered
-                ECS::Components::Component* rawComponent = ECS::Components::ComponentRegistry::CreateComponentByName(type);
+                ECS::Components::Component* rawComponent = SHAME::Engine::ECS::Components::GetComponentRegistry().CreateComponentByName(type);
                 if (!rawComponent) {
                     std::cerr << "[WARN] [Serialization] Unknown component type: " << type << "\n";
                     continue;

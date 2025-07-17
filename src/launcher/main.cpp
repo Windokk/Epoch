@@ -1,6 +1,7 @@
 #include "engine/core/engine.hpp"
 #include "engine/serialization/level/level_serializer.hpp"
 #include "engine/core/resources/resources_manager.hpp"
+#include "engine/ecs/components/core/component_registry.hpp"
 
 #if defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
@@ -12,10 +13,10 @@
 #endif
 
 using namespace SHAME::Engine;
-using namespace Rendering;
-using namespace Input;
-using namespace ECS::Components;
-using namespace ECS::Objects;
+using namespace SHAME::Engine::Rendering;
+using namespace SHAME::Engine::Input;
+using namespace SHAME::Engine::ECS::Components;
+using namespace SHAME::Engine::ECS::Objects;
 
 void RenderPassMain() {
     Rendering::Renderer::DrawScene();
@@ -26,33 +27,42 @@ bool LoadGameModule(const std::string& path) {
     HMODULE hLib = LoadLibraryA(path.c_str());
     if (!hLib) {
         throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to load game module : " + path);
-        return false;
     }
+    
+    using InitRegistryFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*);
+    InitRegistryFunc init = reinterpret_cast<InitRegistryFunc>(
+        GetProcAddress(hLib, "InitializeComponentRegistry"));
 
-    using InitFunc = void(*)();
-    InitFunc init = reinterpret_cast<InitFunc>(GetProcAddress(hLib, "InitGameComponents"));
     if (!init) {
-        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to find InitGameComponents() in DLL.");
-        return false;
+        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to find InitializeComponentRegistry() in .dll");
+        
+    }
+ 
+    init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry);
+
+    using RegisterFunc = void(*)();
+    RegisterFunc registerComponents = reinterpret_cast<RegisterFunc>(
+        GetProcAddress(hLib, "RegisterGameComponents"));
+
+    if (!registerComponents) {
+        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Could not find RegisterGameComponents() in GameModule");
     }
 
-    init();
+    registerComponents();
 
 #else
     void* handle = dlopen(path.c_str(), RTLD_NOW);
     if (!handle) {
         throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to load game module : " + dlerror());
-        return false;
     }
 
-    using InitFunc = void(*)();
-    InitFunc init = reinterpret_cast<InitFunc>(dlsym(handle, "InitGameComponents"));
+    using InitRegistryFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*);
+    InitRegistryFunc init = reinterpret_cast<InitRegistryFunc>(dlsym(handle, "InitializeComponentRegistry"));
     if (!init) {
-        throw std::runtime_error("[ERROR] Failed to find InitGameComponents() in .so");
-        return false;
+        throw std::runtime_error("[ERROR] Failed to find InitializeComponentRegistry() in .so");
     }
 
-    init();
+    init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry);
 
 #endif
 

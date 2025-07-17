@@ -1,51 +1,52 @@
 #pragma once
+
 #include <string>
 #include <unordered_map>
 #include <stdexcept>
-#include <iostream>
 
-#if defined(BUILD_ENGINE)
-    #define ECS_API __declspec(dllexport)
-#else
-    #define ECS_API __declspec(dllimport)
-#endif
-
-namespace SHAME::Engine::ECS::Components{
+namespace SHAME::Engine::ECS::Components {
 
     class Component;
-
     using ComponentFactory = Component* (*)();
 
-    class ECS_API ComponentRegistry {
-        public:
+    class ComponentRegistry {
+    public:
+        void RegisterComponentType(const std::string& name, ComponentFactory factory);
+        Component* CreateComponentByName(const std::string& name);
+        const std::unordered_map<std::string, ComponentFactory>& GetAll() const;
 
-            static void RegisterComponentType(const std::string& name, ComponentFactory factory) {
-                if (registry.find(name) != registry.end()) {
-                    throw std::runtime_error("[ERROR] [ENGINE/ECS/COMPONENTS/COMPONENT_REGISTRY] : Component already registered: " + name);
-                }
-                registry[name] = factory;
-                std::cout << "[INFO] [ENGINE/ECS/COMPONENTS/COMPONENT_REGISTRY] : Registered: " << name << std::endl;
-                std::cout << "[INFO] [ENGINE/ECS/COMPONENTS/COMPONENT_REGISTRY] : Registry size : " << registry.size() << std::endl;
-                std::cout << "[DEBUG] Registry address: " << &registry << std::endl;
-            }
+        ComponentRegistry() = default;
+        ComponentRegistry(const ComponentRegistry&) = delete;
+        ComponentRegistry& operator=(const ComponentRegistry&) = delete;
 
-            static Component* CreateComponentByName(const std::string& name) {
-                std::cout << "[INFO] [ENGINE/ECS/COMPONENTS/COMPONENT_REGISTRY] : Registry size : " << registry.size() << std::endl;
-                std::cout << "[DEBUG] Registry address: " << &registry << std::endl;
-                auto it = registry.find(name);
-                if (it == registry.end()) {
-                    throw std::runtime_error("[ERROR] [ENGINE/ECS/COMPONENTS/COMPONENT_REGISTRY] : Component not registered: " + name);
-                }
-                return it->second();
-            }
-
-        private:
-            static std::unordered_map<std::string, ComponentFactory> registry;
-
-            // Disallow external construction
-            ComponentRegistry() = default;
-            ComponentRegistry(const ComponentRegistry&) = delete;
-            ComponentRegistry& operator=(const ComponentRegistry&) = delete;
+    private:
+        std::unordered_map<std::string, ComponentFactory> registry;
     };
-}
 
+    extern ComponentRegistry gSharedComponentRegistry;
+
+#if defined(BUILD_ENGINE)
+
+    // Used by the EXE/engine
+    inline ComponentRegistry& GetComponentRegistry() {
+        return gSharedComponentRegistry;
+    }
+
+#else
+
+    // Used by the DLL/plugin
+    inline ComponentRegistry* gSharedComponentRegistryPtr = nullptr;
+
+    inline void SetComponentRegistry(ComponentRegistry* ptr) {
+        gSharedComponentRegistryPtr = ptr;
+    }
+
+    inline ComponentRegistry& GetComponentRegistry() {
+        if (!gSharedComponentRegistryPtr)
+            throw std::runtime_error("ComponentRegistry pointer not initialized!");
+        return *gSharedComponentRegistryPtr;
+    }
+
+#endif
+
+}

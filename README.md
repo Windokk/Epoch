@@ -18,9 +18,9 @@ A psychological horror game
 
 ### Game code loading and execution
 
-- [x] Game as executable, engine as source
-- [ ] Game logic as dynamic library (.dll/.so/.dylib)
-- [ ] Engine loads game DLL at runtime
+- [x] Game as executable, engine as static library
+- [x] Game logic as dynamic library (.dll/.so/.dylib), loaded at runtime
+- [ ] Custom components defined inside game dll, registered and serialized in engine
 
 ### Serialization
 
