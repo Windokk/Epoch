@@ -16,10 +16,16 @@ A psychological horror game
 - [ ] LODs generator
 - [ ] Post processing effects shaders (SSAO, Bloom, Vignette, Tone Mapping, Film Grain, Chromatic Abberration)
 
+### Game code loading and execution
+
+- [x] Game as executable, engine as source
+- [ ] Game logic as dynamic library (.dll/.so/.dylib)
+- [ ] Engine loads game DLL at runtime
+
 ### Serialization
 
-- [ ] Level importer
-    - [ ] Material file parser
+- [x] Level importer
+    - [x] Material file parser
 - [ ] Level exporter
     - [ ] Material file exporter
 
@@ -34,7 +40,6 @@ A psychological horror game
     - [ ] Commands (in game/editor)
 
 - [ ] Frame-Debugger (see stats overlay)
-- [ ] Crash Handler
 
 ### Stats overlay
 
@@ -46,7 +51,7 @@ A psychological horror game
 
 ### Unified Math Interface
 
-- [ ] Base types : float, int, vec2, vec3, vec4, mat2, mat3, mat4
+- [ ] Base types : float, int, vec2, vec3, vec4, mat2, mat3, mat4, quat
 - [ ] Physics types : Ray, Frustum geometry
 - [ ] Interpolation : Lerp, Slerp (Custom curves)
 

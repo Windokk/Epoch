@@ -4,6 +4,8 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
+#include "engine/ecs/components/core/component_registry.hpp"
+
 #include "engine/core/resources/resources_manager.hpp"
 
 using namespace nlohmann;
@@ -169,23 +171,54 @@ namespace SHAME::Engine::Serialization{
         for(auto& component : actor["components"]){
             
             if (!component.contains("type")) continue;
+        
+            const std::string& type = component["type"];
 
-            if(component["type"] == "transform"){
+            if(type == "transform"){
                 a->transform->SetPosition(glm::vec3(component["position"]["x"],component["position"]["y"],component["position"]["z"]));
                 a->transform->SetRotation(glm::vec3(component["rotation"]["x"],component["rotation"]["y"],component["rotation"]["z"]));
                 a->transform->SetScale(glm::vec3(component["scale"]["x"],component["scale"]["y"],component["scale"]["z"]));
             }
-            else if(component["type"] == "model"){
+            else if(type == "model"){
                 LoadModelComponent(component, a, data);
             }
-            else if(component["type"] == "light"){
+            else if(type == "light"){
                 LoadLightComponent(component, a);
             }
-            else if(component["type"] == "physics_body"){
+            else if(type == "physics_body"){
                 LoadPhysicsBodyComponent(component, a);
             }
-            else if(component["type"] == "camera"){
+            else if(type == "camera"){
                 LoadCameraComponent(component, a);
+            }
+            else if(type == "audio"){
+                a->AddComponent<ECS::Components::AudioSource>();
+                
+                auto audio = a->GetComponent<ECS::Components::AudioSource>();
+
+                float volume = component["volume"];
+                std::string path = component["path"];
+
+                audio->SetPath(Filesystem::FileManager::GetProjectRoot().full+path);
+                audio->SetVolume(volume);
+
+                if(component["active"])
+                    audio->Activate();
+                else
+                    audio->DeActivate();
+            }
+            else{
+                //Custom component/Inherited component case
+                //Note : The custom component has to be already registered
+                ECS::Components::Component* rawComponent = ECS::Components::ComponentRegistry::CreateComponentByName(type);
+                if (!rawComponent) {
+                    std::cerr << "[WARN] [Serialization] Unknown component type: " << type << "\n";
+                    continue;
+                }
+
+                rawComponent->Deserialize(component);
+                a->AddComponentRaw(rawComponent);
+                
             }
         }
     }

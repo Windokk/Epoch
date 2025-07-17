@@ -34,18 +34,6 @@ namespace SHAME::Engine::Time{
                 auto delta = std::chrono::duration<float>(frameStartTime - lastTime);
                 deltaTime = delta.count();
                 lastTime = frameStartTime;
-
-                accumulator += deltaTime;
-                if (accumulator > maxAccumulatedTime)
-                    accumulator = maxAccumulatedTime;
-            }
-
-            bool ShouldStepPhysics() {
-                return accumulator >= fixedDeltaTime;
-            }
-
-            void ConsumeFixedStep() {
-                accumulator -= fixedDeltaTime;
             }
 
             float GetFixedDeltaTime() { return fixedDeltaTime; }

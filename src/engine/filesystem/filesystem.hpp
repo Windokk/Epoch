@@ -90,17 +90,13 @@ namespace SHAME::Engine::Filesystem{
 
     class FileManager {
         public:
-            static FileManager& GetInstance() {
-                static FileManager instance;
-                return instance;
-            }
 
             FileManager(const FileManager&) = delete;
             FileManager& operator=(const FileManager&) = delete;
             FileManager(FileManager&&) = delete;
             FileManager& operator=(FileManager&&) = delete;
             
-            static void Init(std::string rootPath = "");
+            static void Init(std::string rootPath = "", std::string projectRootPath = "");
 
 
             // File and directory browsing
@@ -113,10 +109,13 @@ namespace SHAME::Engine::Filesystem{
 
             // Utility
             static void SetRoot(const Path& path);
+            static void SetProjectRoot(const Path& path);
             static Path GetRoot() { return root; };
+            static Path GetProjectRoot() { return projectRoot; };
 
         private:
             static Path root;
+            static Path projectRoot;
             FileManager() = default;
             ~FileManager() = default;
     };

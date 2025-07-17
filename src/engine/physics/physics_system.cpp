@@ -73,10 +73,6 @@ namespace SHAME::Engine::Physics {
 
     void PhysicsSystem::Shutdown()
     {
-        for (auto& physicsBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies){
-            physicsBody->RemoveBody();
-        }
-
         delete m_jobSystem;
         m_jobSystem = nullptr;
 

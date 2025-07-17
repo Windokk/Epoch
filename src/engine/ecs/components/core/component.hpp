@@ -2,6 +2,10 @@
 
 #include <cstdint>
 
+#include <nlohmann/json.hpp>
+
+using namespace nlohmann;
+
 namespace SHAME::Engine::ECS{
     namespace Objects{
         class Actor;
@@ -21,6 +25,13 @@ namespace SHAME::Engine::ECS{
 
                 virtual void Activate() { activated = true; }
                 virtual void DeActivate() { activated = false; }
+
+                virtual void Deserialize(json componentData) {};
+                virtual json Serialize() { json dummy; return dummy; };
+
+                bool Active(){
+                    return activated;
+                }
 
             private:
 

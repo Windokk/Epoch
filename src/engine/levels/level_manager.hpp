@@ -20,6 +20,7 @@ namespace SHAME::Engine::Levels{
                 if(!lvl)
                     throw std::runtime_error("[ERROR] [LEVELS] Cannot load level (null)");
                 levelBuffer.push_back(lvl);
+                lvl->Start();
             }
 
             /// @brief Getter for a loaded level
@@ -37,6 +38,7 @@ namespace SHAME::Engine::Levels{
             /// @param index The index of the level to unload
             static void UnLoadLevel(int index){
                 if (index >= 0 && index < levelBuffer.size()) {
+                    levelBuffer[index]->Clear();
                     levelBuffer.erase(levelBuffer.begin() + index);
                 } else {
                     throw std::runtime_error("[ERROR] [LEVELS] Invalid index (out of bounds). Unable to unload level.");
@@ -45,6 +47,9 @@ namespace SHAME::Engine::Levels{
         
             /// @brief Unload all loaded levels
             static void UnloadAllLevels() {
+                for(int i = 0; i < levelBuffer.size(); i++){
+                    levelBuffer[i]->Clear();
+                }
                 levelBuffer.clear();
             }
         

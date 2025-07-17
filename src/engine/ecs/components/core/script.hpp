@@ -10,17 +10,19 @@ namespace SHAME::Engine::ECS::Components
         public:
             Script(Objects::Actor *parent, uint32_t local_id);
 
+            virtual void OnLevelLoaded();
+
             virtual void Begin();
 
             virtual void Tick();
 
-            virtual void End();
+            virtual void OnDestroyed();
 
-            virtual void OnContactAdded(Events::ContactAddedEvent& event);
+            virtual void OnContactAdded(const Events::ContactAddedEvent& event);
 
-            virtual void OnContactPersisted(Events::ContactPersistedEvent& event);
+            virtual void OnContactPersisted(const Events::ContactPersistedEvent& event);
 
-            virtual void OnContactEnded(Events::ContactRemovedEvent& event);
+            virtual void OnContactEnded(const Events::ContactRemovedEvent& event);
 
             virtual void OnActivated();
 
@@ -39,6 +41,8 @@ namespace SHAME::Engine::ECS::Components
 
                 OnDeactivated();
             }
+            
+            bool beginCalled = false;
 
         private:
 

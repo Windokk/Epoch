@@ -61,7 +61,6 @@ namespace SHAME::Engine::Events {
             using ComponentID = uint32_t;
 
             // Subscriptions
-
             template<typename T>
             static void subscribeGlobal(std::function<void(const T&)> callback) {
                 globalSubscribers[typeid(T)].emplace_back([cb = std::move(callback)](const Event& e) {

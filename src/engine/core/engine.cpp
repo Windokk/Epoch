@@ -125,8 +125,6 @@ namespace SHAME::Engine::Core{
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        std::cout<<time.GetDeltaTime()<<std::endl;
     }
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)

@@ -38,10 +38,6 @@ namespace SHAME::Engine::ECS::Components
 
             void Tick();
 
-            void OnContactAdded(const PhysicsBody &other, const ContactManifold &contact, ContactSettings &settings);
-            void OnContactPersisted(const PhysicsBody &other, const ContactManifold &contact, ContactSettings &settings);
-            void OnContactRemove(const PhysicsBody &other, const ContactManifold &contact, ContactSettings &settings);
-
             void Activate() override
             {
                 Component::Activate();
@@ -54,6 +50,11 @@ namespace SHAME::Engine::ECS::Components
                 Component::DeActivate();
 
                 Physics::PhysicsSystem::GetBodyInterface().DeactivateBody(mBodyID);
+            }
+
+            void Destroy() override
+            {
+                RemoveBody();
             }
 
             void RemoveBody() {

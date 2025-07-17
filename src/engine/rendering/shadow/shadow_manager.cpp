@@ -30,9 +30,9 @@ namespace SHAME::Engine::Rendering{
     }
 
     /// @brief Register/Replace a light for shadow mappings
-    /// @param updatedLight The updated/new light's global index in the scene
+    /// @param lightIndex The updated/new light's global index in the scene
     /// @param light The point to the light's data
-    void ShadowManager::RegisterLight(int updatedLight, std::shared_ptr<LightData> light)
+    void ShadowManager::RegisterLight(int lightIndex, std::shared_ptr<LightData> light)
     {
         if (!light->castShadow)
             return;
@@ -82,11 +82,11 @@ namespace SHAME::Engine::Rendering{
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
-        sm.lightMatrix = light->getLightMatrix();
+        sm.lightMatrix = light->GetLightMatrix();
 
-        if (updatedLight < shadowMaps.size())
+        if (lightIndex < shadowMaps.size())
         {
-            ShadowMap& old = shadowMaps[updatedLight];
+            ShadowMap& old = shadowMaps[lightIndex];
 
             // Free FBO
             if (glIsFramebuffer(old.fbo))
@@ -96,7 +96,7 @@ namespace SHAME::Engine::Rendering{
             if (old.light.type != static_cast<int>(LightType::Point) && glIsTexture(old.depthMap))
                 glDeleteTextures(1, &old.depthMap);
 
-            shadowMaps[updatedLight] = sm; // Replace
+            shadowMaps[lightIndex] = sm; // Replace
 
         }
         else
@@ -107,6 +107,43 @@ namespace SHAME::Engine::Rendering{
             }
         }
             
+    }
+
+    /// @brief Remove a light from shadow mappings
+    /// @param lightIndex The light's global index in the scene
+    void ShadowManager::UnregisterLight(int lightIndex)
+    {
+        if (lightIndex < 0 || lightIndex >= shadowMaps.size())
+            return;
+
+        ShadowMap& removedSM = shadowMaps[lightIndex];
+
+        // Delete associated OpenGL resources
+        if (glIsFramebuffer(removedSM.fbo))
+            glDeleteFramebuffers(1, &removedSM.fbo);
+
+        if (removedSM.light.type != static_cast<int>(LightType::Point) && glIsTexture(removedSM.depthMap))
+            glDeleteTextures(1, &removedSM.depthMap);
+
+        // Special handling for point lights (with cube map array)
+        if (removedSM.light.type == static_cast<int>(LightType::Point))
+        {
+            int removedLayer = removedSM.cubeArrayLayer;
+
+            // Shift down layers of all later point lights
+            for (auto& sm : shadowMaps)
+            {
+                if (sm.light.type == static_cast<int>(LightType::Point) && sm.cubeArrayLayer > removedLayer)
+                {
+                    --sm.cubeArrayLayer;
+                }
+            }
+
+            --pointLightCount;
+        }
+
+        // Remove the shadow map from the vector
+        shadowMaps.erase(shadowMaps.begin() + lightIndex);
     }
 
     /// @brief Render the scene into each shadow map

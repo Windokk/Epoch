@@ -2,7 +2,7 @@
 
 #include "engine/ecs/components/core/component.hpp"
 
-#include "engine/rendering/light/light_manager.hpp"
+#include "engine/rendering/renderer/renderer.hpp"
 
 namespace SHAME::Engine::ECS::Components
 {
@@ -22,9 +22,9 @@ namespace SHAME::Engine::ECS::Components
             void SetCastShadow(bool castShadows);
 
             Rendering::LightData GetData();
-
+            
             void Destroy() override{
-                //TODO
+                Rendering::Renderer::lightMan->RemoveLight(lightIndex);
             }
 
         private:

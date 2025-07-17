@@ -23,7 +23,7 @@ namespace SHAME::Engine::Rendering{
         alignas(4) float outerCutoff = glm::cos(glm::radians(7.5f));
         alignas(4) bool castShadow = true;
 
-        glm::mat4 getLightMatrix() const;
+        glm::mat4 GetLightMatrix() const;
     };
 
     class LightManager {
@@ -37,6 +37,8 @@ namespace SHAME::Engine::Rendering{
             void AddLight(int index, std::shared_ptr<LightData> light);
 
             void Clear();
+
+            void RemoveLight(int lightIndex);
 
             int GetLightsCount();
 

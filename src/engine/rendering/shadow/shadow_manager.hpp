@@ -23,7 +23,8 @@ namespace SHAME::Engine::Rendering{
     class ShadowManager {
     public:
         void Init(int resolution);
-        void RegisterLight(int updatedLight, std::shared_ptr<LightData> light);
+        void RegisterLight(int lightIndex, std::shared_ptr<LightData> light);
+        void UnregisterLight(int lightIndex);
         void RenderShadowMaps(const std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh*>> &meshes);
         void BindShadowMaps(std::shared_ptr<SHAME::Engine::Rendering::Material> material);
 

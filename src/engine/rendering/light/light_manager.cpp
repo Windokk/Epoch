@@ -17,6 +17,9 @@ namespace SHAME::Engine::Rendering{
         glDeleteBuffers(1, &ssbo);
     }
 
+    /// @note Only call this AFTER modifying the light data
+    /// @brief Update the light system's storage buffer, and shadow maps
+    /// @param updatedLight The global index (scene-relative) of the modified light
     void LightManager::Update(int updatedLight){
 
         if(lights.size() != 0){
@@ -40,21 +43,61 @@ namespace SHAME::Engine::Rendering{
         Renderer::shadowMan->RegisterLight(updatedLight, lights[updatedLight]);
     }
 
+    /// @brief Add a light to the renderer
+    /// @param index The global index (scene-relative) of the light
+    /// @param light The light's parameters
     void LightManager::AddLight(int index, std::shared_ptr<LightData> light)
     {
         lights.push_back(light);
     }
 
-    void LightManager::Clear(){
+    /// @brief Remove all lights from the renderer (and their associated shadow maps)
+    void LightManager::Clear()
+    {
+        for (int i = 0; i < lights.size(); ++i)
+        {
+            if (lights[i] && lights[i]->castShadow)
+            {
+                Renderer::shadowMan->UnregisterLight(i);
+            }
+        }
+
         lights.clear();
     }
 
+    /// @brief Remove light from renderer (and its associated shadow map)
+    /// @param lightIndex The global (scene-relative) light index to remove
+    void LightManager::RemoveLight(int lightIndex)
+    {
+        if (lightIndex < 0 || lightIndex >= lights.size())
+            return;
+
+        if (lights[lightIndex] && lights[lightIndex]->castShadow)
+        {
+            Renderer::shadowMan->UnregisterLight(lightIndex);
+        }
+
+        lights.erase(lights.begin() + lightIndex);
+
+        for (int i = 0; i < lights.size(); ++i)
+        {
+            if (lights[i] && lights[i]->castShadow)
+            {
+                Renderer::shadowMan->RegisterLight(i, lights[i]);
+            }
+        }
+    }
+
+    /// @brief Getter for lights count
+    /// @return The total number of lights in the renderer
     int LightManager::GetLightsCount()
     {
         return lights.size();
     }
     
-    glm::mat4 LightData::getLightMatrix() const
+    /// @brief Getter for lights matrices
+    /// @return The view-projection matrix from the light's point of view
+    glm::mat4 LightData::GetLightMatrix() const
     {
         if (type == static_cast<int>(LightType::Directional))
         {

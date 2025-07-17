@@ -16,15 +16,35 @@ namespace SHAME::Engine::Levels{
 
     void Level::Clear()
     {
+        for(auto& script : scripts){
+            if(script->Active()){
+                script->OnDestroyed();
+            }
+        }
+        
         for(auto& actor : rootActors){
             RemoveActor(actor->GetID(), true);
+        }
+    }
+
+    void Level::Start()
+    {
+
+        for(auto& script : scripts){
+            script->OnLevelLoaded();
         }
     }
 
     void Level::Tick()
     {
         for(auto& script : scripts){
-            script->Tick();
+            if(script->Active()){
+                if(script->beginCalled)
+                    script->Tick();
+                else
+                    script->Begin();
+                    script->beginCalled = true;
+            }
         }
     }
 

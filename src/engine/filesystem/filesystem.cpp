@@ -5,11 +5,16 @@
 namespace SHAME::Engine::Filesystem{
 
     Path FileManager::root = Path("");
+    Path FileManager::projectRoot = Path("");
 
-    void FileManager::Init(std::string rootPath)
+    void FileManager::Init(std::string rootPath, std::string projectRootPath)
     {
         if(rootPath == ""){
             root = Path(std::filesystem::current_path().string());
+        }
+
+        if(projectRootPath == ""){
+            projectRoot = Path(root.full+"\\project_resources\\");
         }
     }
 
@@ -217,6 +222,11 @@ namespace SHAME::Engine::Filesystem{
     void FileManager::SetRoot(const Path &path)
     {
         root = path;
+    }
+
+    void FileManager::SetProjectRoot(const Path &path)
+    {
+        projectRoot = path;
     }
 
     Path::Path(const std::string &raw)

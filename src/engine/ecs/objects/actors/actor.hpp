@@ -26,6 +26,8 @@ namespace SHAME::Engine::ECS::Objects{
         public:
             Actor(std::string name);
 
+            std::shared_ptr<Component> AddComponentRaw(Component *rawComponent);
+
             template <typename T>
             bool HasComponent();
 
@@ -65,7 +67,27 @@ namespace SHAME::Engine::ECS::Objects{
 
             std::shared_ptr<Transform> transform;
             Levels::Level* level;
-        private:
+
+            void Activate(){
+                activated = true;
+                for(auto& component : components){
+                    component->Activate();
+                }
+            }
+
+            void DeActivate(){
+                activated = false;
+                for(auto& component : components){
+                    component->DeActivate();
+                }
+            }
+
+            bool Active(){
+                return activated;
+            }
+
+        protected:
+            bool activated = true;
     };
 
     

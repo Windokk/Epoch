@@ -92,6 +92,12 @@
                     "materials": {
                         "0": "lit_mat1"
                     }
+                },
+                {
+                    "type": "audio",
+                    "active": true,
+                    "path": "\\sounds\\song18.mp3",
+                    "volume": 1.0
                 }
             ]
         },
@@ -240,6 +246,35 @@
                     "active": true,
                     "near": 0.1,
                     "far": 100
+                }
+            ]
+        },
+        {
+            "name": "Player",
+            "components": [
+                {
+                    "type": "transform",
+                    "active": true,
+                    "position": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    },
+                    "scale": {
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
+                    }
+                },
+                {
+                    "type":"Character",
+                    "active": true
                 }
             ]
         }

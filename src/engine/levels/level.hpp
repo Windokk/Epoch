@@ -41,6 +41,7 @@ namespace SHAME::Engine::Levels{
         void Clear();
 
         void Tick();
+        void Start();
 
         void AddActor(std::shared_ptr<ECS::Objects::Actor> a);
         void RemoveActor(ECS::ObjectID id, bool recursive = false);
