@@ -58,13 +58,16 @@ elseif(UNIX)
   target_link_libraries(Engine PUBLIC freetype CosemPacker Jolt fmod glfw3 -lz PNG::PNG BZip2::BZip2 PkgConfig::BROTLI)
 endif()
 
-# === Game Module (game logic) ===
+# === Game Module (game logic) ==
 
 file(GLOB_RECURSE GAME_SOURCES
   ${CMAKE_SOURCE_DIR}/src/game/*.cpp
 )
 
 add_library(GameModule SHARED ${GAME_SOURCES})
+
+
+target_compile_definitions(GameModule PRIVATE BUILDING_GAME_DLL)
 
 target_include_directories(GameModule PRIVATE
   ${CMAKE_SOURCE_DIR}/src/

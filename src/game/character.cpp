@@ -20,3 +20,6 @@ void Character::Begin() {
 void Character::Tick() {
     std::cout << "Character Tick" << std::endl;
 }
+
+
+REGISTER_COMPONENT(Character);

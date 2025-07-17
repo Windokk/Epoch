@@ -1,12 +1,15 @@
 #include "engine/ecs/components/core/component_registry.hpp"
-#include "character.hpp"
+#include "engine/ecs/components/core/dll_component_registration.hpp"
+
+using namespace SHAME::Engine::ECS::Components;
 
 extern "C" __declspec(dllexport) void InitializeComponentRegistry(SHAME::Engine::ECS::Components::ComponentRegistry* ptr) {
-    SHAME::Engine::ECS::Components::SetComponentRegistry(ptr);
+    SetComponentRegistry(ptr);
 }
 
 extern "C" __declspec(dllexport)
 void RegisterGameComponents() {
-    using namespace SHAME::Engine::ECS::Components;
-    GetComponentRegistry().RegisterComponentType("Character", Create_Character);
+    for (auto& cb : GetComponentRegistrars()) {
+        cb(GetComponentRegistry());
+    }
 }
