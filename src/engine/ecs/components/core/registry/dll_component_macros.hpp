@@ -1,6 +1,6 @@
 #pragma once
 
-#include "component.hpp"
+#include "engine/ecs/components/core/component.hpp"
 #include "component_registry.hpp"
 #include "dll_component_registration.hpp"
 

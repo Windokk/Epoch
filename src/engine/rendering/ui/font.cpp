@@ -1,6 +1,7 @@
 #include "font.hpp"
 
 #include "engine/filesystem/filesystem.hpp"
+#include "engine/debugging/debugger.hpp"
 
 namespace SHAME::Engine::Rendering::UI{
 
@@ -13,7 +14,7 @@ namespace SHAME::Engine::Rendering::UI{
         FT_Library ft;
         if (FT_Init_FreeType(&ft))
         {
-            throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Could not init FreeType Library");
+            DEBUG_ERROR("Could not init FreeType Library");
             return;
         }
         
@@ -34,12 +35,12 @@ namespace SHAME::Engine::Rendering::UI{
             );
     
         } else {
-            throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Couldn't find font : " + std::string(path));
+            DEBUG_ERROR("Couldn't find font : " + std::string(path));
             return;
         }
     
         if (error) {
-            throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Couldn't load font : " + std::string(path));
+            DEBUG_ERROR("Couldn't load font : " + std::string(path));
             return;
         }
         else {
@@ -55,7 +56,7 @@ namespace SHAME::Engine::Rendering::UI{
                 // Load character glyph 
                 if (FT_Load_Char(face, c, FT_LOAD_RENDER))
                 {
-                    throw std::runtime_error("[ERROR] [RENDERING/UI/FONT] Couldn't load glyph");
+                    DEBUG_ERROR("Couldn't load glyph");
                     continue;
                 }
                 // generate texture

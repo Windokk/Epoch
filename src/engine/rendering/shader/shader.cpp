@@ -1,5 +1,7 @@
 #include "shader.hpp"
 
+#include "engine/debugging/debugger.hpp"
+
 #include <stdexcept>
 #include <iostream>
 
@@ -145,7 +147,7 @@ namespace SHAME::Engine::Rendering {
             if (hasCompiled == GL_FALSE)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                throw std::runtime_error("[ERROR] [RENDERING/SHADER] Couldn't compile shader : " + std::string(type) + "\n" + infoLog);
+                DEBUG_ERROR("Couldn't compile shader : " + std::string(type) + "\n" + infoLog);
                 return;
             }
         }
@@ -155,7 +157,7 @@ namespace SHAME::Engine::Rendering {
             if (hasCompiled == GL_FALSE)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                throw std::runtime_error("[ERROR] [RENDERING/SHADER] Couldn't link shader : " + std::string(type) + "\n" + infoLog);
+                DEBUG_ERROR("Couldn't link shader : " + std::string(type) + "\n" + infoLog);
                 return;
             }
         }

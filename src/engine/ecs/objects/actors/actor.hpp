@@ -95,7 +95,7 @@ namespace SHAME::Engine::ECS::Objects{
     template <typename T>
     bool Actor::HasComponent() {
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
+            DEBUG_ERROR("T must inherit from Component");
         }
 
         for (const std::shared_ptr<Component>& component : components) {
@@ -109,7 +109,7 @@ namespace SHAME::Engine::ECS::Objects{
     template <typename T>
     std::vector<std::shared_ptr<T>> Actor::GetComponents(){
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
+            DEBUG_ERROR("T must inherit from Component");
         }
 
         std::vector<std::shared_ptr<T>> list;
@@ -126,7 +126,7 @@ namespace SHAME::Engine::ECS::Objects{
     template <typename T>
     std::shared_ptr<T> Actor::GetComponent(int k) {
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
+            DEBUG_ERROR("T must inherit from Component");
         }
 
         int n = 0;
@@ -142,21 +142,22 @@ namespace SHAME::Engine::ECS::Objects{
                 }
             }
         }
-        throw std::runtime_error(
-            std::string("[ERROR] [ENGINE/ECS/ACTOR] : Failed to retrieve Component of type ") + typeid(T).name());
+        DEBUG_ERROR(std::string("Failed to retrieve Component of type ") + typeid(T).name());
+        return nullptr;
     }
 
     template <typename T>
     std::shared_ptr<T> Actor::AddComponent()
     {
         if(!std::is_base_of<Component, T>::value){
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] T must inherit from Component");
+            DEBUG_ERROR("T must inherit from Component");
+            return nullptr;
         }
 
         std::shared_ptr<T> component = std::make_shared<T>(this, components.size());
         
         if (std::is_base_of<Transform, T>::value) {
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] An actor can only have one transform component.");
+            DEBUG_ERROR("An actor can only have one transform component.");
             return nullptr;
         }
         components.push_back(component);

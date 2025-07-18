@@ -1,7 +1,7 @@
 #include "engine/core/engine.hpp"
 #include "engine/serialization/level/level_serializer.hpp"
 #include "engine/core/resources/resources_manager.hpp"
-#include "engine/ecs/components/core/component_registry.hpp"
+#include "engine/ecs/components/core/registry/component_registry.hpp"
 
 #if defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
@@ -26,7 +26,7 @@ bool LoadGameModule(const std::string& path) {
 #if defined(_WIN32)
     HMODULE hLib = LoadLibraryA(path.c_str());
     if (!hLib) {
-        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to load game module : " + path);
+        DEBUG_FATAL("Failed to load game module : " + path);
     }
     
     using InitRegistryFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*);
@@ -34,7 +34,7 @@ bool LoadGameModule(const std::string& path) {
         GetProcAddress(hLib, "InitializeComponentRegistry"));
 
     if (!init) {
-        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to find InitializeComponentRegistry() in .dll");
+        DEBUG_FATAL("Failed to find InitializeComponentRegistry() in .dll");
         
     }
  
@@ -45,7 +45,7 @@ bool LoadGameModule(const std::string& path) {
         GetProcAddress(hLib, "RegisterGameComponents"));
 
     if (!registerComponents) {
-        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Could not find RegisterGameComponents() in GameModule");
+        DEBUG_FATAL("Could not find RegisterGameComponents() in GameModule");
     }
 
     registerComponents();
@@ -53,20 +53,20 @@ bool LoadGameModule(const std::string& path) {
 #else
     void* handle = dlopen(path.c_str(), RTLD_NOW);
     if (!handle) {
-        throw std::runtime_error("[ERROR] [LAUNCHER/MAIN] : Failed to load game module : " + dlerror());
+        DEBUG_FATAL("Failed to load game module : " + dlerror());
     }
 
     using InitRegistryFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*);
     InitRegistryFunc init = reinterpret_cast<InitRegistryFunc>(dlsym(handle, "InitializeComponentRegistry"));
     if (!init) {
-        throw std::runtime_error("[ERROR] Failed to find InitializeComponentRegistry() in .so");
+        DEBUG_FATAL("Failed to find InitializeComponentRegistry() in .so");
     }
 
     init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry);
 
 #endif
 
-    std::cout << "[INFO] [LAUNCHER/MAIN] : Game module loaded : " << path << "\n";
+    DEBUG_LOG("Game module loaded : " + path);
     return true;
 }
 

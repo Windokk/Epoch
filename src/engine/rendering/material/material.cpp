@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-#include <ufbx/ufbx.h>
-
+#include "engine/debugging/debugger.hpp"
 
 #include "engine/filesystem/filesystem.hpp"
 
@@ -19,7 +18,11 @@ namespace SHAME::Engine::Rendering{
             case GL_SAMPLER_2D: return std::pair<Rendering::TextureType,std::shared_ptr<Texture>>(Rendering::TextureType::ANY, nullptr);
             case GL_SAMPLER_CUBE: return 0;
             case GL_SAMPLER_CUBE_MAP_ARRAY: return 0;
-            default: throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MATERIAL] : Failed to query default variable type : "+std::to_string(type));
+            default:{
+                DEBUG_ERROR("Failed to query default variable type : "+std::to_string(type));
+                return -1;
+            } 
+
         }
     }
 

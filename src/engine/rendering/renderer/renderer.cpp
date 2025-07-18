@@ -266,7 +266,7 @@ namespace SHAME::Engine::Rendering{
                 }
                 case RenderStage::PostProcess:{
                     if(!pass.target)
-                        throw std::runtime_error("[ERROR] [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
+                        DEBUG_ERROR("Couldn't render pass without framebuffer");
 
                     if(!Renderer::settings.enablePostProcessing)
                         break;
@@ -293,7 +293,7 @@ namespace SHAME::Engine::Rendering{
                 case RenderStage::Debug:
                 default:{
                     if(!pass.target)
-                        throw std::runtime_error("[ERROR] [ENGINE/RENDERING] : Couldn't render pass without framebuffer");
+                        DEBUG_ERROR("Couldn't render pass without framebuffer");
                     pass.target->Bind();
                     pass.callback();
                     pass.target->Unbind();

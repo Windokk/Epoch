@@ -257,7 +257,7 @@ namespace SHAME::Engine::Rendering{
 
             if (textureUnit >= 32)
             {
-                std::cerr << "[ERROR] [ENGINE/RENDERING/SHADOWS] : Exceeded max number of active texture units (32)." << std::endl;
+                DEBUG_ERROR("Exceeded max number of active texture units (32).");
                 break;
             }
 

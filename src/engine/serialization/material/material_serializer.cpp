@@ -31,7 +31,7 @@ namespace SHAME::Engine::Serialization{
             std::shared_ptr<Shader> shader = ResourcesManager::GetShader(data["shader"]);
 
             if(!shader){
-                throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/MATERIAL_IMPORTER] : No shader found : " + ((std::string)data["shader"]));
+                DEBUG_ERROR("No shader found : " + ((std::string)data["shader"]));
                 return nullptr;
             }
 
@@ -51,11 +51,11 @@ namespace SHAME::Engine::Serialization{
                                 mat->SetParameter(name, std::make_pair(found->second, tex));
                             }
                             else{
-                                throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/MATERIAL_IMPORTER] : No texture found : " + value.get<std::string>());
+                                DEBUG_ERROR("No texture found : " + value.get<std::string>());
                                 return nullptr;
                             }
                         } else {
-                            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/MATERIAL_IMPORTER] :  Texture uniform has unknown name : " + name);
+                            DEBUG_ERROR("Texture uniform has unknown name : " + name);
                         }
                     }
                     // Float
@@ -84,11 +84,11 @@ namespace SHAME::Engine::Serialization{
                                 mat4[i / 4][i % 4] = value[i].get<float>();
                             mat->SetParameter(name, mat4);
                         } else {
-                            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/MATERIAL_IMPORTER] : Unknown array size for uniform: " + name);
+                            DEBUG_ERROR("Unknown array size for uniform: " + name);
                         }
                     }
                     else {
-                        throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/MATERIAL_IMPORTER] : Unsupported uniform value type for: " + name);
+                        DEBUG_ERROR("Unsupported uniform value type for: " + name);
                     }
                 }
 
@@ -98,7 +98,7 @@ namespace SHAME::Engine::Serialization{
             return mat;
 
         } catch (const json::parse_error& e) {
-            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/MATERIAL_IMPORTER] : JSON parse error: " + (std::string)e.what());
+            DEBUG_ERROR("JSON parse error: " + (std::string)e.what());
         }
     }
 }

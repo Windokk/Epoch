@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/ecs/components/core/component_registry.hpp"
+#include "engine/ecs/components/core/registry/component_registry.hpp"
 
 #include <vector>
 #include <functional>

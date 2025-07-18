@@ -2,6 +2,8 @@
 
 #include "packer/unpacker.hpp"
 
+#include "engine/debugging/debugger.hpp"
+
 namespace SHAME::Engine::Filesystem{
 
     Path FileManager::root = Path("");
@@ -24,7 +26,7 @@ namespace SHAME::Engine::Filesystem{
         std::vector<FileInfo> files;
 
         if (!std::filesystem::exists(path.full) || !std::filesystem::is_directory(path.full))
-            throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot list files inside non-existing directory");
+            DEBUG_ERROR("Cannot list files inside non-existing directory");
 
         auto processEntry = [&](const auto& entry) {
             Path filePath(entry.path().string());
@@ -87,7 +89,7 @@ namespace SHAME::Engine::Filesystem{
         }
         else{
             std::ifstream file(full, std::ios::binary);
-            if (!file) throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Can't read file at path : " + full);
+            if (!file) DEBUG_ERROR("Can't read file at path : " + full);
             std::ostringstream sstream;
             sstream << file.rdbuf();
             return sstream.str();
@@ -103,7 +105,7 @@ namespace SHAME::Engine::Filesystem{
     bool Path::WriteFile(const std::string &content) const
     {
         if (IsPacked()) {
-            throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot write to a file inside a .caf archive");
+            DEBUG_ERROR("Cannot write to a file inside a .caf archive");
             return false;
         }
     
@@ -122,7 +124,7 @@ namespace SHAME::Engine::Filesystem{
     bool Path::AppendToFile(const std::string &content) const
     {
         if(IsPacked()){
-            throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot create append to file placed in .caf archive");
+            DEBUG_ERROR("Cannot create append to file placed in .caf archive");
             return false;
         }
 
@@ -310,7 +312,8 @@ namespace SHAME::Engine::Filesystem{
             } else if (std::filesystem::exists(full) && std::filesystem::is_regular_file(full)) {
                 return static_cast<int>(std::filesystem::file_size(full));
             } else {
-                throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : File or directory does not exist: " + full);
+                DEBUG_ERROR("File or directory does not exist: " + full);
+                return -1;
             }
         }
     }
@@ -323,14 +326,14 @@ namespace SHAME::Engine::Filesystem{
     std::string Path::GetParentArchive() const
     {
         if(!IsPacked()){
-            throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Cannot get parent archive for a file that is not placed in an archive");
+            DEBUG_ERROR("Cannot get parent archive for a file that is not placed in an archive");
             return "";
         }
         else{
 
             size_t pos = full.find(".caf");
             if (pos == std::string::npos) {
-                throw std::runtime_error("[ERROR] [ENGINE/FILESYSTEM] : Packed resource path does not contain '.caf', it is not placed in an archive");
+                DEBUG_ERROR("Packed resource path does not contain '.caf', it is not placed in an archive");
             }
 
             return full.substr(0, pos + 4);
@@ -342,7 +345,7 @@ namespace SHAME::Engine::Filesystem{
         const std::string &fullPath = this->full;
         size_t pos = fullPath.find(".caf");
         if (pos == std::string::npos) {
-            throw std::runtime_error("[ERROR]  [ENGINE/FILESYSTEM] : File is not inside an archive");
+            DEBUG_ERROR("File is not inside an archive");
         }
 
         size_t start = pos + 5;

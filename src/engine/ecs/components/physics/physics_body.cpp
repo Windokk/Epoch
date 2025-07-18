@@ -74,7 +74,7 @@ namespace SHAME::Engine::ECS::Components{
             }
 
             default:
-                throw std::runtime_error("[ERROR] [ENGINE/ECS/COMPONENTS/PHYSICS_BODY] : Unsupported shape type!");
+                DEBUG_ERROR("Unsupported physics shape type !");
                 return;
         }
 

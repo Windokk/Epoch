@@ -4,7 +4,7 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
-#include "engine/ecs/components/core/component_registry.hpp"
+#include "engine/ecs/components/core/registry/component_registry.hpp"
 
 #include "engine/core/resources/resources_manager.hpp"
 
@@ -20,7 +20,7 @@ namespace SHAME::Engine::Serialization{
             if(mesh)
                 a->AddComponent<ECS::Components::Model>()->SetMesh(mesh);
             else
-                throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Failed to retrieve mesh : "+mesh_path);
+                DEBUG_ERROR("Failed to retrieve mesh : "+mesh_path);
         }
 
         const auto& localMaterials = component["materials"];
@@ -44,19 +44,19 @@ namespace SHAME::Engine::Serialization{
             if (matIt != globalMaterials.end()) {
                 materialPath = matIt.value();
             } else {
-                throw std::runtime_error("[WARNING] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Material '" + materialName
+                DEBUG_WARNING("Material '" + materialName
                         + "' not found in global materials. Using fallback.");
                 materialPath = "engine/materials/unlit";
             }
 
             auto material = Core::Resources::ResourcesManager::GetMaterial(materialPath);
             if (!material) {
-                throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Failed to load material at path: " + materialPath
+                DEBUG_ERROR("Failed to load material at path: " + materialPath
                         + ". Using fallback.");
                 material = Core::Resources::ResourcesManager::GetMaterial("engine/materials/unlit");
 
                 if (!material) {
-                    throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Failed to load fallback material: engine/materials/unlit");
+                    DEBUG_ERROR("Failed to load fallback material: engine/materials/unlit");
                 }
             }
 
@@ -86,7 +86,7 @@ namespace SHAME::Engine::Serialization{
             light->SetType(Rendering::LightType::Spot);
         }
         else{
-            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Light type not recognized : " + (std::string)component["light_type"]);
+            DEBUG_ERROR("Light type not recognized : " + (std::string)component["light_type"]);
         }
         
         light->SetIntensity(component["intensity"]);
@@ -122,7 +122,7 @@ namespace SHAME::Engine::Serialization{
             shape = Physics::PhysicsShape::CYLINDER;
         }
         else{
-            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Physics shape not recognized : " + (std::string)component["shape"]);
+            DEBUG_ERROR("Physics shape not recognized : " + (std::string)component["shape"]);
         }
         
         JPH::EMotionType motion;
@@ -137,7 +137,7 @@ namespace SHAME::Engine::Serialization{
             motion = JPH::EMotionType::Static;
         }
         else{
-            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : Physics motion type not recognized : " + (std::string)component["shape"]);
+            DEBUG_ERROR("Physics motion type not recognized : " + (std::string)component["shape"]);
         }
 
         physics_body->CreateBody(shape, glm::vec3(component["size"]["x"], component["size"]["y"], component["size"]["z"]), motion);
@@ -212,7 +212,7 @@ namespace SHAME::Engine::Serialization{
                 //Note : The custom component has to be already registered
                 ECS::Components::Component* rawComponent = SHAME::Engine::ECS::Components::GetComponentRegistry().CreateComponentByName(type);
                 if (!rawComponent) {
-                    std::cerr << "[WARN] [Serialization] Unknown component type: " << type << "\n";
+                    DEBUG_WARNING("Unknown component type: " + type);
                     continue;
                 }
 
@@ -236,7 +236,7 @@ namespace SHAME::Engine::Serialization{
         LoadComponents(a, data, actor);
     }
 
-    std::shared_ptr<Levels::Level> LevelSerializer::ImportLevel(const Filesystem::Path path)
+    std::shared_ptr<Levels::Level> ImportLevel(const Filesystem::Path path)
     {
         std::string src = path.ReadFile();
 
@@ -255,7 +255,8 @@ namespace SHAME::Engine::Serialization{
             return l;
 
         } catch (const json::parse_error& e) {
-            throw std::runtime_error("[ERROR] [ENGINE/SERIALIZATION/LEVEL_IMPORTER] : JSON parse error: " + (std::string)e.what());
+            DEBUG_ERROR("JSON parse error: " + (std::string)e.what());
+            return nullptr;
         }
     }
 

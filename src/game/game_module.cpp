@@ -1,5 +1,5 @@
-#include "engine/ecs/components/core/component_registry.hpp"
-#include "engine/ecs/components/core/dll_component_registration.hpp"
+#include "engine/ecs/components/core/registry/component_registry.hpp"
+#include "engine/ecs/components/core/registry/dll_component_registration.hpp"
 
 using namespace SHAME::Engine::ECS::Components;
 

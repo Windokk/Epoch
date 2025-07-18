@@ -149,7 +149,7 @@ namespace SHAME::Engine::Rendering{
         std::vector<DrawCommand> cmds;
 
         if(mats.size() != submeshes.size()){
-            throw std::runtime_error("[ERROR] [ENGINE/RENDERING/MESH] : Cannot create draw command for meshes with different submeshes and materials count");
+            DEBUG_ERROR("Cannot create draw command for meshes with different submeshes and materials count");
         }
         
         for (int i = 0; i < submeshes.size(); i++) {

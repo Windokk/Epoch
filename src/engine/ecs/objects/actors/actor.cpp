@@ -15,7 +15,7 @@ namespace SHAME::Engine::ECS::Objects{
 
     std::shared_ptr<Component> Actor::AddComponentRaw(Component* rawComponent) {
         if (!rawComponent) {
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] Tried to add null component.");
+            DEBUG_ERROR("Tried to add null component.");
         }
 
         // Wrap in shared_ptr
@@ -26,7 +26,7 @@ namespace SHAME::Engine::ECS::Objects{
         component->local_id = components.size();
 
         if (dynamic_cast<Transform*>(component.get())) {
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/ACTOR] An actor can only have one transform component.");
+            DEBUG_ERROR("An actor can only have one transform component.");
         }
 
         components.push_back(component);

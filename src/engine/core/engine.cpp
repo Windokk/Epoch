@@ -51,7 +51,7 @@ namespace SHAME::Engine::Core{
         if (window == NULL)
         {
             glfwTerminate();
-            throw std::runtime_error("[ERROR] [ENGINE/CORE] : Failed to create GLFW window");
+            DEBUG_FATAL("Failed to create GLFW window");
         }
 
         glfwSetWindowUserPointer(window, this);
@@ -61,7 +61,7 @@ namespace SHAME::Engine::Core{
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            throw std::runtime_error("[ERROR] [ENGINE/CORE] : Failed to initialize GLAD");
+            DEBUG_FATAL("Failed to initialize GLAD");
         }
 
         
@@ -69,30 +69,30 @@ namespace SHAME::Engine::Core{
         const GLubyte* vendor   = glGetString(GL_VENDOR);       // GPU vendor
         const GLubyte* version  = glGetString(GL_VERSION);      // OpenGL version
 
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] ===== System infos =====\n";
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] GPU Vendor: " << vendor << "\n";
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] GPU Renderer: " << renderer << "\n";
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] OpenGL Version: " << version << "\n";
+        DEBUG_INFO("===== System infos =====");
+        DEBUG_INFO(std::string("GPU Vendor : ") + reinterpret_cast<const char*>(vendor));
+        DEBUG_INFO(std::string("GPU Renderer : ") + reinterpret_cast<const char*>(renderer));
+        DEBUG_INFO(std::string("OpenGL Version : ") + reinterpret_cast<const char*>(version));
 
         // GLFW context version (you asked for)
         int major, minor, rev;
         glfwGetVersion(&major, &minor, &rev);
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] GLFW Version: " << major << "." << minor << "." << rev << "\n";
+        DEBUG_INFO("GLFW Version : " + std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(rev));
 
         // Monitor and resolution
         int count;
         GLFWmonitor** monitors = glfwGetMonitors(&count);
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] Connected Monitors: " << count << "\n";
+        DEBUG_INFO("Connected Monitors: " + count);
 
         for (int i = 0; i < count; ++i) {
             const GLFWvidmode* mode = glfwGetVideoMode(monitors[i]);
-            std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] Monitor " << i << ": "
-                    << mode->width << "x" << mode->height << " @ " << mode->refreshRate << "Hz\n";
+            DEBUG_INFO("Monitor " + std::to_string(i) + ": "
+                    + std::to_string(mode->width) + "x" + std::to_string(mode->height) + " @ " + std::to_string(mode->refreshRate) + "Hz");
         }
         // Window size
         int width, height;
         glfwGetWindowSize(window, &width, &height);
-        std::cout << "[INFO] [ENGINE/CORE/SYSTEM_INFOS] Window Size: " << width << "x" << height << "\n";
+        DEBUG_INFO("Window Size: " + std::to_string(width) + "x" + std::to_string(height));
         
     }
 

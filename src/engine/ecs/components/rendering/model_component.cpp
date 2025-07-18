@@ -36,7 +36,7 @@ namespace SHAME::Engine::ECS::Components{
             return;
 
         if (materials.empty()) {
-            throw std::runtime_error("[ERROR] [ENGINE/ECS/MODEL_COMPONENT] : SetMaterials called with empty list");
+            DEBUG_ERROR("SetMaterials called with empty list");
         }
             
         this->materials = std::move(materials);

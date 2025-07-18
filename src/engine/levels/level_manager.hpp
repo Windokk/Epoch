@@ -18,7 +18,7 @@ namespace SHAME::Engine::Levels{
             /// @param lvl The pointer to the level
             static void LoadLevel(std::shared_ptr<Level> lvl) {
                 if(!lvl)
-                    throw std::runtime_error("[ERROR] [LEVELS] Cannot load level (null)");
+                    DEBUG_ERROR("Cannot load level (because pointer is null)");
                 levelBuffer.push_back(lvl);
                 lvl->Start();
             }
@@ -30,7 +30,8 @@ namespace SHAME::Engine::Levels{
                 if (index >= 0 && index < levelBuffer.size()) {
                     return levelBuffer[index].get();
                 } else {
-                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index (out of bounds). Unable to retrieve level.");
+                    DEBUG_ERROR("Invalid index (out of bounds). Unable to retrieve level.");
+                    return nullptr;
                 }
             }
 
@@ -41,7 +42,7 @@ namespace SHAME::Engine::Levels{
                     levelBuffer[index]->Clear();
                     levelBuffer.erase(levelBuffer.begin() + index);
                 } else {
-                    throw std::runtime_error("[ERROR] [LEVELS] Invalid index (out of bounds). Unable to unload level.");
+                    DEBUG_ERROR("Invalid index (out of bounds). Unable to unload level.");
                 }
             }
         

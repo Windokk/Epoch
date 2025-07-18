@@ -2,22 +2,24 @@
 
 #include <iostream>
 
+#include "engine/debugging/debugger.hpp"
+
 namespace SHAME::Engine::ECS::Components {
 
     ComponentRegistry gSharedComponentRegistry;
 
     void ComponentRegistry::RegisterComponentType(const std::string& name, ComponentFactory factory) {
         if (registry.find(name) != registry.end()) {
-            throw std::runtime_error("[ERROR] Component already registered: " + name);
+            DEBUG_ERROR("Component already registered: " + name);
         }
         registry[name] = factory;
-        std::cout << "[INFO] Registered: " << name << std::endl;
+        DEBUG_INFO("Registered custom component : " + name);
     }
 
     Component* ComponentRegistry::CreateComponentByName(const std::string& name) {
         auto it = registry.find(name);
         if (it == registry.end()) {
-            throw std::runtime_error("[ERROR] Component not registered: " + name);
+            DEBUG_ERROR("Component not registered: " + name);
         }
         return it->second();
     }

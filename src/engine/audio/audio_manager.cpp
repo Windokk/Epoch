@@ -72,7 +72,7 @@ namespace SHAME::Engine::Audio
 
             FMOD_RESULT result = FMOD_System_CreateSound(system, buffer, FMOD_2D | FMOD_OPENMEMORY, &exinfo, &sound->fmod_sound);
             if (result != FMOD_OK) {
-                std::cerr << "FMOD error: " << result << std::endl;
+                DEBUG_ERROR("FMOD error: " + result);
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace SHAME::Engine::Audio
             AudioIDManager::AssignID(id, sound);
             channels.emplace(id.GetAsString() + "_channel", channel);
         } else {
-            std::cerr << "[ERROR] [ENGINE/AUDIO/AUDIO_MANAGER] Couldn't load sound: " << path.full << std::endl;
+            DEBUG_ERROR("Couldn't load sound: " + path.full);
         }
     }
 
@@ -126,7 +126,7 @@ namespace SHAME::Engine::Audio
     void AudioManager::Update(glm::vec3 listenerPos, glm::vec2 listenerFacingNormalized, float maxDistance)
     {
         if(maxDistance <= 0){
-            throw std::runtime_error("[ERROR] [ENGINE/AUDIO/AUDIO_MANAGER] : maxDistance can't be >= 0");
+            DEBUG_FATAL("maxDistance can't be >= 0");
         }
         
         for (const auto& pair : *AudioIDManager::GetAudioMap()) {

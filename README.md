@@ -15,6 +15,7 @@ A psychological horror game
 - [ ] LODs
 - [ ] LODs generator
 - [ ] Post processing effects shaders (SSAO, Bloom, Vignette, Tone Mapping, Film Grain, Chromatic Abberration)
+- [ ] Frustum culling
 
 ### Game code loading and execution
 
@@ -29,16 +30,16 @@ A psychological horror game
 - [ ] Level exporter
     - [ ] Material file exporter
 
-### Debugger
+### Debugging
 
-- [ ] Debugger : 
-    - [ ] Multiple debugger levels : 
-        - [ ] LOG/INFO
-        - [ ] WARNING
-        - [ ] ERROR
-        - [ ] FATAL ERROR (CRASH)
-    - [ ] Commands (in game/editor)
-
+- [x] Debugger : 
+    - [x] Multiple debugger levels : 
+        - [x] LOG
+        - [x] INFO
+        - [x] WARNING
+        - [x] ERROR
+        - [x] FATAL ERROR (CRASH)
+- [ ] Commands (in game/editor)
 - [ ] Frame-Debugger (see stats overlay)
 
 ### Stats overlay

@@ -39,7 +39,7 @@ namespace SHAME::Engine::Rendering{
                                             &infos.width, &infos.height, &infos.nrChannels, 0);
 
         } else {
-            throw std::runtime_error(std::string("[ERROR] [RENDERING/TEXTURE] Couldn't find texture : ") + infos.filepath->full);
+            DEBUG_ERROR("Couldn't find texture : " + infos.filepath->full);
             return;
         }
 
@@ -57,7 +57,7 @@ namespace SHAME::Engine::Rendering{
             glTexImage2D(GL_TEXTURE_2D, 0, format, infos.width, infos.height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else {
-            throw std::runtime_error("[ERROR] [RENDERING/TEXTURE] Couldn't load texture : " + filepath.full);
+            DEBUG_ERROR("Couldn't load texture : " + filepath.full);
             return;
         }
 

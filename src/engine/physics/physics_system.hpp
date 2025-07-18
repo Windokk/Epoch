@@ -19,6 +19,8 @@
 
 #include "engine/rendering/utils.hpp"
 
+#include "engine/debugging/debugger.hpp"
+
 using namespace JPH;
 
 using namespace JPH::literals;
@@ -200,7 +202,7 @@ namespace SHAME::Engine::Physics
 
         static JPH::BodyInterface& GetBodyInterface() {
             if(!initialized)
-                throw std::runtime_error("[ERROR] [ENGINE/PHYSICS] : Physics system is not yet initialized");
+                DEBUG_FATAL("Physics system is not yet initialized");
             return m_physicsSystem.GetBodyInterface();
         }
 
