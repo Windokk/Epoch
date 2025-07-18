@@ -46,17 +46,17 @@ namespace SHAME::Engine::Serialization{
             } else {
                 DEBUG_WARNING("Material '" + materialName
                         + "' not found in global materials. Using fallback.");
-                materialPath = "engine/materials/unlit";
+                materialPath = "materials\\unlit";
             }
 
             auto material = Core::Resources::ResourcesManager::GetMaterial(materialPath);
             if (!material) {
                 DEBUG_ERROR("Failed to load material at path: " + materialPath
                         + ". Using fallback.");
-                material = Core::Resources::ResourcesManager::GetMaterial("engine/materials/unlit");
+                material = Core::Resources::ResourcesManager::GetMaterial("materials\\unlit");
 
                 if (!material) {
-                    DEBUG_ERROR("Failed to load fallback material: engine/materials/unlit");
+                    DEBUG_ERROR("Failed to load fallback material: materials\\unlit");
                 }
             }
 

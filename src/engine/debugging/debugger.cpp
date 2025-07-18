@@ -7,8 +7,15 @@ namespace SHAME::Engine::Debugging{
     
     Level Debugger::currentMinLevel = Level::Log;
     std::ofstream Debugger::logFile;
+    bool Debugger::useTimestamp = false;
 
-    void Debugger::EnableFileLogging(const std::string& filepath) {
+    void Debugger::EnableTimestamp()
+    {
+        useTimestamp = true;
+    }
+
+    void Debugger::EnableFileLogging(const std::string &filepath)
+    {
         logFile.open(filepath, std::ios::out | std::ios::app);
     }
 
@@ -42,7 +49,7 @@ namespace SHAME::Engine::Debugging{
         if (level < currentMinLevel)
             return;
 
-        std::string output = GetTimestamp() + " [" + LevelToString(level) + "] (" + file + ":" + std::to_string(line) + ") " + message;
+        std::string output = (useTimestamp ? GetTimestamp()+" " : "") + "[" + LevelToString(level) + "] (" + file + ":" + std::to_string(line) + ") " + message;
 
         std::cout << output << std::endl;
 

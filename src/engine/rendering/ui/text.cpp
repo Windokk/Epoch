@@ -11,10 +11,8 @@ namespace SHAME::Engine::Rendering::UI
     void Text::Draw(Shader& shader){
 
         glm::vec2 cursor = glm::vec2(transform.GetPosition().x-transform.GetScale().x/2.f, transform.GetPosition().y-transform.GetScale().y/2.f);
-        // activate shaders and send uniforms	
+        // activate shader and send uniforms
         shader.Activate();
-        shader.setInt("useTexture", 1);
-        shader.setInt("useText", 1);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::scale(model, transform.GetScale());
         shader.setMat4("model", model);

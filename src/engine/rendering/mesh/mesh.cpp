@@ -30,12 +30,17 @@ namespace SHAME::Engine::Rendering{
         };
 
         std::unordered_map<ufbx_material*, GroupedTriangles> materialGroups;
+        std::vector<ufbx_material*> materialOrder;
 
         for (size_t i = 0; i < ufbx_mesh->num_faces; i++) {
             ufbx_face face = ufbx_mesh->faces.data[i];
             uint32_t mat_index = ufbx_mesh->face_material.data[i];
             ufbx_material* mat = ufbx_mesh->materials[mat_index];
             if (!mat) mat = ufbx_mats.data[0];
+
+            if (materialGroups.find(mat) == materialGroups.end()) {
+                materialOrder.push_back(mat);
+            }
 
             GroupedTriangles& group = materialGroups[mat];
             size_t start = face.index_begin;
@@ -91,7 +96,8 @@ namespace SHAME::Engine::Rendering{
         indices.clear();
         submeshes.clear();
 
-        for (auto& [mat, group] : materialGroups) {
+        for (ufbx_material* mat : materialOrder) {
+            auto& group = materialGroups[mat];
             size_t indexOffset = indices.size();
             size_t indexCount = group.localIndices.size();
 
@@ -153,6 +159,7 @@ namespace SHAME::Engine::Rendering{
         }
         
         for (int i = 0; i < submeshes.size(); i++) {
+
             DrawCommand cmd;
             cmd.indexOffset = static_cast<int>(submeshes[i].indexOffset);
             cmd.indexCount  = static_cast<int>(submeshes[i].indexCount);

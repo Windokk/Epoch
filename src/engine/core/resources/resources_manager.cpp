@@ -14,13 +14,8 @@ namespace SHAME::Engine::Core::Resources{
     std::unordered_map<std::string, std::shared_ptr<Rendering::Material>> ResourcesManager::materials; 
     std::unordered_map<std::string, std::shared_ptr<Levels::Level>> ResourcesManager::levels; 
 
-    void ResourcesManager::LoadResources(const Filesystem::Path &baseDir)
-    {
-        DEBUG_LOG("Loading resources from base directory:"+ baseDir.full);
-
-        if(!baseDir.Exists() || !baseDir.IsDirectory()){
-            DEBUG_FATAL("Base directory for resources does not exist or is not a directory.");
-        }
+    void ResourcesManager::LoadResourcesInDir(const Filesystem::Path &baseDir){
+        
         for(Filesystem::FileInfo infos : Filesystem::FileManager::ListDirectory(baseDir, {Type::T_IMAGE, Type::T_SHADER}, false, true)){
             switch(infos.path.GetExtensionType()){
                 case Type::T_IMAGE:{
@@ -98,8 +93,25 @@ namespace SHAME::Engine::Core::Resources{
             LoadLevel(levelName, infos.path);
             break;
         }
+    
     }
 
+    void ResourcesManager::LoadResources(const Filesystem::Path &projectDir, const Filesystem::Path &engineDir)
+    {
+        DEBUG_LOG("Loading resources from base directory:"+ projectDir.full);
+
+        if(!projectDir.Exists() || !projectDir.IsDirectory()){
+            DEBUG_FATAL("Project directory for resources does not exist or is not a directory.");
+        }
+
+        if(!engineDir.Exists() || !engineDir.IsDirectory()){
+            DEBUG_FATAL("Engine directory for resources does not exist or is not a directory.");
+        }
+
+        LoadResourcesInDir(engineDir);
+        LoadResourcesInDir(projectDir);
+    }
+    
     std::shared_ptr<Rendering::Mesh> ResourcesManager::LoadModel(const std::string &name, const Filesystem::Path &path)
     {
         ufbx_load_opts opts = { 0 }; // Optional, pass NULL for defaults

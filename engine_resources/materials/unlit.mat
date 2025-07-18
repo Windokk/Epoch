@@ -1,0 +1,7 @@
+{
+    "castShadows":false,
+    "shader":"shaders\\mesh\\unlit",
+    "uniforms":[
+        {"useTexture":false}
+    ]
+}

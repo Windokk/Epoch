@@ -191,7 +191,7 @@ namespace SHAME::Engine::Rendering{
         for (auto& cmd : drawList) {
             if (!cmd.mat || cmd.indexCount <= 0) continue;
 
-            if(settings.enableShadows)
+            if(settings.enableShadows && cmd.mat->castShadows)
                 shadowMan->BindShadowMaps(cmd.mat);
             cmd.mat->SetParameter("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
             cmd.mat->SetParameter("model", cmd.tr->GetTransformMatrix());
@@ -199,7 +199,7 @@ namespace SHAME::Engine::Rendering{
             cmd.mat->Use();
             glBindVertexArray(cmd.VAO);
             glPolygonMode(GL_FRONT_AND_BACK, cmd.fillMode);
-            glDrawElements(GL_TRIANGLES, cmd.indexCount, GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, cmd.indexCount, GL_UNSIGNED_INT, (void*)(cmd.indexOffset * sizeof(uint32_t)));
             cmd.mat->StopUsing();
         }
 

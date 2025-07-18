@@ -58,6 +58,9 @@ namespace SHAME::Engine::Serialization{
                             DEBUG_ERROR("Texture uniform has unknown name : " + name);
                         }
                     }
+                    else if(value.is_boolean()){
+                        mat->SetParameter(name, value.get<bool>());
+                    }
                     // Float
                     else if (value.is_number_float()) {
                         mat->SetParameter(name, value.get<float>());
@@ -99,6 +102,7 @@ namespace SHAME::Engine::Serialization{
 
         } catch (const json::parse_error& e) {
             DEBUG_ERROR("JSON parse error: " + (std::string)e.what());
+            return nullptr;
         }
     }
 }

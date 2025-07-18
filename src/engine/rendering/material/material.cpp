@@ -12,6 +12,7 @@ namespace SHAME::Engine::Rendering{
         switch (type) {
             case GL_FLOAT: return 0.0f;
             case GL_INT: return 0;
+            case GL_BOOL: return false;
             case GL_FLOAT_VEC3: return glm::vec3(0.0f);
             case GL_FLOAT_VEC4: return glm::vec4(0.0f);
             case GL_FLOAT_MAT4: return glm::mat4(1.0f);

@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Rendering::Shader> fbShader = std::make_shared<Rendering::Shader>(Filesystem::Path("engine_resources/shaders/fb/framebuffer.vert"), Filesystem::Path("engine_resources/shaders/fb/framebuffer.frag"));
     Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetCurrentHeight()), fbShader};
     
-    Core::Resources::ResourcesManager::LoadResources(Filesystem::Path("project_resources"));
+    Core::Resources::ResourcesManager::LoadResources(Filesystem::Path("project_resources"), Filesystem::Path("engine_resources"));
 
     Rendering::Renderer::AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
 

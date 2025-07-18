@@ -18,7 +18,7 @@ namespace SHAME::Engine::Debugging{
     public:
         static void Log(Level level, const std::string& message, const char* file, int line);
 
-        // Optional: Set output file, filters, etc.
+        static void EnableTimestamp();
         static void EnableFileLogging(const std::string& filepath);
         static void SetMinimumLevel(Level level);
 
@@ -27,6 +27,8 @@ namespace SHAME::Engine::Debugging{
         static std::string GetTimestamp();
         static Level currentMinLevel;
         static std::ofstream logFile;
+
+        static bool useTimestamp;
     };
 }
 

@@ -85,11 +85,13 @@ namespace SHAME::Engine::Rendering {
             {
                 glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
             }
+            
+            std::string fragmentFilePath;
+
         private:
             void CompileErrors(unsigned int shader, const char* type);
         
             std::string vertexFilePath;
-            std::string fragmentFilePath;
             std::string geometryFilePath;
     };
 

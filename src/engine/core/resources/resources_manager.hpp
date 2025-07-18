@@ -14,7 +14,8 @@ namespace SHAME::Engine::Core::Resources{
                 static ResourcesManager instance;
                 return instance;
             }
-            static void LoadResources(const Filesystem::Path& baseDir);
+            static void LoadResourcesInDir(const Filesystem::Path &baseDir);
+            static void LoadResources(const Filesystem::Path &projectDir, const Filesystem::Path &engineDir);
             static std::shared_ptr<Rendering::Mesh> LoadModel(const std::string &name, const Filesystem::Path &path);
             static std::shared_ptr<Rendering::Texture> LoadTexture(const std::string &name, const Filesystem::Path &path);
             static std::shared_ptr<Rendering::Shader> LoadShader(const std::string &name, const Filesystem::Path &vsPath, const Filesystem::Path &fsPath, const Filesystem::Path &gsPath);

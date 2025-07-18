@@ -36,7 +36,8 @@
                     "active": true,
                     "mesh": "sphere",
                     "materials": {
-                        "0": "lit_mat1"
+                        "0": "lit_mat1",
+                        "1": "null"
                     }
                 },
                 {
@@ -90,7 +91,8 @@
                     "active": true,
                     "mesh": "plane",
                     "materials": {
-                        "0": "lit_mat1"
+                        "0": "lit_mat1",
+                        "1": "null"
                     }
                 },
                 {
