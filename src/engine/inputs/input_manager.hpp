@@ -1,57 +1,73 @@
 #pragma once
 
 #include <unordered_map>
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 
 #include "keys.hpp"
+#include "engine/debugging/debugger.hpp"
 
 namespace SHAME::Engine::Input
 {
     class InputManager{
         public:
-            static InputManager& GetInstance() {
-                static InputManager instance;
-                return instance;
-            }
 
-            static void Init(GLFWwindow* window);
-            static void Tick();
-            static void Shutdown();
-            static bool IsKeyDown(int key) {
-                auto it = mCurrentKeyState.find(key);
-                return it != mCurrentKeyState.end() && it->second;
-            }
+            void Init(GLFWwindow* window);
+            void Tick();
+            void Shutdown();
 
-            static bool IsKeyUp(int key) {
-                return !IsKeyDown(key);
-            }
+            bool IsKeyDown(int key);
+            bool IsKeyUp(int key);
+            bool WasKeyPressed(int key);
+            bool WasKeyReleased(int key);
 
-            static bool WasKeyPressed(int key) {
-                return !mPreviousKeyState[key] && mCurrentKeyState[key];
-            }
+            bool IsMouseDown(int button);
+            bool IsMouseUp(int button);
+            bool WasMousePressed(int button);
+            bool WasMouseReleased(int button);
 
-            static bool WasKeyReleased(int key) {
-                return mPreviousKeyState[key] && !mCurrentKeyState[key];
-            }
+            void SetCursorVisibility(bool visible);
+            void GetCursorPos(double* x, double* y);
+            void SetCursorPos(double x, double y);
+            
 
         private:
-            InputManager() = default;
-            ~InputManager() = default;
-            InputManager(const InputManager&) = delete;
-            InputManager& operator=(const InputManager&) = delete;
 
-            static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-                if (key >= 0) {
-                    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-                        mCurrentKeyState[key] = true;
-                    } else if (action == GLFW_RELEASE) {
-                        mCurrentKeyState[key] = false;
-                    }
-                }
-            }
+            void KeyCallback(int key,  int action);
+            void MouseCallback(int button, int action);
 
-            static std::unordered_map<int, bool> mCurrentKeyState;
-            static std::unordered_map<int, bool> mPreviousKeyState;
+            std::unordered_map<int, bool> mCurrentKeyState;
+            std::unordered_map<int, bool> mPreviousKeyState;
+
+            std::unordered_map<int, bool> mCurrentMouseState;
+            std::unordered_map<int, bool> mPreviousMouseState;
+            
+            GLFWwindow* win = nullptr;
     };
+    
+    extern InputManager gSharedInputManager;
+
+    #if defined(BUILD_ENGINE)
+
+        // Used by the EXE/engine
+        inline InputManager& GetInputManager() {
+            return gSharedInputManager;
+        }
+
+    #else
+        // Used by the DLL
+        inline InputManager* gSharedInputManagerPtr = nullptr;
+
+        inline void SetInputManager(InputManager* ptr) {
+            gSharedInputManagerPtr = ptr;
+        }
+
+        inline InputManager& GetInputManager() {
+            if (!gSharedInputManagerPtr)
+                DEBUG_FATAL("InputManager pointer not initialized!");
+            return *gSharedInputManagerPtr;
+        }
+
+    #endif
 }

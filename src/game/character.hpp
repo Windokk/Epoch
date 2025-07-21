@@ -11,4 +11,13 @@ BEGIN_COMPONENT(Character, SHAME::Engine::ECS::Components::Script)
     void Begin() override;
     void Tick() override;
 
+    float speed = 1.0f;
+    double lockedMouseX, lockedMouseY = 0;
+    bool firstClick = true;
+
+    float pitch = 0.0f;
+    float yaw = 0.0f;
+
+    float mouseSensitivity = 0.1f;
+
 END_COMPONENT(Character)

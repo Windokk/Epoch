@@ -29,16 +29,16 @@ bool LoadGameModule(const std::string& path) {
         DEBUG_FATAL("Failed to load game module : " + path);
     }
     
-    using InitRegistryFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*);
-    InitRegistryFunc init = reinterpret_cast<InitRegistryFunc>(
-        GetProcAddress(hLib, "InitializeComponentRegistry"));
+    using InitFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*, SHAME::Engine::Input::InputManager*);
+    InitFunc init = reinterpret_cast<InitFunc>(
+        GetProcAddress(hLib, "InitializeSingletons"));
 
     if (!init) {
-        DEBUG_FATAL("Failed to find InitializeComponentRegistry() in .dll");
+        DEBUG_FATAL("Failed to find InitializeSingletons() in .dll");
         
     }
  
-    init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry);
+    init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry, &SHAME::Engine::Input::gSharedInputManager);
 
     using RegisterFunc = void(*)();
     RegisterFunc registerComponents = reinterpret_cast<RegisterFunc>(
@@ -56,13 +56,13 @@ bool LoadGameModule(const std::string& path) {
         DEBUG_FATAL("Failed to load game module : " + dlerror());
     }
 
-    using InitRegistryFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*);
-    InitRegistryFunc init = reinterpret_cast<InitRegistryFunc>(dlsym(handle, "InitializeComponentRegistry"));
+    using InitFunc = void(*)(SHAME::Engine::ECS::Components::ComponentRegistry*, SHAME::Engine::Input::InputManager*);
+    InitFunc init = reinterpret_cast<InitFunc>(dlsym(handle, "InitializeSingletons"));
     if (!init) {
-        DEBUG_FATAL("Failed to find InitializeComponentRegistry() in .so");
+        DEBUG_FATAL("Failed to find InitializeSingletons() in .so");
     }
 
-    init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry);
+    init(&SHAME::Engine::ECS::Components::gSharedComponentRegistry, &SHAME::Engine::Inputs::gSharedInputManager);
 
 #endif
 
@@ -85,22 +85,22 @@ int main(int argc, char *argv[]) {
 
     Core::EngineInstance engine{};
 
-    std::shared_ptr<Rendering::Shader> fbShader = std::make_shared<Rendering::Shader>(Filesystem::Path("engine_resources/shaders/fb/framebuffer.vert"), Filesystem::Path("engine_resources/shaders/fb/framebuffer.frag"));
+    std::shared_ptr<Rendering::Shader> fbShader = Core::Resources::ResourcesManager::GetShader("shaders\\fb\\framebuffer");
     Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetCurrentHeight()), fbShader};
     
-    Core::Resources::ResourcesManager::LoadResources(Filesystem::Path("project_resources"), Filesystem::Path("engine_resources"));
-
     Rendering::Renderer::AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
 
     std::shared_ptr<Levels::Level> l = Core::Resources::ResourcesManager::GetLevel("level1.lvl");
 
     Levels::LevelManager::LoadLevel(l);
 
+    Debugging::Debugger::SetMinimumLevel(Debugging::Level::Warning);
+
     while (!engine.shouldEnd())
     {
         engine.Run();
 
-        if(InputManager::WasKeyPressed(KEY_ESCAPE))
+        if(GetInputManager().WasKeyPressed(KEY_ESCAPE))
         {
             break;
         }

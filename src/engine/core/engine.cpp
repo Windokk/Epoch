@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
+
+#include "engine/core/resources/resources_manager.hpp"
 
 
 using namespace std::chrono;
@@ -21,10 +24,12 @@ namespace SHAME::Engine::Core{
         this->settings = settings;
         CreateWindow();
         FileManager::Init(settings.rootPath);
-        Renderer::Init(window);
         PhysicsSystem::Init(settings.gravity);
         AudioManager::Init(100.0f);
-        InputManager::Init(window);
+        Renderer::Init(window);
+        Resources::ResourcesManager::LoadResources(Filesystem::Path("project_resources"), Filesystem::Path("engine_resources"));
+        Renderer::InitFramebuffers();
+        GetInputManager().Init(window);
         EventDispatcher::GetInstance();
 
         float fixedDelta = 1.0f / 30.0f;
@@ -104,7 +109,7 @@ namespace SHAME::Engine::Core{
 
     void EngineInstance::Destroy()
     {
-        InputManager::Shutdown();
+        GetInputManager().Shutdown();
         AudioManager::Shutdown();
         PhysicsSystem::Shutdown();
         LevelManager::UnloadAllLevels();
@@ -116,19 +121,23 @@ namespace SHAME::Engine::Core{
         auto& time = Time::TimeManager::GetInstance();
         time.Tick();
 
-        PhysicsSystem::StepSimulation(time.GetFixedDeltaTime());
+        //PhysicsSystem::StepSimulation(time.GetFixedDeltaTime());
+
+        glfwPollEvents();
 
         Renderer::Render();
         AudioManager::Tick();
-        InputManager::Tick();
+        GetInputManager().Tick();
+
+        double x, y;
         LevelManager::Tick();
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)
     {
+        Renderer::RescaleFramebuffers(width, height);
     }
 
 }

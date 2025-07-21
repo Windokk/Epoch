@@ -110,6 +110,8 @@ namespace SHAME::Engine::Core::Resources{
 
         LoadResourcesInDir(engineDir);
         LoadResourcesInDir(projectDir);
+
+        DEBUG_LOG("Loaded all resources correctly !");
     }
     
     std::shared_ptr<Rendering::Mesh> ResourcesManager::LoadModel(const std::string &name, const Filesystem::Path &path)

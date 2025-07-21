@@ -50,6 +50,21 @@ namespace SHAME::Engine::ECS::Components{
 		UpdateMeshReferencesInLevel();
     }
 
+    void Transform::SetRotation(glm::quat rotation)
+    {
+		if(!activated)
+            return;
+
+		this->rotation = rotation;
+		
+		if(parent->HasComponent<Light>()){
+			for(auto& light : parent->GetComponents<Light>()){
+				light->SetDirection(-this->GetForward());
+			}
+		}
+		UpdateMeshReferencesInLevel();
+    }
+
     void Transform::SetScale(glm::vec3 scale)
     {
         if(!activated)
@@ -83,8 +98,13 @@ namespace SHAME::Engine::ECS::Components{
         if(!activated)
             return;
 
-        this->rotation = glm::radians(angle) * this->rotation;
+        glm::vec3 radians = glm::radians(angle);
 
+		glm::quat qPitch = glm::angleAxis(radians.x, glm::vec3(1, 0, 0));
+		glm::quat qYaw   = glm::angleAxis(radians.y, glm::vec3(0, 1, 0));
+		glm::quat qRoll  = glm::angleAxis(radians.z, glm::vec3(0, 0, 1));
+
+		this->rotation = qYaw * qPitch * qRoll * this->rotation;
 		
 		if(parent->HasComponent<Light>()){
 			for(auto& light : parent->GetComponents<Light>()){

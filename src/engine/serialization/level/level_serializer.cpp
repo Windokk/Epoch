@@ -64,6 +64,11 @@ namespace SHAME::Engine::Serialization{
         }
         
         auto model = a->GetComponent<ECS::Components::Model>();
+
+        if(!model){
+            DEBUG_ERROR("Actor : "+ a->GetName() + " doesn't contain any model component");
+        }
+
         model->SetMaterials(std::move(materials));
 
         if(component["active"])

@@ -11,6 +11,8 @@
 
 #include "engine/rendering/camera/camera_manager.hpp"
 
+#include "engine/core/resources/resources_manager.hpp"
+
 namespace SHAME::Engine::Rendering{
     
     GLFWwindow* Renderer::window = nullptr;
@@ -64,23 +66,17 @@ namespace SHAME::Engine::Rendering{
 
         Renderer::window = window;
         
-        glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
+        glfwGetWindowSize(window, &Renderer::settings.windowWidth, &Renderer::settings.windowHeight);
 
         glViewport(0, 0, settings.windowWidth, settings.windowHeight);
 
         //FRAMBUFFERS
         CreateRectGeometry();
-        blendShader = std::make_shared<Shader>(Filesystem::Path("engine_resources/shaders/fb/framebuffer.vert"),Filesystem::Path("engine_resources/shaders/fb/blend.frag"));
-        framebufferShader = std::make_shared<Shader>(Filesystem::Path("engine_resources/shaders/fb/framebuffer.vert"),Filesystem::Path("engine_resources/shaders/fb/framebuffer.frag"));
-        viewportBuffer = new FrameBuffer(settings.windowWidth, settings.windowHeight, framebufferShader);
 
         //LIGHTS
         lightMan = new LightManager();
         lightMan->Update(-1);
-
-        //DEBUG_SHAPES
-        unlitShader = std::make_shared<Shader>(Filesystem::Path("engine_resources/shaders/mesh/unlit.vert"),Filesystem::Path("engine_resources/shaders/mesh/unlit.frag"), Filesystem::Path(""));
-
+        
         //MULTISAMPLING
         if(settings.antiAliasingLevel>0){
             glfwWindowHint(GLFW_SAMPLES, settings.antiAliasingLevel);
@@ -90,6 +86,22 @@ namespace SHAME::Engine::Rendering{
         //SHADOWS
         shadowMan = new ShadowManager();
         shadowMan->Init(1024);
+    }
+
+    void Renderer::InitFramebuffers()
+    {
+        blendShader = Core::Resources::ResourcesManager::GetShader("shaders\\fb\\blend");
+        framebufferShader = Core::Resources::ResourcesManager::GetShader("shaders\\fb\\framebuffer");
+
+        if(framebufferShader == nullptr || blendShader == nullptr){
+            DEBUG_ERROR("Viewport buffer cannot be created if the framebuffer shader or the blend shader are null");
+        }
+        else{
+            viewportBuffer = new FrameBuffer(settings.windowWidth, settings.windowHeight, framebufferShader);
+        }
+
+        //DEBUG_SHAPES
+        Renderer::unlitShader = Core::Resources::ResourcesManager::GetShader("shaders\\mesh\\unlit");
     }
 
     void Renderer::Shutdown()
@@ -196,6 +208,7 @@ namespace SHAME::Engine::Rendering{
             cmd.mat->SetParameter("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
             cmd.mat->SetParameter("model", cmd.tr->GetTransformMatrix());
             cmd.mat->SetParameter("lightNB", lightMan->GetLightsCount());
+            cmd.mat->SetParameter("camPos", CameraManager::GetActiveCamera()->parent->transform->GetPosition());
             cmd.mat->Use();
             glBindVertexArray(cmd.VAO);
             glPolygonMode(GL_FRONT_AND_BACK, cmd.fillMode);

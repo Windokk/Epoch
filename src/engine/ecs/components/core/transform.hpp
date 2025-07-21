@@ -18,11 +18,12 @@ namespace SHAME::Engine::ECS::Components
         Transform(Objects::Actor *parent, uint32_t local_id);
 
         const glm::vec3& GetPosition() const { return position; };
-        const glm::quat& GetRotation() const { return rotation; };
+        glm::vec3 GetRotation() const { return glm::degrees(glm::eulerAngles(rotation)); };
         const glm::vec3& GetScale() const { return scale; };
 
         void SetPosition(glm::vec3 position);
         void SetRotation(glm::vec3 rotation);
+        void SetRotation(glm::quat rotation);
         void SetScale(glm::vec3 scale);
 
         void Translate(glm::vec3 deltaPosition);
@@ -32,15 +33,15 @@ namespace SHAME::Engine::ECS::Components
         void UpdateMeshReferencesInLevel();
 
         glm::vec3 GetForward() {
-            return rotation * glm::vec3(0, 0, 1);
+            return glm::normalize(rotation * glm::vec3(0, 0, 1));
         }
 
         glm::vec3 GetUp() {
-            return rotation * glm::vec3(0, 1, 0);
+            return glm::normalize(rotation * glm::vec3(0, 1, 0));
         }
 
         glm::vec3 GetRight() {
-            return rotation * glm::vec3(1, 0, 0);
+            return glm::normalize(rotation * glm::vec3(1, 0, 0));
         }
 
         glm::mat4 GetTransformMatrix();

@@ -7,11 +7,11 @@
 
 namespace SHAME::Engine::Debugging{
     enum class Level {
-        Log,
-        Info,
-        Warning,
-        Error,
-        Fatal
+        Log = 0,
+        Info = 1,
+        Warning = 2,
+        Error = 3,
+        Fatal = 4
     };
 
     class Debugger {

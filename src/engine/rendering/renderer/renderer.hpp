@@ -74,6 +74,7 @@ namespace SHAME::Engine{
             }
 
             static void Init(GLFWwindow *window, RendererSettings settings = {});
+            static void InitFramebuffers();
             static void Shutdown();
             static void Render();
 

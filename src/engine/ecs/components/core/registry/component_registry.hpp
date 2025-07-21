@@ -4,23 +4,25 @@
 #include <unordered_map>
 #include <stdexcept>
 
+#include "engine/debugging/debugger.hpp"
+
 namespace SHAME::Engine::ECS::Components {
 
     class Component;
     using ComponentFactory = Component* (*)();
 
     class ComponentRegistry {
-    public:
-        void RegisterComponentType(const std::string& name, ComponentFactory factory);
-        Component* CreateComponentByName(const std::string& name);
-        const std::unordered_map<std::string, ComponentFactory>& GetAll() const;
+        public:
+            void RegisterComponentType(const std::string& name, ComponentFactory factory);
+            Component* CreateComponentByName(const std::string& name);
+            const std::unordered_map<std::string, ComponentFactory>& GetAll() const;
 
-        ComponentRegistry() = default;
-        ComponentRegistry(const ComponentRegistry&) = delete;
-        ComponentRegistry& operator=(const ComponentRegistry&) = delete;
+            ComponentRegistry() = default;
+            ComponentRegistry(const ComponentRegistry&) = delete;
+            ComponentRegistry& operator=(const ComponentRegistry&) = delete;
 
-    private:
-        std::unordered_map<std::string, ComponentFactory> registry;
+        private:
+            std::unordered_map<std::string, ComponentFactory> registry;
     };
 
     extern ComponentRegistry gSharedComponentRegistry;
@@ -34,7 +36,7 @@ namespace SHAME::Engine::ECS::Components {
 
 #else
 
-    // Used by the DLL/plugin
+    // Used by the DLL
     inline ComponentRegistry* gSharedComponentRegistryPtr = nullptr;
 
     inline void SetComponentRegistry(ComponentRegistry* ptr) {
@@ -43,7 +45,7 @@ namespace SHAME::Engine::ECS::Components {
 
     inline ComponentRegistry& GetComponentRegistry() {
         if (!gSharedComponentRegistryPtr)
-            throw std::runtime_error("ComponentRegistry pointer not initialized!");
+            DEBUG_FATAL("ComponentRegistry pointer not initialized!");
         return *gSharedComponentRegistryPtr;
     }
 

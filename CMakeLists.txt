@@ -48,7 +48,7 @@ target_link_directories(Engine PUBLIC
 target_compile_definitions(Engine PRIVATE BUILD_ENGINE JPH_PROFILE_ENABLED JPH_DEBUG_RENDERER JPH_OBJECT_STREAM)
 
 if(WIN32)
-  target_link_libraries(Engine PUBLIC freetype CosemPacker Jolt fmod glfw3 -lz opengl32 gdi32 user32 shell32 advapi32)
+  target_link_libraries(Engine PUBLIC freetype CosemPacker Jolt fmod glfw3dll -lz opengl32 gdi32 user32 shell32 advapi32)
 elseif(UNIX)
   find_package(PNG REQUIRED)
   find_package(BZip2 REQUIRED)
@@ -67,18 +67,26 @@ file(GLOB_RECURSE GAME_SOURCES
 add_library(GameModule SHARED ${GAME_SOURCES})
 
 
-target_compile_definitions(GameModule PRIVATE BUILDING_GAME_DLL)
 
 target_include_directories(GameModule PRIVATE
   ${CMAKE_SOURCE_DIR}/src/
 )
 
+
+if(WIN32)
+target_link_directories(GameModule PUBLIC
+  ${GLFW_LIB_DIR})
+target_link_libraries(GameModule PRIVATE Engine glfw3dll)
+elseif(UNIX)
 target_link_libraries(GameModule PRIVATE Engine)
+endif()
 
 
 # === Launcher (full game executable) ===
 
 add_executable(SHA.me ${CMAKE_SOURCE_DIR}/src/launcher/main.cpp)
+
+target_compile_definitions(SHA.me PRIVATE BUILD_ENGINE)
 
 target_link_libraries(SHA.me PRIVATE Engine)
 

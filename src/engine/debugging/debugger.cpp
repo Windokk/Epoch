@@ -46,6 +46,7 @@ namespace SHAME::Engine::Debugging{
     }
 
     void Debugger::Log(Level level, const std::string& message, const char* file, int line) {
+        
         if (level < currentMinLevel)
             return;
 

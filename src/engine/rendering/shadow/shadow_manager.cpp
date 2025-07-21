@@ -246,6 +246,9 @@ namespace SHAME::Engine::Rendering{
             material->SetParameter("shadow_lightSpaceMatrices[" + std::to_string(i) + "]", glm::mat4(1.0f));
         }
 
+        int dirIdx = 0;
+        int spotIdx = 0;
+
         // Bind directional and spot shadow maps individually
         for (size_t i = 0; i < shadowMaps.size(); ++i)
         {
@@ -265,16 +268,18 @@ namespace SHAME::Engine::Rendering{
             {
                 glActiveTexture(GL_TEXTURE0 + textureUnit);
                 glBindTexture(GL_TEXTURE_2D, sm.depthMap);
-                material->SetParameter("shadow_dirShadowMaps[" + std::to_string(i) + "]", textureUnit);
-                material->SetParameter("shadow_lightSpaceMatrices[" + std::to_string(i) + "]", sm.lightMatrix);
+                material->SetParameter("shadow_dirShadowMaps[" + std::to_string(dirIdx) + "]", textureUnit);
+                material->SetParameter("shadow_dirLightSpaceMatrices[" + std::to_string(dirIdx) + "]", sm.lightMatrix);
+                ++dirIdx;
                 ++textureUnit;
             }
             else if (light.type == static_cast<int>(LightType::Spot))
             {
                 glActiveTexture(GL_TEXTURE0 + textureUnit);
                 glBindTexture(GL_TEXTURE_2D, sm.depthMap);
-                material->SetParameter("shadow_spotShadowMaps[" + std::to_string(i) + "]", textureUnit);
-                material->SetParameter("shadow_lightSpaceMatrices[" + std::to_string(i) + "]", sm.lightMatrix);
+                material->SetParameter("shadow_spotShadowMaps[" + std::to_string(spotIdx) + "]", textureUnit);
+                material->SetParameter("shadow_spotLightSpaceMatrices[" + std::to_string(spotIdx) + "]", sm.lightMatrix);
+                ++spotIdx;
                 ++textureUnit;
             }
         }
