@@ -4,7 +4,7 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
     
     /// @brief Initializer for the shadow manager
     /// @param resolution The resolution to use for shadow maps
@@ -232,7 +232,7 @@ namespace SHAME::Engine::Rendering{
 
     /// @brief Bind the shadow maps to a material
     /// @param material The material to bind shadow maps to
-    void ShadowManager::BindShadowMaps(std::shared_ptr<SHAME::Engine::Rendering::Material> material)
+    void ShadowManager::BindShadowMaps(std::shared_ptr<EPOCH::Engine::Rendering::Material> material)
     {
         constexpr int MAX_SHADOW_LIGHTS = 16;
         int textureUnit = 10;

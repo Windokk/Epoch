@@ -3,17 +3,17 @@
 #include "engine/ecs/objects/actors/actor.hpp"
 
 
-namespace SHAME::Engine::ECS::Components{
+namespace EPOCH::Engine::ECS::Components{
     
     void AudioSource::Update()
     {
         if(audioID.IsValid() && activated){
-            Audio::AudioManager::UpdateSound(audioID, parent->transform->GetPosition(), volume);
+            Audio::AudioManager::GetInstance().UpdateSound(audioID, parent->transform->GetPosition(), volume);
         }
         else{
             if(path != nullptr && volume != -1.0f){
                 audioID = Audio::AudioIDManager::GenerateNewID();
-                Audio::AudioManager::CreateSound(audioID, path->full, parent->transform->GetPosition());
+                Audio::AudioManager::GetInstance().CreateSound(audioID, path->full, parent->transform->GetPosition());
 
             }
         }
@@ -40,16 +40,16 @@ namespace SHAME::Engine::ECS::Components{
         if(!activated)
             return;
 
-        Audio::AudioManager::PlaySound(this->audioID, this->volume);
+        Audio::AudioManager::GetInstance().PlaySound(this->audioID, this->volume);
     }
 
     void AudioSource::Pause()
     {
-        Audio::AudioManager::PauseSound(this->audioID);
+        Audio::AudioManager::GetInstance().PauseSound(this->audioID);
     }
 
     void AudioSource::RemoveSound()
     {
-        Audio::AudioManager::RemoveSound(this->audioID);
+        Audio::AudioManager::GetInstance().RemoveSound(this->audioID);
     }
 }

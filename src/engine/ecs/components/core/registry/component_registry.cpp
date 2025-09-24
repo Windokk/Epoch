@@ -4,7 +4,7 @@
 
 #include "engine/debugging/debugger.hpp"
 
-namespace SHAME::Engine::ECS::Components {
+namespace EPOCH::Engine::ECS::Components {
 
     ComponentRegistry gSharedComponentRegistry;
 

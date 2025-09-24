@@ -4,7 +4,7 @@
 
 #include "engine/events/event_system.hpp"
 
-namespace SHAME::Engine::ECS::Components
+namespace EPOCH::Engine::ECS::Components
 {
     class Script : public Component{
         public:

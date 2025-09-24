@@ -3,11 +3,7 @@
 #include <iomanip>
 #include <ctime>
 
-namespace SHAME::Engine::Debugging{
-    
-    Level Debugger::currentMinLevel = Level::Log;
-    std::ofstream Debugger::logFile;
-    bool Debugger::useTimestamp = false;
+namespace EPOCH::Engine::Debugging{
 
     void Debugger::EnableTimestamp()
     {

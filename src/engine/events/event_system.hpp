@@ -9,11 +9,11 @@
 #include <typeindex>
 #include <vector>
 
-namespace SHAME::Engine::ECS::Components{
+namespace EPOCH::Engine::ECS::Components{
     class PhysicsBody;
 }
 
-namespace SHAME::Engine::Events {
+namespace EPOCH::Engine::Events {
 
     struct Event {
         virtual ~Event() = default;

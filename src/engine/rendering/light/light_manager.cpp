@@ -5,7 +5,7 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
     
     LightManager::LightManager()
     {

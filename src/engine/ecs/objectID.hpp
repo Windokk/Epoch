@@ -8,7 +8,7 @@
 #include <functional>
 #include <memory>
 
-namespace SHAME::Engine::ECS
+namespace EPOCH::Engine::ECS
 {
     namespace Objects{
         class Object;
@@ -106,8 +106,8 @@ namespace SHAME::Engine::ECS
 
 namespace std {
     template<>
-    struct hash<SHAME::Engine::ECS::ObjectID> {
-        std::size_t operator()(const SHAME::Engine::ECS::ObjectID& id) const noexcept {
+    struct hash<EPOCH::Engine::ECS::ObjectID> {
+        std::size_t operator()(const EPOCH::Engine::ECS::ObjectID& id) const noexcept {
             return std::hash<int>{}(id.GetAsInt());
         }
     };

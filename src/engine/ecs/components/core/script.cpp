@@ -1,6 +1,6 @@
 #include "script.hpp"
 
-namespace SHAME::Engine::ECS::Components
+namespace EPOCH::Engine::ECS::Components
 {
     Script::Script(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {    

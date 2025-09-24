@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
     
     using namespace ECS::Components;
 

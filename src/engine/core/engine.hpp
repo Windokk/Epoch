@@ -8,7 +8,7 @@
 #include "engine/inputs/input_manager.hpp"
 #include "engine/time/time_manager.hpp"
 
-namespace SHAME::Engine::Core {
+namespace EPOCH::Engine::Core {
     
     struct EngineCreationSettings{
         //WINDOW
@@ -30,7 +30,7 @@ namespace SHAME::Engine::Core {
         EngineInstance(EngineCreationSettings settings = {});
         bool shouldEnd() { return glfwWindowShouldClose(window); };
         void Destroy();
-        void Run();
+        bool Run();
 
         GLFWwindow* GetGLFWWindow() { return window; }
 

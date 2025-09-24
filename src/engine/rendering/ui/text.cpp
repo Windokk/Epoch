@@ -1,6 +1,6 @@
 #include "text.hpp"
 
-namespace SHAME::Engine::Rendering::UI
+namespace EPOCH::Engine::Rendering::UI
 {
     Text::Text(Font& font, std::string text, glm::vec4 color, Transform transform) : font(font), transform(transform) 
     {

@@ -2,7 +2,7 @@
 
 #include "engine/rendering/material/material.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
 
     class DebugShape{
         public:

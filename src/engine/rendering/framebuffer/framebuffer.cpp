@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace SHAME::Engine::Rendering {
+namespace EPOCH::Engine::Rendering {
 
     FrameBuffer::FrameBuffer(float width, float height, std::shared_ptr<Shader> shader)
     {

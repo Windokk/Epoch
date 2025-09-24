@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace SHAME::Engine::Debugging{
+namespace EPOCH::Engine::Debugging{
     enum class Level {
         Log = 0,
         Info = 1,
@@ -16,24 +16,59 @@ namespace SHAME::Engine::Debugging{
 
     class Debugger {
     public:
-        static void Log(Level level, const std::string& message, const char* file, int line);
+        static Debugger& GetInstance() {
+            static Debugger instance;
+            return instance;
+        }
 
-        static void EnableTimestamp();
-        static void EnableFileLogging(const std::string& filepath);
-        static void SetMinimumLevel(Level level);
+        void Log(Level level, const std::string& message, const char* file, int line);
+
+        void EnableTimestamp();
+        void EnableFileLogging(const std::string& filepath);
+        void SetMinimumLevel(Level level);
 
     private:
-        static std::string LevelToString(Level level);
-        static std::string GetTimestamp();
-        static Level currentMinLevel;
-        static std::ofstream logFile;
+        std::string LevelToString(Level level);
+        std::string GetTimestamp();
+        Level currentMinLevel;
+        std::ofstream logFile;
 
-        static bool useTimestamp;
+        bool useTimestamp;
+
+        Debugger() = default;
+        ~Debugger() = default;
+        Debugger(const Debugger&) = delete;
+        Debugger& operator=(const Debugger&) = delete;
     };
+
+#if defined(BUILD_ENGINE)
+
+    // Used by the EXE/engine
+    inline Debugger& GetDebugger() {
+        return Debugger::GetInstance();
+    }
+
+#else
+
+    // Used by the DLL
+    inline Debugger* gSharedDebuggerPtr = nullptr;
+
+    inline void SetDebugger(Debugger* ptr) {
+        gSharedDebuggerPtr = ptr;
+    }
+
+    inline Debugger& GetDebugger() {
+        if (!gSharedDebuggerPtr)
+            exit(2);
+        return *gSharedDebuggerPtr;
+    }
+
+#endif
+
 }
 
-#define DEBUG_LOG(msg)       SHAME::Engine::Debugging::Debugger::Log(SHAME::Engine::Debugging::Level::Log,    msg, __FILE__, __LINE__)
-#define DEBUG_INFO(msg)      SHAME::Engine::Debugging::Debugger::Log(SHAME::Engine::Debugging::Level::Info,   msg, __FILE__, __LINE__)
-#define DEBUG_WARNING(msg)   SHAME::Engine::Debugging::Debugger::Log(SHAME::Engine::Debugging::Level::Warning,msg, __FILE__, __LINE__)
-#define DEBUG_ERROR(msg)     SHAME::Engine::Debugging::Debugger::Log(SHAME::Engine::Debugging::Level::Error,  msg, __FILE__, __LINE__)
-#define DEBUG_FATAL(msg)     SHAME::Engine::Debugging::Debugger::Log(SHAME::Engine::Debugging::Level::Fatal,  msg, __FILE__, __LINE__)
+#define DEBUG_LOG(msg)       EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Log,    msg, __FILE__, __LINE__)
+#define DEBUG_INFO(msg)      EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Info,   msg, __FILE__, __LINE__)
+#define DEBUG_WARNING(msg)   EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Warning,msg, __FILE__, __LINE__)
+#define DEBUG_ERROR(msg)     EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Error,  msg, __FILE__, __LINE__)
+#define DEBUG_FATAL(msg)     EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Fatal,  msg, __FILE__, __LINE__)

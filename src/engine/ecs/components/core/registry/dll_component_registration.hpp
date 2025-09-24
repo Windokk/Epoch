@@ -6,7 +6,7 @@
 #include <functional>
 #include <iostream>
 
-namespace SHAME::Engine::ECS::Components {
+namespace EPOCH::Engine::ECS::Components {
 
     using RegisterComponentCallback = std::function<void(ComponentRegistry&)>;
 

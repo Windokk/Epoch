@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28.2)
 set(CMAKE_COLOR_MAKEFILE ON)
 
 
-project(SHA.me VERSION 1.0.0 LANGUAGES C CXX)
+project(EPOCH VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
 
@@ -84,12 +84,12 @@ endif()
 
 # === Launcher (full game executable) ===
 
-add_executable(SHA.me ${CMAKE_SOURCE_DIR}/src/launcher/main.cpp)
+add_executable(EPOCH ${CMAKE_SOURCE_DIR}/src/launcher/main.cpp)
 
-target_compile_definitions(SHA.me PRIVATE BUILD_ENGINE)
+target_compile_definitions(EPOCH PRIVATE BUILD_ENGINE)
 
-target_link_libraries(SHA.me PRIVATE Engine)
+target_link_libraries(EPOCH PRIVATE Engine)
 
-target_include_directories(SHA.me PRIVATE
+target_include_directories(EPOCH PRIVATE
   ${CMAKE_SOURCE_DIR}/src/
 )

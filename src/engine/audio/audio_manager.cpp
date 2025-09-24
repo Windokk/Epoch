@@ -10,7 +10,7 @@
 
 #include <cassert>
 
-namespace SHAME::Engine::Audio
+namespace EPOCH::Engine::Audio
 {
     using namespace Filesystem;
     using namespace Rendering;
@@ -39,11 +39,6 @@ namespace SHAME::Engine::Audio
 
         return FMOD_OK;
     }
-
-    FMOD_SYSTEM* AudioManager::system;
-    std::unordered_map<std::string, FMOD_CHANNEL*> AudioManager::channels;
-	FMOD_CREATESOUNDEXINFO AudioManager::exinfo;
-    float AudioManager::masterVolume = 100.0f;
 
     void AudioManager::Init(float masterVolume)
     {

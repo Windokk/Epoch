@@ -14,7 +14,7 @@
 
 #include "assetID.hpp"
 
-namespace SHAME::Engine::Filesystem{
+namespace EPOCH::Engine::Filesystem{
 
     enum class Type{
         T_IMAGE,

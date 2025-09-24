@@ -5,7 +5,7 @@
 #include <string>
 
 
-namespace SHAME::Engine::Serialization{
+namespace EPOCH::Engine::Serialization{
 
     std::shared_ptr<Levels::Level> ImportLevel(const Filesystem::Path path);
 }

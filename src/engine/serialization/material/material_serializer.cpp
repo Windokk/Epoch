@@ -6,7 +6,7 @@
 
 using namespace nlohmann;
 
-namespace SHAME::Engine::Serialization{
+namespace EPOCH::Engine::Serialization{
 
     using namespace Core::Resources;
     using namespace Rendering;
@@ -28,7 +28,7 @@ namespace SHAME::Engine::Serialization{
 
             std::shared_ptr<Material> mat = std::make_shared<Material>();
 
-            std::shared_ptr<Shader> shader = ResourcesManager::GetShader(data["shader"]);
+            std::shared_ptr<Shader> shader = ResourcesManager::GetInstance().GetShader(data["shader"]);
 
             if(!shader){
                 DEBUG_ERROR("No shader found : " + ((std::string)data["shader"]));
@@ -46,7 +46,7 @@ namespace SHAME::Engine::Serialization{
                     if (value.is_string()) {
                         auto found = textureTypeMap.find(name);
                         if (found != textureTypeMap.end()) {
-                            std::shared_ptr<Texture> tex = ResourcesManager::GetTexture(value.get<std::string>());
+                            std::shared_ptr<Texture> tex = ResourcesManager::GetInstance().GetTexture(value.get<std::string>());
                             if(tex){
                                 mat->SetParameter(name, std::make_pair(found->second, tex));
                             }

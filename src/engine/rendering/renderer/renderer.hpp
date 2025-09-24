@@ -8,7 +8,7 @@
 #include "engine/rendering/shadow/shadow_manager.hpp"
 #include "engine/debugging/debugger.hpp"
 
-namespace SHAME::Engine{
+namespace EPOCH::Engine{
 
     namespace ECS::Components{
         class Transform;
@@ -27,7 +27,7 @@ namespace SHAME::Engine{
             private:
                 int windowPosX, windowPosY, windowWidth, windowHeight= 0;
                 bool fullscreen = false;
-            friend class SHAME::Engine::Rendering::Renderer;
+            friend class EPOCH::Engine::Rendering::Renderer;
 
         };
 
@@ -52,6 +52,7 @@ namespace SHAME::Engine{
             std::shared_ptr<FrameBuffer> target = nullptr;
             bool appendToViewport = true;
             BlendMode blendMode = BlendMode::Normal;
+            
         };
 
         struct DrawCommand {

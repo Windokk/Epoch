@@ -4,7 +4,7 @@
 
 #include "engine/filesystem/filesystem.hpp"
 
-namespace SHAME::Engine::Serialization{
+namespace EPOCH::Engine::Serialization{
 
     class MaterialSerializer{
         public:

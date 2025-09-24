@@ -4,7 +4,7 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 
-namespace SHAME::Engine::ECS::Components
+namespace EPOCH::Engine::ECS::Components
 {
     class Light : public Component{
         public:

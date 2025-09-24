@@ -6,7 +6,7 @@
 
 #include <ufbx/ufbx.h>
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
 
     struct SubMesh {
         size_t indexOffset;

@@ -4,7 +4,7 @@
 #include "engine/rendering/light/light_manager.hpp"
 #include "engine/rendering/mesh/mesh.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
 
     class Shader;
 
@@ -26,7 +26,7 @@ namespace SHAME::Engine::Rendering{
         void RegisterLight(int lightIndex, std::shared_ptr<LightData> light);
         void UnregisterLight(int lightIndex);
         void RenderShadowMaps(const std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh*>> &meshes);
-        void BindShadowMaps(std::shared_ptr<SHAME::Engine::Rendering::Material> material);
+        void BindShadowMaps(std::shared_ptr<EPOCH::Engine::Rendering::Material> material);
 
     private:
         std::vector<ShadowMap> shadowMaps;

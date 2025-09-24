@@ -4,15 +4,9 @@
 
 #include "engine/serialization/level/level_serializer.hpp"
 
-namespace SHAME::Engine::Core::Resources{
+namespace EPOCH::Engine::Core::Resources{
 
     using namespace Filesystem;
-
-    std::unordered_map<std::string, std::shared_ptr<Rendering::Mesh>> ResourcesManager::meshes;
-    std::unordered_map<std::string, std::shared_ptr<Rendering::Texture>> ResourcesManager::textures;
-    std::unordered_map<std::string, std::shared_ptr<Rendering::Shader>> ResourcesManager::shaders;
-    std::unordered_map<std::string, std::shared_ptr<Rendering::Material>> ResourcesManager::materials; 
-    std::unordered_map<std::string, std::shared_ptr<Levels::Level>> ResourcesManager::levels; 
 
     void ResourcesManager::LoadResourcesInDir(const Filesystem::Path &baseDir){
         

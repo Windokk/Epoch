@@ -7,12 +7,12 @@
 #include <string>
 #include <memory>
 
-namespace SHAME::Engine::Filesystem{
+namespace EPOCH::Engine::Filesystem{
 
     class Path;
 }
 
-namespace SHAME::Engine::Rendering {
+namespace EPOCH::Engine::Rendering {
 
     struct DrawCommand;
 

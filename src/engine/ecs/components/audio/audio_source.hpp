@@ -6,7 +6,7 @@
 
 #include "engine/rendering/utils.hpp"
 
-namespace SHAME::Engine::ECS::Components
+namespace EPOCH::Engine::ECS::Components
 {
 
     class AudioSource : public Component {

@@ -2,7 +2,7 @@
 
 #include "level.hpp"
 
-namespace SHAME::Engine::Levels{
+namespace EPOCH::Engine::Levels{
 
     class LevelManager {
         public:

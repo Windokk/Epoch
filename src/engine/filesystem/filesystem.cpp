@@ -4,7 +4,7 @@
 
 #include "engine/debugging/debugger.hpp"
 
-namespace SHAME::Engine::Filesystem{
+namespace EPOCH::Engine::Filesystem{
 
     Path FileManager::root = Path("");
     Path FileManager::projectRoot = Path("");

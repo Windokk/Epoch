@@ -6,7 +6,7 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
-namespace SHAME::Engine::Physics {
+namespace EPOCH::Engine::Physics {
 
     // Constants
     static constexpr uint cMaxBodies = 1024;

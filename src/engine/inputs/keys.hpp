@@ -1,7 +1,7 @@
 
 
 
-namespace SHAME::Engine::Input
+namespace EPOCH::Engine::Input
 {
     /* Printable keys */
     #define KEY_SPACE              32

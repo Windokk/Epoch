@@ -1,7 +1,7 @@
 #include "input_manager.hpp"
 
 
-namespace SHAME::Engine::Input{
+namespace EPOCH::Engine::Input{
 
     InputManager gSharedInputManager;
 

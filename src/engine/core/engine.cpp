@@ -9,7 +9,7 @@
 
 using namespace std::chrono;
 
-namespace SHAME::Engine::Core{
+namespace EPOCH::Engine::Core{
     
     using namespace Levels;
     using namespace Engine::Rendering;
@@ -25,9 +25,9 @@ namespace SHAME::Engine::Core{
         CreateWindow();
         FileManager::Init(settings.rootPath);
         PhysicsSystem::Init(settings.gravity);
-        AudioManager::Init(100.0f);
+        AudioManager::GetInstance().Init(100.0f);
         Renderer::Init(window);
-        Resources::ResourcesManager::LoadResources(Filesystem::Path("project_resources"), Filesystem::Path("engine_resources"));
+        Resources::ResourcesManager::GetInstance().LoadResources(Filesystem::Path("project_resources"), Filesystem::Path("engine_resources"));
         Renderer::InitFramebuffers();
         GetInputManager().Init(window);
         EventDispatcher::GetInstance();
@@ -110,14 +110,14 @@ namespace SHAME::Engine::Core{
     void EngineInstance::Destroy()
     {
         GetInputManager().Shutdown();
-        AudioManager::Shutdown();
+        AudioManager::GetInstance().Shutdown();
         PhysicsSystem::Shutdown();
         LevelManager::UnloadAllLevels();
         Renderer::Shutdown();
         DestroyWindow();
     }
 
-    void EngineInstance::Run() {
+    bool EngineInstance::Run() {
         auto& time = Time::TimeManager::GetInstance();
         time.Tick();
 
@@ -126,13 +126,20 @@ namespace SHAME::Engine::Core{
         glfwPollEvents();
 
         Renderer::Render();
-        AudioManager::Tick();
+        AudioManager::GetInstance().Tick();
         GetInputManager().Tick();
 
         double x, y;
         LevelManager::Tick();
 
         glfwSwapBuffers(window);
+
+        if(GetInputManager().WasKeyPressed(KEY_ESCAPE))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)

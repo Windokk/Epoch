@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace SHAME::Engine::ECS::Objects{
+namespace EPOCH::Engine::ECS::Objects{
 
     using namespace Components;
 

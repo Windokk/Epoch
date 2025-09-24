@@ -4,7 +4,7 @@
 #include "component_registry.hpp"
 #include "dll_component_registration.hpp"
 
-using namespace SHAME::Engine::ECS;
+using namespace EPOCH::Engine::ECS;
 
 #define BEGIN_COMPONENT(className, baseClass)                                                   \
     class className : public baseClass {                                                        \
@@ -13,14 +13,14 @@ public:                                                                         
 
 #define END_COMPONENT(className)                                                                \
     };                                                                                          \
-    inline Components::Component* Create_##className() { return new className(nullptr, 0); }    \
+    inline Components::Component* Create_##className() { return new className(nullptr, 0); }    
 
-#define REGISTER_COMPONENT(className)                        \
+#define REGISTER_COMPONENT(className)                       \
 namespace {                                                 \
     struct AutoRegister_##className {                       \
         AutoRegister_##className() {                        \
-            SHAME::Engine::ECS::Components::AddComponentRegistrar( \
-                [](SHAME::Engine::ECS::Components::ComponentRegistry& reg) { \
+            EPOCH::Engine::ECS::Components::AddComponentRegistrar( \
+                [](EPOCH::Engine::ECS::Components::ComponentRegistry& reg) { \
                     reg.RegisterComponentType(#className, Create_##className); \
                 }                                           \
             );                                              \

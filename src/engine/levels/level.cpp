@@ -7,7 +7,7 @@
 #include "engine/ecs/components/rendering/light_component.hpp"
 #include "engine/ecs/components/rendering/model_component.hpp"
 
-namespace SHAME::Engine::Levels{
+namespace EPOCH::Engine::Levels{
 
     Level::Level(std::string name)
     {

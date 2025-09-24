@@ -4,7 +4,7 @@
 
 #include "engine/rendering/mesh/mesh.hpp"
 
-namespace SHAME::Engine::ECS::Components
+namespace EPOCH::Engine::ECS::Components
 {
     class Model : public Component{
         public:

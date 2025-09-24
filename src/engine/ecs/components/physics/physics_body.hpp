@@ -19,7 +19,7 @@
 
 #include "engine/rendering/debug/debug.hpp"
 
-namespace SHAME::Engine::ECS::Components
+namespace EPOCH::Engine::ECS::Components
 {
 
     class PhysicsBody : public Component {

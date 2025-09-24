@@ -3,7 +3,7 @@
 #include "engine/filesystem/filesystem.hpp"
 #include "engine/debugging/debugger.hpp"
 
-namespace SHAME::Engine::Rendering::UI{
+namespace EPOCH::Engine::Rendering::UI{
 
     using namespace Filesystem;
     

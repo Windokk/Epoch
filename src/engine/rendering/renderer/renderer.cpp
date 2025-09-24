@@ -13,7 +13,7 @@
 
 #include "engine/core/resources/resources_manager.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
     
     GLFWwindow* Renderer::window = nullptr;
     std::vector<DrawCommand> Renderer::drawList = {};
@@ -90,8 +90,8 @@ namespace SHAME::Engine::Rendering{
 
     void Renderer::InitFramebuffers()
     {
-        blendShader = Core::Resources::ResourcesManager::GetShader("shaders\\fb\\blend");
-        framebufferShader = Core::Resources::ResourcesManager::GetShader("shaders\\fb\\framebuffer");
+        blendShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\fb\\blend");
+        framebufferShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\fb\\framebuffer");
 
         if(framebufferShader == nullptr || blendShader == nullptr){
             DEBUG_ERROR("Viewport buffer cannot be created if the framebuffer shader or the blend shader are null");
@@ -101,7 +101,7 @@ namespace SHAME::Engine::Rendering{
         }
 
         //DEBUG_SHAPES
-        Renderer::unlitShader = Core::Resources::ResourcesManager::GetShader("shaders\\mesh\\unlit");
+        Renderer::unlitShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\mesh\\unlit");
     }
 
     void Renderer::Shutdown()
@@ -196,7 +196,7 @@ namespace SHAME::Engine::Rendering{
     void Renderer::DrawScene()
     {
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // --- Main Draw Calls ---
@@ -315,7 +315,7 @@ namespace SHAME::Engine::Rendering{
                     if(pass.appendToViewport){
                         viewportBuffer->Bind();
 
-                        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+                        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                         
                         blendShader->Activate();

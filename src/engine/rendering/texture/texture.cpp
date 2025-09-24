@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
 
     using namespace Filesystem;
 

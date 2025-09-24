@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
 
     enum class LightType{
         Directional = 0,

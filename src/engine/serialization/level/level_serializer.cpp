@@ -10,13 +10,13 @@
 
 using namespace nlohmann;
 
-namespace SHAME::Engine::Serialization{
+namespace EPOCH::Engine::Serialization{
     
     void LoadModelComponent(json &component, std::shared_ptr<ECS::Objects::Actor> a, json data){
         std::string mesh_name = component["mesh"];
         if (data["meshes"].contains(mesh_name)) {
             const std::string& mesh_path = data["meshes"][mesh_name];
-            std::shared_ptr<Rendering::Mesh> mesh = Core::Resources::ResourcesManager::GetMesh(mesh_path);
+            std::shared_ptr<Rendering::Mesh> mesh = Core::Resources::ResourcesManager::GetInstance().GetMesh(mesh_path);
             if(mesh)
                 a->AddComponent<ECS::Components::Model>()->SetMesh(mesh);
             else
@@ -49,11 +49,11 @@ namespace SHAME::Engine::Serialization{
                 materialPath = "materials\\unlit";
             }
 
-            auto material = Core::Resources::ResourcesManager::GetMaterial(materialPath);
+            auto material = Core::Resources::ResourcesManager::GetInstance().GetMaterial(materialPath);
             if (!material) {
                 DEBUG_ERROR("Failed to load material at path: " + materialPath
                         + ". Using fallback.");
-                material = Core::Resources::ResourcesManager::GetMaterial("materials\\unlit");
+                material = Core::Resources::ResourcesManager::GetInstance().GetMaterial("materials\\unlit");
 
                 if (!material) {
                     DEBUG_ERROR("Failed to load fallback material: materials\\unlit");
@@ -215,7 +215,7 @@ namespace SHAME::Engine::Serialization{
             else{
                 //Custom component/Inherited component case
                 //Note : The custom component has to be already registered
-                ECS::Components::Component* rawComponent = SHAME::Engine::ECS::Components::GetComponentRegistry().CreateComponentByName(type);
+                ECS::Components::Component* rawComponent = EPOCH::Engine::ECS::Components::GetComponentRegistry().CreateComponentByName(type);
                 if (!rawComponent) {
                     DEBUG_WARNING("Unknown component type: " + type);
                     continue;

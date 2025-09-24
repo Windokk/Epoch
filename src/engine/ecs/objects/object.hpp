@@ -6,7 +6,7 @@
 #include "engine/ecs/objectID.hpp"
 
 
-namespace SHAME::Engine::ECS::Objects{
+namespace EPOCH::Engine::ECS::Objects{
     
     class Object : public std::enable_shared_from_this<Object>{
         public:

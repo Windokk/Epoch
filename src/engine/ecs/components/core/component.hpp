@@ -6,7 +6,7 @@
 
 using namespace nlohmann;
 
-namespace SHAME::Engine::ECS{
+namespace EPOCH::Engine::ECS{
     namespace Objects{
         class Actor;
     }

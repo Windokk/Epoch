@@ -1,6 +1,6 @@
 #include "debug.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
     
     constexpr int LAT_SEGMENTS = 12;
     constexpr int LONG_SEGMENTS = 24;

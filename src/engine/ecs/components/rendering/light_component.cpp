@@ -4,7 +4,7 @@
 #include "engine/ecs/components/core/transform.hpp"
 #include "engine/ecs/objects/actors/actor.hpp"
 
-namespace SHAME::Engine::ECS::Components{
+namespace EPOCH::Engine::ECS::Components{
 
     Light::Light(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {

@@ -9,7 +9,7 @@
 #include "engine/ecs/components/rendering/camera.hpp"
 #include "engine/ecs/components/core/script.hpp"
 
-namespace SHAME::Engine::ECS{
+namespace EPOCH::Engine::ECS{
 
     namespace Objects{
         class Actor;
@@ -22,12 +22,12 @@ namespace SHAME::Engine::ECS{
     }
 }
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
     class Renderer;
     class Mesh;
 }
 
-namespace SHAME::Engine::Levels{
+namespace EPOCH::Engine::Levels{
 
     class Level{
 

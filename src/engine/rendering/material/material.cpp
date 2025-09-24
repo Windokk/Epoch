@@ -6,7 +6,7 @@
 
 #include "engine/filesystem/filesystem.hpp"
 
-namespace SHAME::Engine::Rendering{
+namespace EPOCH::Engine::Rendering{
 
     UniformValue DefaultValueForType(GLenum type) {
         switch (type) {

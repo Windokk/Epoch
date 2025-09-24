@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <map>
 
-namespace SHAME::Engine::Audio
+namespace EPOCH::Engine::Audio
 {
     class Sound;
 

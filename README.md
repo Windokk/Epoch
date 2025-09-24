@@ -1,6 +1,6 @@
-# SHA.me
-A psychological horror game
+# EPOCH Engine
 
+Yet another game engine
 
 ## ROADMAP (Engine)
 

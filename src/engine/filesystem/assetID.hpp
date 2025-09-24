@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <map>
 
-namespace SHAME::Engine::Filesystem
+namespace EPOCH::Engine::Filesystem
 {
 
     class AssetID {

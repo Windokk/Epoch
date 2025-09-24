@@ -1,6 +1,6 @@
 #include "object.hpp"
 
-namespace SHAME::Engine::ECS::Objects{
+namespace EPOCH::Engine::ECS::Objects{
     
     Object::Object()
     {

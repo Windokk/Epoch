@@ -7,9 +7,9 @@
 #include <thread>
 #include <iostream>
 
-using namespace SHAME::Engine::Input;
+using namespace EPOCH::Engine::Input;
 
-Character::Character(SHAME::Engine::ECS::Objects::Actor* parent, uint32_t local_id)
+Character::Character(EPOCH::Engine::ECS::Objects::Actor* parent, uint32_t local_id)
     : Script(parent, local_id) {
     // Init
 }
@@ -26,7 +26,7 @@ void Character::Begin() {
 }
 
 void Character::Tick() {
-    auto& input = SHAME::Engine::Input::GetInputManager();
+    auto& input = EPOCH::Engine::Input::GetInputManager();
 
     if(input.IsKeyDown(KEY_W)){
         parent->transform->Translate(parent->transform->GetForward() * speed);

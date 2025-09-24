@@ -8,7 +8,7 @@
 #include "keys.hpp"
 #include "engine/debugging/debugger.hpp"
 
-namespace SHAME::Engine::Input
+namespace EPOCH::Engine::Input
 {
     class InputManager{
         public:
