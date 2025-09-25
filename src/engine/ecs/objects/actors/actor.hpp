@@ -24,6 +24,7 @@ namespace EPOCH::Engine::ECS::Objects{
         std::vector<std::shared_ptr<Component>> components;        
         std::string name;
         public:
+
             Actor(std::string name);
 
             std::shared_ptr<Component> AddComponentRaw(Component *rawComponent);
@@ -53,9 +54,12 @@ namespace EPOCH::Engine::ECS::Objects{
                 Object::Destroy();
             }
 
-            uint32_t GetComponentIDInScene(int componentIndex) { 
-                uint32_t global_id = (static_cast<uint32_t>(id.GetAsInt()) << 16) | componentIndex;
-                return global_id;
+            int GetComponentIDInScene(int componentIndex) { 
+                if(componentIndex >= 0 && id.GetAsInt() >= 0){
+                    return (id.GetAsInt() << 12) | (componentIndex & 0xFFF);
+                }
+                DEBUG_ERROR("Either local component ID or actor id is not greater than 0. Returning default value (0).");
+                return 0;
             }
             
             std::string GetName() { return name; }

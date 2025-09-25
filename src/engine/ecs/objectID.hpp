@@ -43,7 +43,7 @@ namespace EPOCH::Engine::ECS
     
     class ObjectIDBuilder {
         public:
-        ObjectIDBuilder& WithValue(int val) {
+            ObjectIDBuilder& WithValue(int val) {
                 value = val;
                 generated = false;
                 return *this;
@@ -71,26 +71,30 @@ namespace EPOCH::Engine::ECS
 
     class ObjectIDManager {
         public:
+            static ObjectIDManager& GetInstance() {
+                static ObjectIDManager instance;
+                return instance;
+            }
 
-            static void DestroyID(const ObjectID& id) {
+            void DestroyID(const ObjectID& id) {
                 availableIDs.insert(id.GetAsInt());
                 ObjectIDMap.erase(id);
             }
             
-            static ObjectID GenerateNewID() {
+            ObjectID GenerateNewID() {
                 if (!availableIDs.empty()) {
                     int id = *availableIDs.begin();
                     availableIDs.erase(availableIDs.begin());
                     return ObjectID(id);
                 }
-                return ObjectID(ObjectIDBuilder().Generate().Build().GetAsInt());
+                return ObjectIDBuilder().Generate().Build();
             }
 
-            static void AssignID(ObjectID id, std::shared_ptr<Objects::Object> obj){
+            void AssignID(ObjectID id, std::shared_ptr<Objects::Object> obj){
                 ObjectIDMap[id] = obj;
             }
         
-            static std::shared_ptr<Objects::Object> GetObjectFromID(ObjectID id){
+            std::shared_ptr<Objects::Object> GetObjectFromID(ObjectID id){
                 auto it = ObjectIDMap.find(id);
                 if (it != ObjectIDMap.end()) {
                     return it->second;
@@ -99,8 +103,13 @@ namespace EPOCH::Engine::ECS
             }
 
         private:
-            static std::map<ObjectID, std::shared_ptr<Objects::Object>> ObjectIDMap;
-            static std::unordered_set<int> availableIDs;
+            std::map<ObjectID, std::shared_ptr<Objects::Object>> ObjectIDMap;
+            std::unordered_set<int> availableIDs;
+
+            ObjectIDManager() = default;
+            ~ObjectIDManager() = default;
+            ObjectIDManager(const ObjectIDManager&) = delete;
+            ObjectIDManager& operator=(const ObjectIDManager&) = delete;
     };
 }
 

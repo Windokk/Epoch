@@ -1,18 +1,14 @@
 #include "object.hpp"
 
+#include "engine/debugging/debugger.hpp"
+
 namespace EPOCH::Engine::ECS::Objects{
     
     Object::Object()
     {
+
     }
-    
-    std::shared_ptr<Object> Object::Create()
-    {
-        std::shared_ptr<Object> obj(new Object());
-        obj->id = ECS::ObjectIDManager::GenerateNewID();
-        ECS::ObjectIDManager::AssignID(obj->id, obj);
-        return obj;
-    }
+
     Object::~Object()
     {
 
@@ -20,7 +16,7 @@ namespace EPOCH::Engine::ECS::Objects{
 
     std::shared_ptr<Object> Object::GetChild(int index)
     {
-        return ObjectIDManager::GetObjectFromID(children[index]);
+        return ObjectIDManager::GetInstance().GetObjectFromID(children[index]);
     }
 
     std::shared_ptr<Object> Object::GetChild(ObjectID ObjectID)
@@ -31,7 +27,7 @@ namespace EPOCH::Engine::ECS::Objects{
         for (auto& child : children)
         {
             if (child == ObjectID)
-                return ObjectIDManager::GetObjectFromID(child);
+                return ObjectIDManager::GetInstance().GetObjectFromID(child);
         }
 
         return nullptr;

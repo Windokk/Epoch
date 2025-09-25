@@ -252,7 +252,7 @@ namespace EPOCH::Engine::Serialization{
 
             for(auto& actor : data["actors"])
             {
-                std::shared_ptr<ECS::Objects::Actor> a = std::make_shared<ECS::Objects::Actor>(actor["name"]);
+                std::shared_ptr<ECS::Objects::Actor> a = ECS::Objects::Object::Create<ECS::Objects::Actor>(actor["name"]);
                 l->AddActor(a);
                 LoadActor(a, data, actor);
             }

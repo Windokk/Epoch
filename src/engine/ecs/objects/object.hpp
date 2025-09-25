@@ -10,7 +10,16 @@ namespace EPOCH::Engine::ECS::Objects{
     
     class Object : public std::enable_shared_from_this<Object>{
         public:
-            std::shared_ptr<Object> Create();
+        
+            template <typename T, typename... Args>
+            static std::shared_ptr<T> Create(Args&&... args) {
+                static_assert(std::is_base_of<Object, T>::value, "T must derive from Object");
+                std::shared_ptr<T> obj = std::make_shared<T>(std::forward<Args>(args)...);
+                obj->id = ECS::ObjectIDManager::GetInstance().GenerateNewID();
+                ECS::ObjectIDManager::GetInstance().AssignID(obj->id, obj);
+                return obj;
+            }
+
             virtual ~Object();
 
             std::shared_ptr<Object> GetChild(int index);
@@ -44,21 +53,21 @@ namespace EPOCH::Engine::ECS::Objects{
                 }
             }
 
-            std::shared_ptr<Object> GetParent() { return ObjectIDManager::GetObjectFromID(parent); }
+            std::shared_ptr<Object> GetParent() { return ObjectIDManager::GetInstance().GetObjectFromID(parent); }
             void SetParent(ObjectID parentID) { this->parent = parentID; }
 
             ObjectID GetID() { return id; }
 
             virtual void Destroy(){
                 if(parent.GetAsInt() != -1){
-                    ObjectIDManager::GetObjectFromID(parent)->DeleteChildRef(id);
+                    ObjectIDManager::GetInstance().GetObjectFromID(parent)->DeleteChildRef(id);
                 }
                 for(auto& child : children)
                 { 
-                    ObjectIDManager::GetObjectFromID(child)->Destroy(); 
+                    ObjectIDManager::GetInstance().GetObjectFromID(child)->Destroy(); 
                 }
                 children.clear();
-                ObjectIDManager::DestroyID(id); 
+                ObjectIDManager::GetInstance().DestroyID(id); 
             }
         
         private:

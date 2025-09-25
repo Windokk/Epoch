@@ -76,7 +76,7 @@ namespace EPOCH::Engine::Levels{
                 std::vector<ECS::ObjectID> children = actorPtr->GetChildrenID(true);
 
                 for(auto& _id : children){
-                    std::shared_ptr<ECS::Objects::Actor> child = std::dynamic_pointer_cast<ECS::Objects::Actor>(ECS::ObjectIDManager::GetObjectFromID(_id));
+                    std::shared_ptr<ECS::Objects::Actor> child = std::dynamic_pointer_cast<ECS::Objects::Actor>(ECS::ObjectIDManager::GetInstance().GetObjectFromID(_id));
                     if(_id == id && child){
                         return child;
                     }
