@@ -68,12 +68,17 @@ namespace EPOCH::Engine::Audio
     class AudioIDManager {
         public:
 
-            static void DestroyID(const AudioID& id) {
+            static AudioIDManager& GetInstance() {
+                static AudioIDManager instance;
+                return instance;
+            }
+
+            void DestroyID(const AudioID& id) {
                 availableIDs.insert(id.GetAsInt());
                 AudioIDMap.erase(id);
             }
             
-            static AudioID GenerateNewID() {
+            AudioID GenerateNewID() {
                 if (!availableIDs.empty()) {
                     int id = *availableIDs.begin();
                     availableIDs.erase(availableIDs.begin());
@@ -82,13 +87,13 @@ namespace EPOCH::Engine::Audio
                 return AudioID(AudioIDBuilder().Generate().Build().GetAsInt());
             }
 
-            static std::map<AudioID, Sound*> *GetAudioMap() { return &AudioIDMap; }
+            std::map<AudioID, Sound*> *GetAudioMap() { return &AudioIDMap; }
 
-            static void AssignID(AudioID id, Sound* obj){
+            void AssignID(AudioID id, Sound* obj){
                 AudioIDMap[id] = obj;
             }
         
-            static Sound* GetSoundFromID(AudioID id){
+            Sound* GetSoundFromID(AudioID id){
                 auto it = AudioIDMap.find(id);
                 if (it != AudioIDMap.end()) {
                     return it->second;
@@ -97,7 +102,12 @@ namespace EPOCH::Engine::Audio
             }
 
         private:
-            static std::map<AudioID, Sound*> AudioIDMap;
-            static std::unordered_set<int> availableIDs;
+            std::map<AudioID, Sound*> AudioIDMap;
+            std::unordered_set<int> availableIDs;
+            
+            AudioIDManager() = default;
+            ~AudioIDManager() = default;
+            AudioIDManager(const AudioIDManager&) = delete;
+            AudioIDManager& operator=(const AudioIDManager&) = delete;
     };
 }

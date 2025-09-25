@@ -12,7 +12,7 @@ namespace EPOCH::Engine::ECS::Components{
         }
         else{
             if(path != nullptr && volume != -1.0f){
-                audioID = Audio::AudioIDManager::GenerateNewID();
+                audioID = Audio::AudioIDManager::GetInstance().GenerateNewID();
                 Audio::AudioManager::GetInstance().CreateSound(audioID, path->full, parent->transform->GetPosition());
 
             }

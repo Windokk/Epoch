@@ -28,7 +28,7 @@ namespace EPOCH::Engine::Audio
             if (userData) {
                 AudioID* id = static_cast<AudioID*>(userData);
 
-                auto* sound = AudioIDManager::GetSoundFromID(*id);
+                auto* sound = AudioIDManager::GetInstance().GetSoundFromID(*id);
                 if (sound) {
                     sound->isPlaying = false;
                 }
@@ -75,7 +75,7 @@ namespace EPOCH::Engine::Audio
             sound->pos = pos;
             sound->buffer = file;
 
-            AudioIDManager::AssignID(id, sound);
+            AudioIDManager::GetInstance().AssignID(id, sound);
             channels.emplace(id.GetAsString() + "_channel", channel);
         } else {
             DEBUG_ERROR("Couldn't load sound: " + path.full);
@@ -84,38 +84,38 @@ namespace EPOCH::Engine::Audio
 
     void AudioManager::RemoveSound(AudioID id)
     {
-        Sound* sound = AudioIDManager::GetSoundFromID(id);
+        Sound* sound = AudioIDManager::GetInstance().GetSoundFromID(id);
         FMOD_Sound_Release(sound->fmod_sound);
         delete sound;
-        AudioIDManager::DestroyID(id);
+        AudioIDManager::GetInstance().DestroyID(id);
         channels.erase(id.GetAsString()+"_channel");
     }
 
     void AudioManager::PlaySound(AudioID id, float volume)
     {
-        if(!AudioIDManager::GetSoundFromID(id)->isPlaying){
-            FMOD_System_PlaySound(system, AudioIDManager::GetSoundFromID(id)->fmod_sound, nullptr, true, &channels.at(id.GetAsString()+"_channel"));
+        if(!AudioIDManager::GetInstance().GetSoundFromID(id)->isPlaying){
+            FMOD_System_PlaySound(system, AudioIDManager::GetInstance().GetSoundFromID(id)->fmod_sound, nullptr, true, &channels.at(id.GetAsString()+"_channel"));
             AudioID* idCopy = new AudioID(id);
             FMOD_Channel_SetUserData(channels.at(id.GetAsString()+"_channel"), idCopy);
             FMOD_Channel_SetCallback(channels.at(id.GetAsString()+"_channel"), OnSoundStopped);
             FMOD_Channel_SetPaused(channels.at(id.GetAsString()+"_channel"), false);
-            AudioIDManager::GetSoundFromID(id)->isPlaying = true;
-            AudioIDManager::GetSoundFromID(id)->initialVolume = volume/100.0f;
+            AudioIDManager::GetInstance().GetSoundFromID(id)->isPlaying = true;
+            AudioIDManager::GetInstance().GetSoundFromID(id)->initialVolume = volume/100.0f;
         }
     }
 
     void AudioManager::PauseSound(AudioID id)
     {
-        if(AudioIDManager::GetSoundFromID(id)->isPlaying){
+        if(AudioIDManager::GetInstance().GetSoundFromID(id)->isPlaying){
             FMOD_Channel_SetPaused(channels.at(id.GetAsString()+"_channel"), true);
-            AudioIDManager::GetSoundFromID(id)->isPlaying = false;
+            AudioIDManager::GetInstance().GetSoundFromID(id)->isPlaying = false;
         }
     }
 
     void AudioManager::UpdateSound(AudioID id, glm::vec3 pos, float volume)
     {
-        AudioIDManager::GetSoundFromID(id)->pos = pos;
-        AudioIDManager::GetSoundFromID(id)->initialVolume = volume;
+        AudioIDManager::GetInstance().GetSoundFromID(id)->pos = pos;
+        AudioIDManager::GetInstance().GetSoundFromID(id)->initialVolume = volume;
     }
 
     void AudioManager::Update(glm::vec3 listenerPos, glm::vec2 listenerFacingNormalized, float maxDistance)
@@ -124,7 +124,7 @@ namespace EPOCH::Engine::Audio
             DEBUG_FATAL("maxDistance can't be >= 0");
         }
         
-        for (const auto& pair : *AudioIDManager::GetAudioMap()) {
+        for (const auto& pair : *AudioIDManager::GetInstance().GetAudioMap()) {
             if(pair.second->isPlaying){
                 float pan = glm::sin(glm::orientedAngle(glm::normalize(glm::vec2(pair.second->pos.x - listenerPos.x, pair.second->pos.z - listenerPos.z)), listenerFacingNormalized));
                 if (pan < -1.0f) pan = -1.0f;
@@ -146,8 +146,8 @@ namespace EPOCH::Engine::Audio
 
     void AudioManager::Shutdown()
     {
-        for (const auto& pair : *AudioIDManager::GetAudioMap()) {
-            AudioIDManager::DestroyID(pair.first); 
+        for (const auto& pair : *AudioIDManager::GetInstance().GetAudioMap()) {
+            AudioIDManager::GetInstance().DestroyID(pair.first); 
         }
 
         FMOD_System_Close(system);
