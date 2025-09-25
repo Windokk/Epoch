@@ -57,12 +57,6 @@ namespace EPOCH::Engine::Levels{
     void Level::RemoveActor(ECS::ObjectID id, bool recursive)
     {
         GetActor(id, recursive)->Destroy();
-        for (int i = 0; i < rootActors.size(); i++)
-        {
-            if (rootActors[i]->GetID() == id){
-                rootActors.erase(rootActors.begin()+i);
-            }
-        }
     }
 
     std::shared_ptr<ECS::Objects::Actor> Level::GetActor(ECS::ObjectID id, bool recursive)

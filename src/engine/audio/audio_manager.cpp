@@ -10,6 +10,8 @@
 
 #include <cassert>
 
+#include "engine/time/time_manager.hpp"
+
 namespace EPOCH::Engine::Audio
 {
     using namespace Filesystem;
@@ -156,7 +158,7 @@ namespace EPOCH::Engine::Audio
 
     void AudioManager::Tick()
     {
-        for(auto& source : Levels::LevelManager::GetLevelAt(0)->audioSources){
+        for(auto& source : Levels::LevelManager::GetInstance().GetLevelAt(0)->audioSources){
             source->Update();
         }
 

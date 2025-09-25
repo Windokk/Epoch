@@ -176,7 +176,7 @@ namespace EPOCH::Engine::Rendering{
         CameraManager::Tick();
 
         if(settings.enableShadows){
-            shadowMan->RenderShadowMaps(Levels::LevelManager::GetLevelAt(0)->meshes);
+            shadowMan->RenderShadowMaps(Levels::LevelManager::GetInstance().GetLevelAt(0)->meshes);
             glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
             glViewport(0, 0, Renderer::settings.windowWidth, Renderer::settings.windowHeight);
         }
@@ -227,7 +227,7 @@ namespace EPOCH::Engine::Rendering{
         unlitShader->Activate();
         unlitShader->setMat4("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
 
-        for (auto& physicBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies) {
+        for (auto& physicBody : Levels::LevelManager::GetInstance().GetLevelAt(0)->physicsBodies) {
 
             glm::vec3 pos = physicBody->parent->transform->GetPosition();
             glm::quat rot = physicBody->parent->transform->GetRotation();

@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 
     std::shared_ptr<Levels::Level> l = Core::Resources::ResourcesManager::GetInstance().GetLevel("level1.lvl");
 
-    Levels::LevelManager::LoadLevel(l);
+    Levels::LevelManager::GetInstance().LoadLevel(l);
 
     while (!engine.shouldEnd())
     {
@@ -98,6 +98,10 @@ int main(int argc, char *argv[]) {
     }
 
     engine.Destroy();
+    std::cout << "EPOCH Engine has finished. Press Enter to exit..." << std::endl;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
 
     return 0;
 

@@ -158,7 +158,7 @@ namespace EPOCH::Engine::Physics {
     {
         m_physicsSystem.Update(deltaTime, 1, m_tempAllocator, m_jobSystem);
         
-        for (auto& physicsBody : Levels::LevelManager::GetLevelAt(0)->physicsBodies){
+        for (auto& physicsBody : Levels::LevelManager::GetInstance().GetLevelAt(0)->physicsBodies){
             physicsBody->Tick();
         }
     }

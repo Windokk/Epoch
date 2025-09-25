@@ -112,7 +112,7 @@ namespace EPOCH::Engine::Core{
         GetInputManager().Shutdown();
         AudioManager::GetInstance().Shutdown();
         PhysicsSystem::Shutdown();
-        LevelManager::UnloadAllLevels();
+        LevelManager::GetInstance().UnloadAllLevels();
         Renderer::Shutdown();
         DestroyWindow();
     }
@@ -129,8 +129,7 @@ namespace EPOCH::Engine::Core{
         AudioManager::GetInstance().Tick();
         GetInputManager().Tick();
 
-        double x, y;
-        LevelManager::Tick();
+        LevelManager::GetInstance().Tick();
 
         glfwSwapBuffers(window);
 
