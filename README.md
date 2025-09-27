@@ -51,4 +51,5 @@ Yet another game engine
 ## Credits
 
 - Models :
-"Rubik's Cube" (https://skfb.ly/6U7pp) by RED2000 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+  - "Rubik's Cube" (https://skfb.ly/6U7pp) by RED2000 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+  - "Sponza" Model downloaded from Morgan McGuire's [Computer Graphics Archive](https://casual-effects.com/data)
