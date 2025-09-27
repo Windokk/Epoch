@@ -2,7 +2,9 @@
 
 Yet another game engine
 
-## ROADMAP (Engine)
+(full of bugs)
+
+## ROADMAP
 
 #### Renderer
 
@@ -13,6 +15,7 @@ Yet another game engine
 - [ ] LODs generator
 - [ ] Post processing effects shaders (SSAO, Bloom, Vignette, Tone Mapping, Film Grain, Chromatic Abberration)
 - [ ] Frustum culling
+- [ ] Normal mappings
 
 #### Serialization
 

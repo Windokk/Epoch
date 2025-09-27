@@ -8,8 +8,8 @@
 
 namespace EPOCH::Engine::Rendering{
 
-    UniformValue DefaultValueForType(GLenum type) {
-        switch (type) {
+    UniformValue DefaultValueForType(UniformInfo uniform) {
+        switch (uniform.type) {
             case GL_FLOAT: return 0.0f;
             case GL_INT: return 0;
             case GL_BOOL: return false;
@@ -17,10 +17,13 @@ namespace EPOCH::Engine::Rendering{
             case GL_FLOAT_VEC4: return glm::vec4(0.0f);
             case GL_FLOAT_MAT4: return glm::mat4(1.0f);
             case GL_SAMPLER_2D: return std::pair<Rendering::TextureType,std::shared_ptr<Texture>>(Rendering::TextureType::ANY, nullptr);
+            case GL_SAMPLER_2D_SHADOW: return std::pair<Rendering::TextureType,std::shared_ptr<Texture>>(Rendering::TextureType::ANY, nullptr);
             case GL_SAMPLER_CUBE: return 0;
+            case GL_SAMPLER_CUBE_SHADOW: return 0;
             case GL_SAMPLER_CUBE_MAP_ARRAY: return 0;
+            case GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW: return 0;
             default:{
-                DEBUG_ERROR("Failed to query default variable type : "+std::to_string(type));
+                DEBUG_ERROR("Failed to query default variable type : "+std::to_string(uniform.type)+" , uniform name : "+uniform.name);
                 return -1;
             } 
 
@@ -38,7 +41,7 @@ namespace EPOCH::Engine::Rendering{
 
         auto uniforms = this->shader->GetActiveUniforms();
         for (const auto& uniform : uniforms) {
-            parameters[uniform.name] = DefaultValueForType(uniform.type);
+            parameters[uniform.name] = DefaultValueForType(uniform);
         }
     }
 

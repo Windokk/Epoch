@@ -12,6 +12,8 @@ namespace EPOCH::Engine::ECS::Components
 
             virtual void OnLevelLoaded();
 
+            virtual void OnLevelUnloaded();
+
             virtual void Begin();
 
             virtual void Tick();

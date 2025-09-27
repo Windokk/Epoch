@@ -162,7 +162,7 @@ namespace EPOCH::Engine::Audio
             source->Update();
         }
 
-        std::shared_ptr<ECS::Components::Camera> cam = CameraManager::GetActiveCamera();
+        std::shared_ptr<ECS::Components::Camera> cam = CameraManager::GetInstance().GetActiveCamera();
 
         if(cam == nullptr)
             return;

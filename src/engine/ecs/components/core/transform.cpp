@@ -30,7 +30,7 @@ namespace EPOCH::Engine::ECS::Components{
 		}
 
 		if(oldpos != position){
-			Rendering::Renderer::ReorderDrawList();
+			Rendering::Renderer::GetInstance().ReorderDrawList();
 		}
 		UpdateMeshReferencesInLevel();
     }
@@ -88,7 +88,7 @@ namespace EPOCH::Engine::ECS::Components{
 		}
 		
 		if(deltaPosition.z != 0){
-			Rendering::Renderer::ReorderDrawList();
+			Rendering::Renderer::GetInstance().ReorderDrawList();
 		}
 		UpdateMeshReferencesInLevel();
     }

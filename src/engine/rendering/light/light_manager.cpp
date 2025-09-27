@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "engine/rendering/renderer/renderer.hpp"
+#include <glm/gtx/string_cast.hpp>
 
 namespace EPOCH::Engine::Rendering{
     
@@ -40,7 +41,7 @@ namespace EPOCH::Engine::Rendering{
         if(updatedLight == -1)
             return;
 
-        Renderer::shadowMan->RegisterLight(updatedLight, lights[updatedLight]);
+        Renderer::GetInstance().shadowMan->RegisterLight(updatedLight, lights[updatedLight]);
     }
 
     /// @brief Add a light to the renderer
@@ -58,7 +59,7 @@ namespace EPOCH::Engine::Rendering{
         {
             if (lights[i] && lights[i]->castShadow)
             {
-                Renderer::shadowMan->UnregisterLight(i);
+                Renderer::GetInstance().shadowMan->UnregisterLight(i);
             }
         }
 
@@ -74,7 +75,7 @@ namespace EPOCH::Engine::Rendering{
 
         if (lights[lightIndex] && lights[lightIndex]->castShadow)
         {
-            Renderer::shadowMan->UnregisterLight(lightIndex);
+            Renderer::GetInstance().shadowMan->UnregisterLight(lightIndex);
         }
 
         lights.erase(lights.begin() + lightIndex);
@@ -83,7 +84,7 @@ namespace EPOCH::Engine::Rendering{
         {
             if (lights[i] && lights[i]->castShadow)
             {
-                Renderer::shadowMan->RegisterLight(i, lights[i]);
+                Renderer::GetInstance().shadowMan->RegisterLight(i, lights[i]);
             }
         }
     }
@@ -95,27 +96,90 @@ namespace EPOCH::Engine::Rendering{
         return lights.size();
     }
     
+    
+    std::vector<glm::vec4> getFrustumCornersWorldSpace(const glm::mat4& projview)
+    {
+        const auto inv = glm::inverse(projview);
+
+        std::vector<glm::vec4> frustumCorners;
+        for (unsigned int x = 0; x < 2; ++x)
+        {
+            for (unsigned int y = 0; y < 2; ++y)
+            {
+                for (unsigned int z = 0; z < 2; ++z)
+                {
+                    const glm::vec4 pt = inv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+                    frustumCorners.push_back(pt / pt.w);
+                }
+            }
+        }
+
+        return frustumCorners;
+    }
+
     /// @brief Getter for lights matrices
     /// @return The view-projection matrix from the light's point of view
-    glm::mat4 LightData::GetLightMatrix() const
+    glm::mat4 LightData::GetLightMatrix(const glm::mat4& cameraView, const float fov, const float aspectRatio, const float cascadeNear, const float cascadeFar, const float shadowRes)
     {
-        if (type == static_cast<int>(LightType::Directional))
+        if (type == static_cast<int>(LightType::Directional) && cascadeFar != -1 && fov != -1 && aspectRatio != -1 && cascadeFar != -1)
         {
-            float orthoSize = 10.0f;
-            glm::mat4 proj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 0.1f, radius);
+            const auto proj = glm::perspective(
+                glm::radians(fov), aspectRatio, cascadeNear,
+                cascadeFar);
+            const auto corners = getFrustumCornersWorldSpace(proj * cameraView);
 
+            //Frustum center
+            glm::vec3 center(0.0f);
+            for (const auto& v : corners)
+                center += glm::vec3(v);
+            center /= corners.size();
+
+            //Light view
             glm::vec3 lightDir = glm::normalize(direction);
-            glm::vec3 lightPos = -lightDir * 20.0f;
+            glm::vec3 up = (fabs(glm::dot(direction, glm::vec3(0,1,0))) > 0.99f) ? glm::vec3(1,0,0) : glm::vec3(0,1,0);
+            glm::mat4 lightView = glm::lookAt(center - lightDir, center, up);
 
-            glm::vec3 up = glm::abs(glm::dot(lightDir, glm::vec3(0, 1, 0))) > 0.99f ? glm::vec3(1, 0, 0) : glm::vec3(0, 1, 0);
-            glm::mat4 view = glm::lookAt(lightPos, glm::vec3(0), up);
+            //Frustum "radius" computation
+            float radius = 0.0f;
+            for (const auto& v : corners) {
+                float dist = glm::length(glm::vec3(v) - center);
+                radius = glm::max(radius, dist);
+            }
+            radius = std::ceil(radius);
 
-            return proj * view;
+            //AABB from radius
+            glm::vec3 maxOrtho = center + glm::vec3(radius);
+            glm::vec3 minOrtho = center - glm::vec3(radius);
+
+            maxOrtho = glm::vec3(lightView * glm::vec4(maxOrtho, 1.0f));
+            minOrtho = glm::vec3(lightView * glm::vec4(minOrtho, 1.0f));
+
+            float zMult = (cascadeFar - cascadeNear);
+            float nearPlane = minOrtho.z - zMult;
+            float farPlane = maxOrtho.z + zMult;
+
+            glm::mat4 lightProjection = glm::ortho(minOrtho.x, maxOrtho.x,
+                                                minOrtho.y, maxOrtho.y,
+                                                nearPlane, farPlane);
+
+            // Texel snaapping
+            glm::mat4 shadowMatrix = lightProjection * lightView;
+            glm::vec4 shadowOrigin = shadowMatrix * glm::vec4(0, 0, 0, 1);
+            float shadowMapSize = shadowRes;
+            shadowOrigin = shadowOrigin * (shadowMapSize / 2.0f);
+            glm::vec4 roundedOrigin = glm::round(shadowOrigin);
+            glm::vec4 roundOffset = roundedOrigin - shadowOrigin;
+            roundOffset = roundOffset * (2.0f / shadowMapSize);
+            roundOffset.z = 0.0f;
+            roundOffset.w = 0.0f;
+            lightProjection[3] += roundOffset;
+
+            return lightProjection * lightView;
         }
         else if (type == static_cast<int>(LightType::Spot))
         {
             float orthoSize = 10.0f;
-            glm::mat4 proj = glm::perspective(glm::radians(60.0f), static_cast<float>(Renderer::GetCurrentWidth()/Renderer::GetCurrentHeight()), 0.1f, radius);
+            glm::mat4 proj = glm::perspective(glm::radians(60.0f), static_cast<float>(Renderer::GetInstance().GetCurrentWidth()/Renderer::GetInstance().GetCurrentHeight()), 0.1f, radius);
 
             glm::vec3 lightDir = glm::normalize(direction);
             glm::vec3 lightPos = position;

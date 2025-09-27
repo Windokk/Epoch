@@ -42,6 +42,7 @@ namespace EPOCH::Engine::Levels{
 
         void Tick();
         void Start();
+        void Unload();
 
         void AddActor(std::shared_ptr<ECS::Objects::Actor> a);
         void RemoveActor(ECS::ObjectID id, bool recursive = false);
@@ -61,6 +62,8 @@ namespace EPOCH::Engine::Levels{
         std::vector<std::shared_ptr<ECS::Components::Script>> scripts;
 
         std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh*>> meshes;
+        
+        bool loaded = false;
         
     };
 

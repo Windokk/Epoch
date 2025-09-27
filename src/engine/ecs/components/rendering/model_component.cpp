@@ -48,15 +48,24 @@ namespace EPOCH::Engine::ECS::Components{
         if(!activated)
             return;
 
-        if (materials.size() > 0 && mesh != nullptr){
+        if (materials.size() > 0 && mesh != nullptr && parent->level && parent->level->loaded){
 
             std::shared_ptr<Transform> tr = parent->transform;
 
             std::vector<Rendering::DrawCommand> cmds = mesh->CreateDrawCmds(tr, parent->GetComponentIDInScene(local_id), this->materials);
 
-            Rendering::Renderer::Submit(cmds, alreadySubmitted);
+            Rendering::Renderer::GetInstance().SubmitCommands(cmds, alreadySubmitted);
 
             alreadySubmitted = true;
+        }
+    }
+
+    void Model::RemoveFromDrawList()
+    {
+        if (materials.size() > 0 && mesh != nullptr && parent->level->loaded){
+            std::shared_ptr<Transform> tr = parent->transform;
+            std::vector<Rendering::DrawCommand> cmds = mesh->CreateDrawCmds(tr, parent->GetComponentIDInScene(local_id), this->materials);
+            Rendering::Renderer::GetInstance().RemoveCommands(cmds);
         }
     }
 }

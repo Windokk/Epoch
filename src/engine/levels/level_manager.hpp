@@ -20,8 +20,9 @@ namespace EPOCH::Engine::Levels{
             /// @param lvl The pointer to the level
             void LoadLevel(std::shared_ptr<Level> lvl) {
                 if(!lvl)
-                    DEBUG_ERROR("Cannot load level (because pointer is null)");
+                    DEBUG_FATAL("Cannot load level (because pointer is null)");
                 levelBuffer.push_back(lvl);
+                lvl->loaded = true;
                 lvl->Start();
             }
 
@@ -39,23 +40,37 @@ namespace EPOCH::Engine::Levels{
 
             /// @brief Unload a loaded level
             /// @param index The index of the level to unload
-            void UnLoadLevel(int index){
+            void UnloadLevel(int index){
                 if (index >= 0 && index < levelBuffer.size()) {
-                    levelBuffer[index]->Clear();
+                    levelBuffer[index]->Unload();
                     levelBuffer.erase(levelBuffer.begin() + index);
                 } else {
                     DEBUG_ERROR("Invalid index (out of bounds). Unable to unload level.");
                 }
             }
-        
+            
             /// @brief Unload all loaded levels
             void UnloadAllLevels() {
                 for(int i = 0; i < levelBuffer.size(); i++){
+                    levelBuffer[i]->Unload();
+                }
+                levelBuffer.clear();
+            }
+    
+            /// @brief Destroys a level
+            void DestroyLevel(std::shared_ptr<Level> level){
+                level->Unload();
+                level->Clear();
+            }
+        
+            /// @brief Destroys all levels
+            void DestroyAllLevels() {
+                for(int i = 0; i < levelBuffer.size(); i++){
+                    levelBuffer[i]->Unload();
                     levelBuffer[i]->Clear();
                 }
                 levelBuffer.clear();
             }
-        
             
             /// @brief Getter for the total number loaded level
             /// @return The length of the level buffer

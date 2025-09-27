@@ -38,7 +38,10 @@ namespace EPOCH::Engine::ECS::Components {
                 return glm::vec2(width, height);
             }
 
-            
+            float farPlane = 0;
+            float nearPlane = 0;
+
+            float fov = 60.0f;
 
         private:
 
@@ -58,11 +61,6 @@ namespace EPOCH::Engine::ECS::Components {
             int width = 0;
             int height = 0;
 
-            float farPlane = 0;
-            float nearPlane = 0;
-
             bool canInteract = true;
-
-            //void Inputs(GLFWwindow* window, float speed = 0.6f);
     };
 }

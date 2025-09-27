@@ -19,6 +19,7 @@ namespace EPOCH::Engine::Core::Resources{
                     }
                     DEBUG_LOG("Loading texture : "+textureName);
                     LoadTexture(textureName, infos.path);
+                    DEBUG_LOG("Loaded texture : "+textureName);
                     break;
                 }
                 case Type::T_SHADER: {
@@ -80,12 +81,11 @@ namespace EPOCH::Engine::Core::Resources{
     
         for(Filesystem::FileInfo infos : Filesystem::FileManager::ListDirectory(baseDir, {Type::T_LEVEL}, false, true)){
             std::string levelName = infos.path.RelativeTo(baseDir).full;
-            if (meshes.find(levelName) != meshes.end()) {
+            if (levels.find(levelName) != levels.end()) {
                 break;
             }
             DEBUG_INFO("Loading level : " + levelName);
             LoadLevel(levelName, infos.path);
-            break;
         }
     
     }

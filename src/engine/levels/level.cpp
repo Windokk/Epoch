@@ -29,10 +29,37 @@ namespace EPOCH::Engine::Levels{
 
     void Level::Start()
     {
+        for(auto& cam : cameras){
+            Rendering::CameraManager::GetInstance().AddCamera(cam->parent->GetName(), cam);
+        }
+
+        for(int i = 0; i < lights.size(); i++){
+            lights[i]->SetLightIndex(i);
+        }
+
+        for(auto& model : models){
+            model->Update();
+        }
 
         for(auto& script : scripts){
             script->OnLevelLoaded();
         }
+    }
+
+    void Level::Unload()
+    {
+        for(auto& script : scripts){
+            script->OnLevelUnloaded();
+        }
+
+        loaded = false;
+        
+        for(auto& model : models){
+            model->RemoveFromDrawList();
+        }
+
+        Rendering::CameraManager::GetInstance().Clear();
+        Rendering::Renderer::GetInstance().lightMan->Clear();
     }
 
     void Level::Tick()

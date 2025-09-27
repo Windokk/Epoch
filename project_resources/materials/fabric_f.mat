@@ -1,0 +1,9 @@
+{
+    "castShadows":true,
+    "shader":"shaders\\mesh\\lit",
+    "uniforms":[
+        {"albedo":"textures\\sponza_curtain_green_diff.png"},
+        {"metallic":0.0},
+        {"roughness":1.0}
+    ]
+}

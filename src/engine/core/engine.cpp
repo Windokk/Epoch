@@ -26,9 +26,9 @@ namespace EPOCH::Engine::Core{
         FileManager::Init(settings.rootPath);
         PhysicsSystem::Init(settings.gravity);
         AudioManager::GetInstance().Init(100.0f);
-        Renderer::Init(window);
+        Renderer::GetInstance().Init(window);
         Resources::ResourcesManager::GetInstance().LoadResources(Filesystem::Path("project_resources"), Filesystem::Path("engine_resources"));
-        Renderer::InitFramebuffers();
+        Renderer::GetInstance().InitFramebuffers();
         GetInputManager().Init(window);
         EventDispatcher::GetInstance();
 
@@ -42,6 +42,7 @@ namespace EPOCH::Engine::Core{
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_SAMPLES, 4);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         if(settings.fullscreen){
@@ -113,7 +114,7 @@ namespace EPOCH::Engine::Core{
         AudioManager::GetInstance().Shutdown();
         PhysicsSystem::Shutdown();
         LevelManager::GetInstance().UnloadAllLevels();
-        Renderer::Shutdown();
+        Renderer::GetInstance().Shutdown();
         DestroyWindow();
     }
 
@@ -125,7 +126,7 @@ namespace EPOCH::Engine::Core{
 
         glfwPollEvents();
 
-        Renderer::Render();
+        Renderer::GetInstance().Render();
         AudioManager::GetInstance().Tick();
         GetInputManager().Tick();
 
@@ -143,7 +144,7 @@ namespace EPOCH::Engine::Core{
 
     void EngineInstance::OnWindowResize(GLFWwindow *window, int width, int height)
     {
-        Renderer::RescaleFramebuffers(width, height);
+        Renderer::GetInstance().RescaleFramebuffers(width, height);
     }
 
 }

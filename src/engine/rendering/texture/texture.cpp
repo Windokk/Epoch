@@ -45,23 +45,30 @@ namespace EPOCH::Engine::Rendering{
 
         if (data) {
             GLenum format;
-            if (infos.nrChannels == 1)
+            if (infos.nrChannels == 1){
                 format = GL_RED;
-            else if (infos.nrChannels == 3)
+            }
+            else if (infos.nrChannels == 2){
+                format = GL_RG;
+            }
+            else if (infos.nrChannels == 3){
                 format = GL_RGB;
-            else if (infos.nrChannels == 4)
+            }
+            else if (infos.nrChannels == 4){
                 format = GL_RGBA;
-            else
+            }
+            else{
                 format = GL_RGB; // Default to RGB
+            }
 
             glTexImage2D(GL_TEXTURE_2D, 0, format, infos.width, infos.height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else {
-            DEBUG_ERROR("Couldn't load texture : " + filepath.full);
-            return;
+            DEBUG_ERROR("Couldn't load texture : " + filepath.full);   
         }
 
         stbi_image_free(data);
+        return;
     }
 
     void Texture::Bind(int unit)

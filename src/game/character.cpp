@@ -70,7 +70,7 @@ void Character::Tick() {
         glm::quat rotation = qYaw * qPitch;
         
         parent->transform->SetRotation(rotation);
-
+ 
         // Reset cursor back to locked position every frame
         input.SetCursorPos(lockedMouseX, lockedMouseY);
     }

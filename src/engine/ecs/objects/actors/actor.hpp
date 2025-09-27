@@ -202,7 +202,6 @@ namespace EPOCH::Engine::ECS::Objects{
 
         if constexpr (std::is_base_of<Camera, T>::value) {
             level->cameras.push_back(component);
-            Rendering::CameraManager::AddCamera(name, component);
         }
 
         return component;

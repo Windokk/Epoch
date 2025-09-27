@@ -23,7 +23,7 @@ namespace EPOCH::Engine::Rendering{
         alignas(4) float outerCutoff = glm::cos(glm::radians(7.5f));
         alignas(4) bool castShadow = true;
 
-        glm::mat4 GetLightMatrix() const;
+        glm::mat4 GetLightMatrix(const glm::mat4 &cameraView = glm::mat4(1.0f), const float fov = -1.0f, const float aspectRatio = -1.0f, const float cascadeNear = -1.0f, const float cascadeFar = -1.0f, const float shadowRes = -1.0);
     };
 
     class LightManager {

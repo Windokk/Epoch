@@ -10,6 +10,10 @@ namespace EPOCH::Engine::ECS::Components
     {
     }
 
+    void Script::OnLevelUnloaded()
+    {
+    }
+
     void Script::Begin()
     {
     }

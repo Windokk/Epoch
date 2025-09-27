@@ -19,14 +19,14 @@ namespace EPOCH::Engine::Rendering{
             }
             
             /// @brief Adds a new camera with a name
-            static void AddCamera(const std::string& name, std::shared_ptr<Camera> camera) {
+            void AddCamera(const std::string& name, std::shared_ptr<Camera> camera) {
                 cameras[name] = camera;
                 if (!activeCamera)
                     activeCamera = camera;
             }
 
             /// @brief Removes a camera by name
-            static void RemoveCamera(const std::string& name) {
+            void RemoveCamera(const std::string& name) {
                 if (cameras.count(name)) {
                     if (cameras[name] == activeCamera)
                         activeCamera = nullptr;
@@ -37,37 +37,38 @@ namespace EPOCH::Engine::Rendering{
             /// @brief Update all camera's sizes
             /// @param width The new width (in px)
             /// @param height The new height (in px)
-            static void UpdateSize(int width, int height) {
+            void UpdateSize(int width, int height) {
                 for(std::pair<std::string, std::shared_ptr<Camera>> cam : cameras){
                     cam.second->UpdateSize(width, height);
                 }
             }
 
             /// @brief Update the active camera
-            static void Tick(){
-                activeCamera->UpdateMatrix();
+            void Tick(){
+                if(activeCamera != nullptr)
+                    activeCamera->UpdateMatrix();
             }
 
             /// @brief Get a camera by name
-            static std::shared_ptr<Camera> GetCamera(const std::string& name) {
+            std::shared_ptr<Camera> GetCamera(const std::string& name) {
                 if (cameras.count(name))
                     return cameras[name];
                 return nullptr;
             }
 
             /// @brief Set the active camera
-            static void SetActiveCamera(const std::string& name) {
+            void SetActiveCamera(const std::string& name) {
                 if (cameras.count(name))
                     activeCamera = cameras[name];
             }
 
             /// @brief Get the current active camera
-            static std::shared_ptr<Camera> GetActiveCamera() {
+            std::shared_ptr<Camera> GetActiveCamera() {
                 return activeCamera;
             }
 
             /// @brief Clear all cameras
-            static void Clear() {
+            void Clear() {
                 cameras.clear();
                 activeCamera = nullptr;
             }
@@ -78,7 +79,7 @@ namespace EPOCH::Engine::Rendering{
             CameraManager(const CameraManager&) = delete;
             CameraManager& operator=(const CameraManager&) = delete;
 
-            static std::unordered_map<std::string, std::shared_ptr<Camera>> cameras;
-            static std::shared_ptr<Camera> activeCamera;
+            std::unordered_map<std::string, std::shared_ptr<Camera>> cameras;
+            std::shared_ptr<Camera> activeCamera;
     };
 }

@@ -14,18 +14,7 @@
 #include "engine/core/resources/resources_manager.hpp"
 
 namespace EPOCH::Engine::Rendering{
-    
-    GLFWwindow* Renderer::window = nullptr;
-    std::vector<DrawCommand> Renderer::drawList = {};
-    unsigned int  Renderer::rectVAO,  Renderer::rectVBO = -1;
-    std::vector<RenderPass> Renderer::renderPasses = {};
-    FrameBuffer* Renderer::viewportBuffer = nullptr;
-    std::shared_ptr<Shader> Renderer::blendShader = nullptr;
-    std::shared_ptr<Shader> Renderer::framebufferShader = nullptr;
-    LightManager* Renderer::lightMan = nullptr;
-    std::shared_ptr<Shader> Renderer::unlitShader = nullptr;
-    RendererSettings Renderer::settings{};
-    ShadowManager* Renderer::shadowMan = nullptr;
+
 
     void Renderer::CreateRectGeometry()
     {
@@ -78,14 +67,11 @@ namespace EPOCH::Engine::Rendering{
         lightMan->Update(-1);
         
         //MULTISAMPLING
-        if(settings.antiAliasingLevel>0){
-            glfwWindowHint(GLFW_SAMPLES, settings.antiAliasingLevel);
-            glEnable(GL_MULTISAMPLE);
-        }
-
+        glEnable(GL_MULTISAMPLE);
+        
         //SHADOWS
         shadowMan = new ShadowManager();
-        shadowMan->Init(1024);
+        shadowMan->Init(4096);
     }
 
     void Renderer::InitFramebuffers()
@@ -97,7 +83,7 @@ namespace EPOCH::Engine::Rendering{
             DEBUG_ERROR("Viewport buffer cannot be created if the framebuffer shader or the blend shader are null");
         }
         else{
-            viewportBuffer = new FrameBuffer(settings.windowWidth, settings.windowHeight, framebufferShader);
+            viewportBuffer = new FrameBuffer(settings.windowWidth, settings.windowHeight, framebufferShader, true);
         }
 
         //DEBUG_SHAPES
@@ -114,14 +100,14 @@ namespace EPOCH::Engine::Rendering{
 
     void Renderer::Render()
     {
-        if(CameraManager::GetActiveCamera() != nullptr){
+        if(CameraManager::GetInstance().GetActiveCamera() != nullptr){
             BeginFrame();
 
             ExecuteRenderPasses();
         }
     }
 
-    void Renderer::Submit(DrawCommand cmd, bool replace)
+    void Renderer::SubmitCommand(DrawCommand cmd, bool replace)
     {
         if(replace){
             for(int i = 0; i < drawList.size(); i++){ 
@@ -137,7 +123,7 @@ namespace EPOCH::Engine::Rendering{
         ReorderDrawList();
     }
 
-    void Renderer::Submit(std::vector<DrawCommand> cmds, bool replace)
+    void Renderer::SubmitCommands(std::vector<DrawCommand> cmds, bool replace)
     {
         if (replace) {
             for (const auto& cmd : cmds) {
@@ -160,6 +146,35 @@ namespace EPOCH::Engine::Rendering{
         ReorderDrawList();
     }
 
+    void Renderer::RemoveCommand(DrawCommand cmd)
+    {
+        for(int i = 0; i < drawList.size(); i++){ 
+            if(drawList[i].id == cmd.id){
+                drawList.erase(drawList.begin()+i);
+            }
+        }
+
+        ReorderDrawList();
+    }
+
+    void Renderer::RemoveCommands(std::vector<DrawCommand> cmds)
+    {
+        std::unordered_set<int> idsToRemove;
+        for (const auto& cmd : cmds) {
+            idsToRemove.insert(cmd.id);
+        }
+
+        drawList.erase(
+            std::remove_if(drawList.begin(), drawList.end(),
+                        [&](const DrawCommand& dc) {
+                            return idsToRemove.count(dc.id) > 0;
+                        }),
+            drawList.end()
+        );
+
+        ReorderDrawList();
+    }
+
     void Renderer::ReorderDrawList()
     {
         drawList.erase(
@@ -173,10 +188,10 @@ namespace EPOCH::Engine::Rendering{
 
     void Renderer::BeginFrame()
     {
-        CameraManager::Tick();
+        CameraManager::GetInstance().Tick();
 
         if(settings.enableShadows){
-            shadowMan->RenderShadowMaps(Levels::LevelManager::GetInstance().GetLevelAt(0)->meshes);
+            shadowMan->RenderShadowMaps(Levels::LevelManager::GetInstance().GetLevelAt(0)->meshes, CameraManager::GetInstance().GetActiveCamera());
             glfwGetWindowSize(window, &settings.windowWidth, &settings.windowHeight);
             glViewport(0, 0, Renderer::settings.windowWidth, Renderer::settings.windowHeight);
         }
@@ -205,10 +220,11 @@ namespace EPOCH::Engine::Rendering{
 
             if(settings.enableShadows && cmd.mat->castShadows)
                 shadowMan->BindShadowMaps(cmd.mat);
-            cmd.mat->SetParameter("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
+            cmd.mat->SetParameter("projection", CameraManager::GetInstance().GetActiveCamera()->GetProjection());
+            cmd.mat->SetParameter("view", CameraManager::GetInstance().GetActiveCamera()->GetView());
             cmd.mat->SetParameter("model", cmd.tr->GetTransformMatrix());
             cmd.mat->SetParameter("lightNB", lightMan->GetLightsCount());
-            cmd.mat->SetParameter("camPos", CameraManager::GetActiveCamera()->parent->transform->GetPosition());
+            cmd.mat->SetParameter("camPos", CameraManager::GetInstance().GetActiveCamera()->parent->transform->GetPosition());
             cmd.mat->Use();
             glBindVertexArray(cmd.VAO);
             glPolygonMode(GL_FRONT_AND_BACK, cmd.fillMode);
@@ -225,7 +241,7 @@ namespace EPOCH::Engine::Rendering{
 
         // --- Debug Physics Shapes ---
         unlitShader->Activate();
-        unlitShader->setMat4("projectionView", CameraManager::GetActiveCamera()->GetMatrix());
+        unlitShader->setMat4("projectionView", CameraManager::GetInstance().GetActiveCamera()->GetMatrix());
 
         for (auto& physicBody : Levels::LevelManager::GetInstance().GetLevelAt(0)->physicsBodies) {
 
@@ -256,7 +272,7 @@ namespace EPOCH::Engine::Rendering{
 
         glViewport(0, 0, width, height);
 
-        CameraManager::UpdateSize(width, height);
+        CameraManager::GetInstance().UpdateSize(width, height);
     }
 
     void Renderer::AddRenderPass(RenderStage stage, std::function<void()> callback, std::shared_ptr<FrameBuffer> fb, bool appendToViewport, BlendMode blendMode)
@@ -310,6 +326,10 @@ namespace EPOCH::Engine::Rendering{
                     pass.target->Bind();
                     pass.callback();
                     pass.target->Unbind();
+
+                    if (pass.target->isMultisampled)
+                        pass.target->Resolve();
+
                     pass.target->Draw(rectVAO);
 
                     if(pass.appendToViewport){
@@ -328,7 +348,10 @@ namespace EPOCH::Engine::Rendering{
                         glBindTexture(GL_TEXTURE_2D, viewportBuffer->GetFrameTexture());
 
                         glActiveTexture(GL_TEXTURE1);
-                        glBindTexture(GL_TEXTURE_2D, pass.target->GetFrameTexture());
+                        if(pass.target->isMultisampled)
+                            glBindTexture(GL_TEXTURE_2D, pass.target->GetFrameTexture());
+                        else
+                            glBindTexture(GL_TEXTURE_2D, pass.target->GetFrameTexture());
         
                         glBindVertexArray(rectVAO);
                         glDisable(GL_DEPTH_TEST);

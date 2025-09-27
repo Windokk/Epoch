@@ -24,7 +24,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->type = (int)type;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Set the light's intensity
@@ -35,7 +37,10 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->intensity = intensity;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
+        
     }
 
     /// @brief Set the light's position in the world
@@ -46,7 +51,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->position = postion;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Set the light's direction (Only for spot and directionnal lights)
@@ -57,7 +64,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->direction = direction;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+            
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
     
     /// @brief Set the radius of the light (Only for spot and point lights)
@@ -68,7 +77,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->radius = radius;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+        
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Sets the color of the light
@@ -79,7 +90,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->color = color;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+        
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Set the outer cuttof (Only for spot lights)
@@ -90,7 +103,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->outerCutoff = glm::cos(glm::radians(cutoff));
-        Rendering::Renderer::lightMan->Update(lightIndex);
+        
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Set the inner cuttof (Only for spot lights)
@@ -101,7 +116,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->innerCutoff = glm::cos(glm::radians(cutoff));
-        Rendering::Renderer::lightMan->Update(lightIndex);
+        
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Set the light's index in the scene
@@ -111,9 +128,11 @@ namespace EPOCH::Engine::ECS::Components{
         if(lightIndex != -1 || !activated)
             return;
         
-        Rendering::Renderer::lightMan->AddLight(index, lightData);
-        Rendering::Renderer::lightMan->Update(index);
-        lightIndex = index;
+        if(parent->level->loaded){
+            Rendering::Renderer::GetInstance().lightMan->AddLight(index, lightData);
+            Rendering::Renderer::GetInstance().lightMan->Update(index);
+            lightIndex = index;
+        }
     }
     /// @brief Set wether this light should cast shadows
     /// @param castShadows true : cast shadows, false : doesn't cast shadows
@@ -123,7 +142,9 @@ namespace EPOCH::Engine::ECS::Components{
             return;
 
         lightData->castShadow = castShadows;
-        Rendering::Renderer::lightMan->Update(lightIndex);
+        
+        if(parent->level->loaded)
+            Rendering::Renderer::GetInstance().lightMan->Update(lightIndex);
     }
 
     /// @brief Getter for this light component's data

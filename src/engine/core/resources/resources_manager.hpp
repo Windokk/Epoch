@@ -50,9 +50,8 @@ namespace EPOCH::Engine::Core::Resources{
                 return nullptr;
             }
 
-            std::shared_ptr<Levels::Level> GetLevel(std::string name){
-                auto it = levels.find(name);
-                if (it != levels.end())
+            std::shared_ptr<Levels::Level> GetLevel(const std::string& name) {
+                if (auto it = levels.find(name); it != levels.end())
                     return it->second;
                 return nullptr;
             }

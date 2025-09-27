@@ -20,7 +20,7 @@ namespace EPOCH::Engine{
 
         struct RendererSettings{
             bool showDebugShapes = false;
-            int antiAliasingLevel = 4;
+            //int antiAliasingLevel = 4;
             //TODO : bool enableStatsOverlay = false;
             bool enableShadows = true;
             bool enablePostProcessing = true;
@@ -74,22 +74,24 @@ namespace EPOCH::Engine{
                 return instance;
             }
 
-            static void Init(GLFWwindow *window, RendererSettings settings = {});
-            static void InitFramebuffers();
-            static void Shutdown();
-            static void Render();
+            void Init(GLFWwindow *window, RendererSettings settings = {});
+            void InitFramebuffers();
+            void Shutdown();
+            void Render();
 
-            static void Submit(DrawCommand cmd, bool replace);
+            void SubmitCommand(DrawCommand cmd, bool replace);
+            void SubmitCommands(std::vector<DrawCommand> cmds, bool replace);
 
-            static void Submit(std::vector<DrawCommand> cmds, bool replace);
+            void RemoveCommand(DrawCommand cmd);
+            void RemoveCommands(std::vector<DrawCommand> cmds);
 
-            static void ReorderDrawList();
+            void ReorderDrawList();
 
-            static void DrawScene();
+            void DrawScene();
 
-            static void RescaleFramebuffers(int width, int height);
+            void RescaleFramebuffers(int width, int height);
 
-            static void AddRenderPass(
+            void AddRenderPass(
                 RenderStage stage, 
                 std::function<void()> callback, 
                 std::shared_ptr<FrameBuffer> fb = nullptr, 
@@ -97,50 +99,49 @@ namespace EPOCH::Engine{
                 BlendMode blendMode = BlendMode::Normal);
 
             
-            static void ExecuteRenderPasses();
+            void ExecuteRenderPasses();
 
-            static int GetCurrentHeight() { int height; glfwGetWindowSize(window, nullptr, &height); return height; }
+            int GetCurrentHeight() { int height; glfwGetWindowSize(window, nullptr, &height); return height; }
 
-            static int GetCurrentWidth() { int width; glfwGetWindowSize(window, &width, nullptr); return width; }
+            int GetCurrentWidth() { int width; glfwGetWindowSize(window, &width, nullptr); return width; }
 
-            static bool GetCurrentFullscreen() { return settings.fullscreen; }
+            bool GetCurrentFullscreen() { return settings.fullscreen; }
 
-            static void ToggleFullscreen();
+            void ToggleFullscreen();
 
-            static unsigned int GetViewportTextureID() { return viewportBuffer->GetFrameTexture(); }
+            unsigned int GetViewportTextureID() { return viewportBuffer->GetFrameTexture(); }
 
-            static LightManager* lightMan;
+            LightManager* lightMan;
 
-            static ShadowManager* shadowMan;
-
-            static GLuint GetRectVAO();
+            ShadowManager* shadowMan;
 
             private:
 
-            static void CreateRectGeometry();
+            void CreateRectGeometry();
 
             Renderer() = default;
             ~Renderer() = default;
             Renderer(const Renderer&) = delete;
             Renderer& operator=(const Renderer&) = delete;
 
-            static void BeginFrame();
+            void BeginFrame();
 
-            static GLFWwindow *window;
+            GLFWwindow *window;
 
-            static std::vector<DrawCommand> drawList;
+            std::vector<DrawCommand> drawList;
 
-            static unsigned int rectVAO, rectVBO;
+            unsigned int rectVAO, rectVBO;
             
-            static std::vector<RenderPass> renderPasses;
+            std::vector<RenderPass> renderPasses;
 
-            static std::shared_ptr<Shader> blendShader;
-            static FrameBuffer* viewportBuffer;
-            static std::shared_ptr<Shader> framebufferShader;
+            std::shared_ptr<Shader> blendShader;
+            FrameBuffer* viewportBuffer;
 
-            static std::shared_ptr<Shader> unlitShader;
+            std::shared_ptr<Shader> framebufferShader;
 
-            static RendererSettings settings;
+            std::shared_ptr<Shader> unlitShader;
+
+            RendererSettings settings;
 
         };
     }

@@ -33,7 +33,6 @@ namespace EPOCH::Engine::ECS::Objects{
 
         // Register in system component arrays
         if (auto light = std::dynamic_pointer_cast<Light>(component)) {
-            light->SetLightIndex(level->lights.size());
             level->lights.push_back(light);
         }
 
@@ -71,7 +70,6 @@ namespace EPOCH::Engine::ECS::Objects{
 
         if (auto cam = std::dynamic_pointer_cast<Camera>(component)) {
             level->cameras.push_back(cam);
-            Rendering::CameraManager::AddCamera(name, cam);
         }
 
         return component;

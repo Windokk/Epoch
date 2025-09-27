@@ -21,8 +21,9 @@ namespace EPOCH::Engine::ECS::Components
 
             int GetMaterialsCount() { return materials.size(); }
 
-        private:
             void Update();
+            void RemoveFromDrawList();
+        private:
 
             bool alreadySubmitted = false;
 

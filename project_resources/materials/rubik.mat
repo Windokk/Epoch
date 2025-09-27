@@ -1,6 +1,6 @@
 {
     "castShadows":true,
-    "shader":"shaders\\lit",
+    "shader":"shaders\\mesh\\lit",
     "uniforms":[
         {"albedo":"textures\\initialShadingGroup_Base_Color.png"},
         {"metallic":0.7},

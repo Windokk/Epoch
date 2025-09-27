@@ -158,8 +158,8 @@ namespace EPOCH::Engine::Serialization{
 
         auto cam = a->GetComponent<ECS::Components::Camera>();
 
-        int width = Rendering::Renderer::GetCurrentWidth();
-        int height = Rendering::Renderer::GetCurrentHeight();
+        int width = Rendering::Renderer::GetInstance().GetCurrentWidth();
+        int height = Rendering::Renderer::GetInstance().GetCurrentHeight();
 
         float near = component["near"];
         float far = component["far"];

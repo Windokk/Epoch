@@ -11,7 +11,7 @@ using namespace EPOCH::Engine::ECS::Objects;
 using namespace EPOCH::Launcher;
 
 void RenderPassMain() {
-    Rendering::Renderer::DrawScene();
+    Rendering::Renderer::GetInstance().DrawScene();
 }
 
 Debugging::Level minDebugLevel = Debugging::Level::Log;
@@ -82,11 +82,11 @@ int main(int argc, char *argv[]) {
     Core::EngineInstance engine{engineSettings};
 
     std::shared_ptr<Rendering::Shader> fbShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\fb\\framebuffer");
-    Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetCurrentHeight()), fbShader};
+    Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentHeight()), fbShader, true};
     
-    Rendering::Renderer::AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
+    Rendering::Renderer::GetInstance().AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
 
-    std::shared_ptr<Levels::Level> l = Core::Resources::ResourcesManager::GetInstance().GetLevel("level1.lvl");
+    std::shared_ptr<Levels::Level> l = Core::Resources::ResourcesManager::GetInstance().GetLevel("sponza.lvl");
 
     Levels::LevelManager::GetInstance().LoadLevel(l);
 
