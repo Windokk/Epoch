@@ -1,9 +1,0 @@
-{
-    "castShadows":true,
-    "shader":"shaders\\mesh\\lit",
-    "uniforms":[
-        {"albedo":"textures\\sponza_flagpole_diff.png"},
-        {"metallic":0.0},
-        {"roughness":1.0}
-    ]
-}

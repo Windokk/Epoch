@@ -35,7 +35,6 @@ namespace EPOCH::Engine::Rendering {
         public:
         Texture(Filesystem::Path filepath);
         void Init(Filesystem::Path filepath);
-        DrawCommand CreateDrawCmd();
         void Bind(int unit);
         void UnBind(int unit);
         void Cleanup();

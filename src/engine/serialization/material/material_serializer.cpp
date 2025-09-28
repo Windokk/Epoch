@@ -13,10 +13,10 @@ namespace EPOCH::Engine::Serialization{
 
     std::unordered_map<std::string, TextureType> textureTypeMap = {
         {"albedo", TextureType::ALBEDO},
-        {"normal", TextureType::NORMAL},
-        {"metallic", TextureType::METALLIC},
-        {"roughness", TextureType::ROUGHNESS},
-        {"emission", TextureType::EMISSION}
+        {"normalMap", TextureType::NORMAL},
+        {"metallicMap", TextureType::METALLIC},
+        {"roughnessMap", TextureType::ROUGHNESS},
+        {"emissionMap", TextureType::EMISSION}
     };
 
     std::shared_ptr<Material> MaterialSerializer::ImportMaterial(Filesystem::Path path)

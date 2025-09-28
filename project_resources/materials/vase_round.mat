@@ -1,9 +1,0 @@
-{
-    "castShadows":true,
-    "shader":"shaders\\mesh\\lit",
-    "uniforms":[
-        {"albedo":"textures\\vase_round.png"},
-        {"metallic":0.0},
-        {"roughness":1.0}
-    ]
-}

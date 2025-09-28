@@ -22,7 +22,7 @@ namespace EPOCH::Engine::Rendering {
                 parameters[name] = value;
             }
     
-            std::unordered_map<std::string, UniformValue>* GetParameters() { return &parameters; };
+            std::map<std::string, UniformValue>* GetParameters() { return &parameters; };
             std::shared_ptr<Texture> GetTexture(TextureType type);
             void Use();
             void StopUsing();
@@ -30,7 +30,7 @@ namespace EPOCH::Engine::Rendering {
             bool castShadows = true;
 
         private:
-            std::unordered_map<std::string, UniformValue> parameters;
+            std::map<std::string, UniformValue> parameters;
 
     };
 

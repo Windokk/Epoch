@@ -49,6 +49,7 @@ namespace EPOCH::Engine::Rendering{
             vertices[i].normal = glm::normalize(worldPos);
             vertices[i].color = color;
             vertices[i].texCoord = glm::vec2(0,0);
+            vertices[i].tangent = glm::vec3(0);
         }
 
         std::vector<GLuint> indices = {

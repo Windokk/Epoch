@@ -11,12 +11,13 @@ struct Vertex {
     glm::vec3 normal;
     glm::vec4 color;
     glm::vec2 texCoord;
+    glm::vec3 tangent;
     
     bool operator==(const Vertex& other) const {
         return position == other.position &&
                normal == other.normal &&
                color == other.color &&
-               texCoord == other.texCoord;
+               texCoord == other.texCoord && tangent == other.tangent;
     }
 };
 
@@ -28,7 +29,8 @@ namespace std {
             size_t h2 = hash<float>()(v.normal.x) ^ (hash<float>()(v.normal.y) << 1) ^ (hash<float>()(v.normal.z) << 2);
             size_t h3 = hash<float>()(v.color.r) ^ (hash<float>()(v.color.g) << 1) ^ (hash<float>()(v.color.b) << 2) ^ (hash<float>()(v.color.a) << 3);
             size_t h4 = hash<float>()(v.texCoord.x) ^ (hash<float>()(v.texCoord.y) << 1);
-            return h1 ^ h2 ^ h3 ^ h4;
+            size_t h5 = hash<float>()(v.tangent.x) ^ (hash<float>()(v.tangent.y) << 1) ^ (hash<float>()(v.tangent.z) << 2);
+            return h1 ^ h2 ^ h3 ^ h4 ^ h5;
         }
     };
 }

@@ -1,9 +1,0 @@
-{
-    "castShadows":true,
-    "shader":"shaders\\mesh\\lit",
-    "uniforms":[
-        {"albedo":"textures\\white.png"},
-        {"metallic":0.8},
-        {"roughness":0.3}
-    ]
-}

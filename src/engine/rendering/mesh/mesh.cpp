@@ -18,6 +18,51 @@ namespace EPOCH::Engine::Rendering{
         glDeleteBuffers(1, &EBO);
     }
 
+    void ComputeTangents(std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+    {
+        // Initialize tangent accumulators
+        for (auto &v : vertices) {
+            v.tangent = glm::vec3(0.0f);
+        }
+
+        // For each triangle:
+        for (size_t i = 0; i + 2 < indices.size(); i += 3) {
+            Vertex &v0 = vertices[indices[i + 0]];
+            Vertex &v1 = vertices[indices[i + 1]];
+            Vertex &v2 = vertices[indices[i + 2]];
+
+            glm::vec3 edge1 = v1.position - v0.position;
+            glm::vec3 edge2 = v2.position - v0.position;
+            glm::vec2 deltaUV1 = v1.texCoord - v0.texCoord;
+            glm::vec2 deltaUV2 = v2.texCoord - v0.texCoord;
+
+            float denom = (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+            float f = (denom == 0.0f) ? 0.0f : 1.0f / denom;
+
+            glm::vec3 tangent = glm::vec3(0.0f);
+            tangent.x = f * ( deltaUV2.y * edge1.x - deltaUV1.y * edge2.x );
+            tangent.y = f * ( deltaUV2.y * edge1.y - deltaUV1.y * edge2.y );
+            tangent.z = f * ( deltaUV2.y * edge1.z - deltaUV1.y * edge2.z );
+
+            // Accumulate to each vertex
+            v0.tangent += tangent;
+            v1.tangent += tangent;
+            v2.tangent += tangent;
+        }
+
+        // Finally normalize and orthogonalize
+        for (auto &v : vertices) {
+            // Gram-Schmidt orthogonalization
+            glm::vec3 n = v.normal;
+            glm::vec3 t = v.tangent;
+
+            // Remove component in normal direction:
+            t = glm::normalize(t - n * glm::dot(n, t));
+
+            v.tangent = t;
+        }
+    }
+
     bool Mesh::LoadMesh(const ufbx_mesh* ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse)
     {
         
@@ -74,6 +119,12 @@ namespace EPOCH::Engine::Rendering{
                         v.texCoord = { uv.x, uv.y };
                     }
 
+                    // Tangent
+                    /*if (ufbx_mesh->vertex_tangent.exists) {
+                        ufbx_vec3 tangent = ufbx_get_vertex_vec3(&ufbx_mesh->vertex_tangent, vertex_index);
+                        v.tangent = { tangent.x, tangent.y, tangent.z };
+                    }*/
+
                     // Color
                     v.color = diffuse;
 
@@ -115,6 +166,8 @@ namespace EPOCH::Engine::Rendering{
 
         totalIndexCount = indices.size();
 
+        ComputeTangents(vertices, indices);
+
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -127,7 +180,7 @@ namespace EPOCH::Engine::Rendering{
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-        // layout: 0 - position, 1 - normal, 2 - texcoord
+        // layout: 0 - position, 1 - normal, 2 - color, 3 - texCoord, 4 - tangent 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
         glEnableVertexAttribArray(0);
 
@@ -139,6 +192,9 @@ namespace EPOCH::Engine::Rendering{
 
         glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
         glEnableVertexAttribArray(3);
+
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+        glEnableVertexAttribArray(4);
 
         glBindVertexArray(0);
 
