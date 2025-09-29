@@ -79,9 +79,21 @@ namespace EPOCH::Engine::Rendering{
 
         for (size_t i = 0; i < ufbx_mesh->num_faces; i++) {
             ufbx_face face = ufbx_mesh->faces.data[i];
-            uint32_t mat_index = ufbx_mesh->face_material.data[i];
-            ufbx_material* mat = ufbx_mesh->materials[mat_index];
-            if (!mat) mat = ufbx_mats.data[0];
+
+            uint32_t mat_index = 0;
+            if (ufbx_mesh->face_material.data && i < ufbx_mesh->face_material.count) {
+                mat_index = ufbx_mesh->face_material.data[i];
+            }
+
+            ufbx_material* mat = nullptr;
+            if (ufbx_mesh->materials.data && mat_index < ufbx_mesh->materials.count) {
+                mat = ufbx_mesh->materials[mat_index];
+            }
+
+            // Fallback to global material list if needed
+            if (!mat && ufbx_mats.count > 0 && ufbx_mats.data) {
+                mat = ufbx_mats.data[0];
+            }
 
             if (materialGroups.find(mat) == materialGroups.end()) {
                 materialOrder.push_back(mat);
@@ -210,10 +222,10 @@ namespace EPOCH::Engine::Rendering{
     {
         std::vector<DrawCommand> cmds;
 
-        if(mats.size() != submeshes.size()){
+        if(mats.size() != submeshes.size() && submeshes.size() != 1){
             DEBUG_ERROR("Cannot create draw command for meshes with different submeshes and materials count");
         }
-        
+
         for (int i = 0; i < submeshes.size(); i++) {
 
             DrawCommand cmd;

@@ -218,7 +218,7 @@ namespace EPOCH::Engine::Rendering{
         for (auto& cmd : drawList) {
             if (!cmd.mat || cmd.indexCount <= 0) continue;
 
-            if(settings.enableShadows && cmd.mat->castShadows)
+            if(settings.enableShadows && cmd.mat->recievesShadows)
                 shadowMan->BindShadowMaps(cmd.mat);
             cmd.mat->SetParameter("projection", CameraManager::GetInstance().GetActiveCamera()->GetProjection());
             cmd.mat->SetParameter("view", CameraManager::GetInstance().GetActiveCamera()->GetView());

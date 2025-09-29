@@ -1,0 +1,8 @@
+{
+    "recievesShadows":true,
+    "shader":"shaders\\mesh\\unlit",
+    "uniforms":[
+        {"useTexture":false},
+        {"diffuse":"textures\\white.png"}
+    ]
+}

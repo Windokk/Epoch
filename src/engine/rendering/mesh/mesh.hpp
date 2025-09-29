@@ -15,12 +15,16 @@ namespace EPOCH::Engine::Rendering{
 
     class Mesh {
         public:
-            Mesh(const ufbx_mesh *ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse = COL_RGBA(1,1,1,1));
+            Mesh(const ufbx_mesh *ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse = COL_RGBA(0.99f,0.06f,0.75f,1.0f));
             ~Mesh();
 
             void DrawWithoutMaterial() const;
 
             std::vector<DrawCommand> CreateDrawCmds(std::shared_ptr<ECS::Components::Transform> tr, int objectID, std::vector<std::shared_ptr<Material>> mats);
+
+            int SubMeshesCount() const { return submeshes.size(); }
+
+            int materialsSlots;
 
         private:
             GLuint VAO, VBO, EBO;

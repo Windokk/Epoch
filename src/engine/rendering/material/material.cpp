@@ -16,8 +16,8 @@ namespace EPOCH::Engine::Rendering{
             case GL_FLOAT_VEC3: return glm::vec3(0.0f);
             case GL_FLOAT_VEC4: return glm::vec4(0.0f);
             case GL_FLOAT_MAT4: return glm::mat4(1.0f);
-            case GL_SAMPLER_2D: return std::pair<Rendering::TextureType,std::shared_ptr<Texture>>(Rendering::TextureType::ANY, nullptr);
-            case GL_SAMPLER_2D_SHADOW: return std::pair<Rendering::TextureType,std::shared_ptr<Texture>>(Rendering::TextureType::ANY, nullptr);
+            case GL_SAMPLER_2D: return std::shared_ptr<Texture>(nullptr);
+            case GL_SAMPLER_2D_SHADOW: return std::shared_ptr<Texture>(nullptr);
             case GL_SAMPLER_CUBE: return 0;
             case GL_SAMPLER_CUBE_SHADOW: return 0;
             case GL_SAMPLER_CUBE_MAP_ARRAY: return 0;
@@ -34,9 +34,9 @@ namespace EPOCH::Engine::Rendering{
     {
     }
  
-    void Material::Init(std::shared_ptr<Shader> shader, bool castShadows)
+    void Material::Init(std::shared_ptr<Shader> shader, bool recievesShadows)
     {
-        this->castShadows = castShadows;
+        this->recievesShadows = recievesShadows;
         this->shader = shader;
 
         auto uniforms = this->shader->GetActiveUniforms();
@@ -45,19 +45,19 @@ namespace EPOCH::Engine::Rendering{
         }
     }
 
-
-    std::shared_ptr<Texture> Material::GetTexture(TextureType type)
+    std::shared_ptr<Texture> Material::GetTexture(std::string name)
     {
-        for (const auto& [name, value] : parameters)
+        for (const auto& [_name, _value] : parameters)
         {
-            if (std::holds_alternative<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value))
+            if (std::holds_alternative<std::shared_ptr<Texture>>(_value) && _name == name)
             {
-                std::pair<Rendering::TextureType,std::shared_ptr<Texture>> val = std::get<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value);
-                if(val.second && val.first == type){
-                    return val.second;
-                }
+                std::shared_ptr<Texture> val = std::get<std::shared_ptr<Texture>>(_value);
+                if(val)
+                    return val;
             }
         }
+
+        DEBUG_WARNING("Couldn't find texture with name : "+name);
 
         return nullptr;
     }
@@ -88,8 +88,8 @@ namespace EPOCH::Engine::Rendering{
             else if (std::holds_alternative<glm::mat4>(value)){
                 shader->setMat4(name, std::get<glm::mat4>(value));
             }
-            else if (std::holds_alternative<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value)){
-                std::shared_ptr<Texture> val = std::get<std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>(value).second;
+            else if (std::holds_alternative<std::shared_ptr<Texture>>(value)){
+                std::shared_ptr<Texture> val = std::get<std::shared_ptr<Texture>>(value);
                 if (val != nullptr) {
                     val->Bind(textureUnit); // Bind to GL_TEXTURE0 + textureUnit
                     shader->setInt(name, textureUnit);
@@ -108,10 +108,10 @@ namespace EPOCH::Engine::Rendering{
             std::visit([&](auto&& val) {
                 using T = std::decay_t<decltype(val)>;
 
-                if constexpr (std::is_same_v<T, std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>)
+                if constexpr (std::is_same_v<T, std::shared_ptr<Texture>>)
                 {
-                    if (val.second) {
-                        val.second->UnBind(textureUnit);
+                    if (val) {
+                        val->UnBind(textureUnit);
                         textureUnit++;
                     }
                 }

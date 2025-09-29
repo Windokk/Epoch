@@ -21,7 +21,7 @@ namespace EPOCH::Engine::ECS::Objects{
         // Wrap in shared_ptr
         std::shared_ptr<Component> component(rawComponent);
 
-        // Set actor and component index (safely override if base constructor didn't set)
+        // Set actor and component index
         component->parent = this;
         component->local_id = components.size();
 

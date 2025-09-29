@@ -1,0 +1,9 @@
+{
+    "recievesShadows":true,
+    "shader":"shaders\\mesh\\lit",
+    "uniforms":[
+        {"albedo":"textures\\initialShadingGroup_Base_Color.png"},
+        {"metallic":0.7},
+        {"roughness":0.3}
+    ]
+}

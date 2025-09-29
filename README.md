@@ -9,7 +9,7 @@ Yet another game engine
 #### Renderer
 
 - [ ] Transparency
-- [ ] PBR materials/shaders
+- [x] PBR materials/shaders
 - [ ] FBX importer (multiple meshes)
 - [ ] Skyboxes
 - [ ] LODs

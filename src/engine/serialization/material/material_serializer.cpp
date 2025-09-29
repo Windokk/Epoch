@@ -11,14 +11,6 @@ namespace EPOCH::Engine::Serialization{
     using namespace Core::Resources;
     using namespace Rendering;
 
-    std::unordered_map<std::string, TextureType> textureTypeMap = {
-        {"albedo", TextureType::ALBEDO},
-        {"normalMap", TextureType::NORMAL},
-        {"metallicMap", TextureType::METALLIC},
-        {"roughnessMap", TextureType::ROUGHNESS},
-        {"emissionMap", TextureType::EMISSION}
-    };
-
     std::shared_ptr<Material> MaterialSerializer::ImportMaterial(Filesystem::Path path)
     {
         std::string src = path.ReadFile();
@@ -35,7 +27,7 @@ namespace EPOCH::Engine::Serialization{
                 return nullptr;
             }
 
-            mat->Init(shader, data["castShadows"]);
+            mat->Init(shader, data["recievesShadows"]);
 
             for(auto& uniform : data["uniforms"]){
                 for (auto it = uniform.begin(); it != uniform.end(); ++it) {
@@ -44,18 +36,13 @@ namespace EPOCH::Engine::Serialization{
 
                     // Texture
                     if (value.is_string()) {
-                        auto found = textureTypeMap.find(name);
-                        if (found != textureTypeMap.end()) {
-                            std::shared_ptr<Texture> tex = ResourcesManager::GetInstance().GetTexture(value.get<std::string>());
-                            if(tex){
-                                mat->SetParameter(name, std::make_pair(found->second, tex));
-                            }
-                            else{
-                                DEBUG_ERROR("No texture found : " + value.get<std::string>());
-                                return nullptr;
-                            }
-                        } else {
-                            DEBUG_ERROR("Texture uniform has unknown name : " + name);
+                        std::shared_ptr<Texture> tex = ResourcesManager::GetInstance().GetTexture(value.get<std::string>());
+                        if(tex){
+                            mat->SetParameter(name, tex);
+                        }
+                        else{
+                            DEBUG_ERROR("No texture found : " + value.get<std::string>());
+                            return nullptr;
                         }
                     }
                     else if(value.is_boolean()){

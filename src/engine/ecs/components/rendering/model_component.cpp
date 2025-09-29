@@ -4,6 +4,8 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
+#include "engine/core/resources/resources_manager.hpp"
+
 namespace EPOCH::Engine::ECS::Components{
     
 
@@ -38,7 +40,7 @@ namespace EPOCH::Engine::ECS::Components{
         if (materials.empty()) {
             DEBUG_ERROR("SetMaterials called with empty list");
         }
-            
+
         this->materials = std::move(materials);
         this->Update();
     }

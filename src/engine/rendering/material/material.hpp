@@ -9,13 +9,13 @@
 
 namespace EPOCH::Engine::Rendering {
 
-    using UniformValue = std::variant<float, int, glm::vec2, glm::vec3, glm::vec4, glm::mat4, std::pair<Rendering::TextureType,std::shared_ptr<Texture>>>;
+    using UniformValue = std::variant<float, int, glm::vec2, glm::vec3, glm::vec4, glm::mat4, std::shared_ptr<Texture>>;
 
     class Material{
 
         public:
             Material();
-            void Init(std::shared_ptr<Shader> shader, bool castShadows);
+            void Init(std::shared_ptr<Shader> shader, bool recievesShadows);
 
             void SetParameter(const std::string &name, const UniformValue &value)
             {
@@ -23,11 +23,11 @@ namespace EPOCH::Engine::Rendering {
             }
     
             std::map<std::string, UniformValue>* GetParameters() { return &parameters; };
-            std::shared_ptr<Texture> GetTexture(TextureType type);
+            std::shared_ptr<Texture> GetTexture(std::string name);
             void Use();
             void StopUsing();
             std::shared_ptr<Shader> shader;
-            bool castShadows = true;
+            bool recievesShadows = false;
 
         private:
             std::map<std::string, UniformValue> parameters;

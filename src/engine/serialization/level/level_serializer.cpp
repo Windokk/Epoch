@@ -46,17 +46,17 @@ namespace EPOCH::Engine::Serialization{
             } else {
                 DEBUG_WARNING("Material '" + materialName
                         + "' not found in global materials. Using fallback.");
-                materialPath = "materials\\unlit";
+                materialPath = "materials\\default";
             }
 
             auto material = Core::Resources::ResourcesManager::GetInstance().GetMaterial(materialPath);
             if (!material) {
                 DEBUG_ERROR("Failed to load material at path: " + materialPath
                         + ". Using fallback.");
-                material = Core::Resources::ResourcesManager::GetInstance().GetMaterial("materials\\unlit");
+                material = Core::Resources::ResourcesManager::GetInstance().GetMaterial("materials\\default");
 
                 if (!material) {
-                    DEBUG_ERROR("Failed to load fallback material: materials\\unlit");
+                    DEBUG_ERROR("Failed to load fallback material: materials\\default");
                 }
             }
 

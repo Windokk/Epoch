@@ -16,15 +16,6 @@ namespace EPOCH::Engine::Rendering {
 
     struct DrawCommand;
 
-    enum TextureType{
-        ALBEDO,
-        NORMAL,
-        METALLIC,
-        ROUGHNESS,
-        EMISSION,
-        ANY
-    };
-
     struct TextureInfos{
         int width, height;         
         int nrChannels;
