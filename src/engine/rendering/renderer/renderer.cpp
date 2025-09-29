@@ -216,7 +216,8 @@ namespace EPOCH::Engine::Rendering{
 
         // --- Main Draw Calls ---
         for (auto& cmd : drawList) {
-            if (!cmd.mat || cmd.indexCount <= 0) continue;
+            if (!cmd.mat || cmd.indexCount <= 0 || (CameraManager::GetInstance().GetActiveCamera()->frustumCulling && !CameraManager::GetInstance().GetActiveCamera()->IsInFrustum(cmd.boundsMin, cmd.boundsMax)))
+                continue;
 
             if(settings.enableShadows && cmd.mat->recievesShadows)
                 shadowMan->BindShadowMaps(cmd.mat);

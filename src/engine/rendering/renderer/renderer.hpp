@@ -64,6 +64,8 @@ namespace EPOCH::Engine{
             std::shared_ptr<ECS::Components::Transform> tr;
             int id;
             int fillMode = GL_FILL;
+            glm::vec3 boundsMin = glm::vec3(0);
+            glm::vec3 boundsMax = glm::vec3(0);
         };
 
         class Renderer{

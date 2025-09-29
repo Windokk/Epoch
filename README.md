@@ -15,7 +15,7 @@ Yet another game engine
 - [ ] LODs
 - [ ] LODs generator
 - [ ] Post processing effects shaders (SSAO, Bloom, Vignette, Tone Mapping, Film Grain, Chromatic Abberration)
-- [ ] Frustum culling
+- [x] Frustum culling
 - [x] Normal mappings
 
 #### Serialization

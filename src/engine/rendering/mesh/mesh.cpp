@@ -238,6 +238,23 @@ namespace EPOCH::Engine::Rendering{
             cmd.id          = objectID;
             cmd.fillMode    = GL_FILL;
 
+
+            glm::vec3 maxVec = glm::vec3(0);
+            glm::vec3 minVec = glm::vec3(0);
+
+            if(!vertices.empty()){
+                maxVec = vertices[0].position;
+                minVec = vertices[0].position;
+            }
+            
+            for (size_t i = 1; i < vertices.size(); ++i){
+                maxVec = glm::max(maxVec, vertices[i].position);
+                minVec = glm::min(minVec, vertices[i].position);
+            }
+
+            cmd.boundsMax = maxVec;
+            cmd.boundsMin = minVec;
+
             cmds.push_back(std::move(cmd));
         }
         return cmds;

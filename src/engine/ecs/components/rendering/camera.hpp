@@ -6,6 +6,36 @@
 
 namespace EPOCH::Engine::ECS::Components {
     
+    struct Plane
+    {
+        glm::vec3 normal = { 0.f, 1.f, 0.f }; // unit vector
+        float     distance = 0.f;        // Distance with origin
+
+        Plane() = default;
+
+        Plane(const glm::vec3& p1, const glm::vec3& norm)
+            : normal(glm::normalize(norm)),
+            distance(glm::dot(normal, p1))
+        {}
+
+        float getSignedDistanceToPlane(const glm::vec3& point) const
+        {
+            return glm::dot(normal, point) - distance;
+        }
+    };
+
+    struct Frustum
+    {
+        Plane topFace;
+        Plane bottomFace;
+
+        Plane rightFace;
+        Plane leftFace;
+
+        Plane farFace;
+        Plane nearFace;
+    };
+
     class Camera : public Component
     {
         public :
@@ -17,6 +47,17 @@ namespace EPOCH::Engine::ECS::Components {
             void UpdateSize(int new_width, int new_height);
 
             void UpdateMatrix();
+
+            void SetFOV(float newFOV) { fov = newFOV; }
+
+            void SetNearPlane(float newNear) { nearPlane = newNear; }
+            void SetFarPlane(float newFar) { farPlane = newFar; }
+            void SetNearFarPlanes(float newNear, float newFar) { nearPlane = newNear; farPlane = newFar; }
+
+            void ToggleFrustumCulling() { frustumCulling = !frustumCulling; }
+
+
+            bool IsInFrustum(glm::vec3 boundsMin, glm::vec3 boundsMax);
 
             glm::mat4 GetMatrix()
             {
@@ -42,6 +83,8 @@ namespace EPOCH::Engine::ECS::Components {
             float nearPlane = 0;
 
             float fov = 60.0f;
+
+            bool frustumCulling = true;
 
         private:
 
