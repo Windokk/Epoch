@@ -22,6 +22,9 @@ namespace EPOCH::Engine::Rendering::UI
         public:
         Text(Font& font, std::string text, glm::vec4 color, Transform transform);
 
-        void Draw(Shader& shader);
+        void Draw(Shader &shader, glm::mat4 projection, glm::mat4 view);
+
+        void SetText(std::string newText) { text = newText;}
+
     };
 }

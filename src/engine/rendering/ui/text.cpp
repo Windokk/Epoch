@@ -8,7 +8,7 @@ namespace EPOCH::Engine::Rendering::UI
         this->color = color;
     }
 
-    void Text::Draw(Shader& shader){
+    void Text::Draw(Shader& shader, glm::mat4 projection, glm::mat4 view){
 
         glm::vec2 cursor = glm::vec2(transform.GetPosition().x-transform.GetScale().x/2.f, transform.GetPosition().y-transform.GetScale().y/2.f);
         // activate shader and send uniforms
@@ -16,6 +16,8 @@ namespace EPOCH::Engine::Rendering::UI
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::scale(model, transform.GetScale());
         shader.setMat4("model", model);
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(font.GetVAO());
 
@@ -40,10 +42,10 @@ namespace EPOCH::Engine::Rendering::UI
                 // update VBO for each character
                 glm::vec3 normal = glm::vec3(0.0f, 0.0f, 1.0f);
                 std::vector<Vertex> vertices = {
-                    { glm::vec3(xpos,     ypos + h, 0.0f), normal, color, glm::vec2(0.0f, 0.0f) },
-                    { glm::vec3(xpos,     ypos,     0.0f), normal, color, glm::vec2(0.0f, 1.0f) },
-                    { glm::vec3(xpos + w, ypos,     0.0f), normal, color, glm::vec2(1.0f, 1.0f) },
-                    { glm::vec3(xpos + w, ypos + h, 0.0f), normal, color, glm::vec2(1.0f, 0.0f) }
+                    { glm::vec3(xpos,     ypos + h, 0.0f), normal, color, glm::vec2(0.0f, 0.0f), glm::vec3(0) },
+                    { glm::vec3(xpos,     ypos,     0.0f), normal, color, glm::vec2(0.0f, 1.0f), glm::vec3(0) },
+                    { glm::vec3(xpos + w, ypos,     0.0f), normal, color, glm::vec2(1.0f, 1.0f), glm::vec3(0) },
+                    { glm::vec3(xpos + w, ypos + h, 0.0f), normal, color, glm::vec2(1.0f, 0.0f), glm::vec3(0) }
                 };
                 // render glyph texture over quad
                 glBindTexture(GL_TEXTURE_2D, ch.textureID);

@@ -87,7 +87,7 @@ namespace EPOCH::Engine::Audio
                 return AudioID(AudioIDBuilder().Generate().Build().GetAsInt());
             }
 
-            std::map<AudioID, Sound*> *GetAudioMap() { return &AudioIDMap; }
+            std::map<AudioID, Sound*> GetAudioMap() { return AudioIDMap; }
 
             void AssignID(AudioID id, Sound* obj){
                 AudioIDMap[id] = obj;

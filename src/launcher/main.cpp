@@ -2,6 +2,7 @@
 #include "engine/serialization/level/level_serializer.hpp"
 #include "engine/core/resources/resources_manager.hpp"
 #include "module_loader.hpp"
+#include "engine/rendering/ui/text.hpp"
 
 using namespace EPOCH::Engine;
 using namespace EPOCH::Engine::Rendering;
@@ -10,9 +11,6 @@ using namespace EPOCH::Engine::ECS::Components;
 using namespace EPOCH::Engine::ECS::Objects;
 using namespace EPOCH::Launcher;
 
-void RenderPassMain() {
-    Rendering::Renderer::GetInstance().DrawScene();
-}
 
 Debugging::Level minDebugLevel = Debugging::Level::Log;
 
@@ -84,11 +82,34 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Rendering::Shader> fbShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\fb\\framebuffer");
     Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentHeight()), fbShader, true};
     
+    auto RenderPassMain = [] { Rendering::Renderer::GetInstance().DrawScene(); };
+
+    
+    Rendering::UI::Font *font = new Rendering::UI::Font("project_resources\\fonts\\Roboto-Medium.ttf", 30);
+    ECS::Objects::Actor a = ECS::Objects::Actor("test");
+    a.transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+    a.transform->SetRotation(glm::vec3(0, 90, 0));
+    std::string neuil = "FPS = 60.0";
+    Rendering::UI::Text *fpsText = new Rendering::UI::Text(*font, neuil, COL_RGBA(1,1,1,1), *a.transform);
+    std::shared_ptr<Rendering::Shader> textShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\text\\text");
+    Rendering::FrameBuffer uiFB = {static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentHeight()), fbShader, true};
+    
+
+    auto RenderPassUI = [fpsText, textShader] {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        fpsText->SetText("FPS = "+std::to_string(static_cast<float>(1/Time::TimeManager::GetInstance().GetDeltaTime())));
+        fpsText->Draw(*textShader, CameraManager::GetInstance().GetActiveCamera()->GetProjection(), CameraManager::GetInstance().GetActiveCamera()->GetView());
+        glDisable(GL_BLEND);
+    };
+
     Rendering::Renderer::GetInstance().AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
+    Rendering::Renderer::GetInstance().AddRenderPass(Rendering::RenderStage::UI, RenderPassUI, std::make_shared<FrameBuffer>(uiFB));
 
     std::shared_ptr<Levels::Level> l = Core::Resources::ResourcesManager::GetInstance().GetLevel("sponza.lvl");
-
+    l->AddActor(std::make_shared<Actor>(a));
     Levels::LevelManager::GetInstance().LoadLevel(l);
+
 
     while (!engine.shouldEnd())
     {
@@ -97,6 +118,7 @@ int main(int argc, char *argv[]) {
         };
     }
 
+    font->Cleanup();
     engine.Destroy();
     std::cout << "EPOCH Engine has finished. Press Enter to exit..." << std::endl;
     std::cin.clear();

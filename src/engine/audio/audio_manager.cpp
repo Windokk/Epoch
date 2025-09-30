@@ -126,7 +126,7 @@ namespace EPOCH::Engine::Audio
             DEBUG_FATAL("maxDistance can't be >= 0");
         }
         
-        for (const auto& pair : *AudioIDManager::GetInstance().GetAudioMap()) {
+        for (const auto& pair : AudioIDManager::GetInstance().GetAudioMap()) {
             if(pair.second->isPlaying){
                 float pan = glm::sin(glm::orientedAngle(glm::normalize(glm::vec2(pair.second->pos.x - listenerPos.x, pair.second->pos.z - listenerPos.z)), listenerFacingNormalized));
                 if (pan < -1.0f) pan = -1.0f;
@@ -148,7 +148,7 @@ namespace EPOCH::Engine::Audio
 
     void AudioManager::Shutdown()
     {
-        for (const auto& pair : *AudioIDManager::GetInstance().GetAudioMap()) {
+        for (const auto& pair : AudioIDManager::GetInstance().GetAudioMap()) {
             AudioIDManager::GetInstance().DestroyID(pair.first); 
         }
 
