@@ -21,6 +21,7 @@ namespace EPOCH::Engine::Rendering::UI
         unsigned int indices[6] = { 0, 1, 2, 2, 3, 0 };
         unsigned int VAO, VBO, EBO;
         int size;
+        std::string fontData;
         
         public:
         Font(const char* path, int _size);

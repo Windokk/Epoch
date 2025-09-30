@@ -4,6 +4,8 @@ Yet another game engine
 
 (full of bugs)
 
+## Screenshots
+
 ## FEATURES
 
 ### Rendering
@@ -36,6 +38,12 @@ Yet another game engine
 ### Game Module
 
 - Game module loading at runtime in a DLL
+- Code execution across DLL
+
+### Editor Module
+
+- Editor module loaded at runtime in a DLL
+- FPS Counter
 
 ### Debugging
 

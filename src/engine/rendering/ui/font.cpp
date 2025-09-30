@@ -24,8 +24,12 @@ namespace EPOCH::Engine::Rendering::UI{
         Path font_path = Path(path);
 
         if (font_path.Exists()) {
-            std::string fontData = font_path.ReadFile();
-    
+            fontData = font_path.ReadFile();
+            if (fontData.empty()) {
+                DEBUG_ERROR("Font file is empty or could not be read: " + font_path.full);
+                return;
+            }
+
             error = FT_New_Memory_Face(
                 ft,                                              // FreeType library instance
                 reinterpret_cast<const FT_Byte*>(fontData.data()), // Cast is necessary
@@ -33,6 +37,11 @@ namespace EPOCH::Engine::Rendering::UI{
                 0,                                               // Face index (for font collections, typically 0)
                 &face                                            // Output face object
             );
+
+            if (error || !face) {
+                DEBUG_ERROR("FT_New_Memory_Face failed for: " + std::string(path));
+                return;
+            }
     
         } else {
             DEBUG_ERROR("Couldn't find font : " + std::string(path));

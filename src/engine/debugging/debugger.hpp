@@ -48,9 +48,24 @@ namespace EPOCH::Engine::Debugging{
         return Debugger::GetInstance();
     }
 
-#else
+#elif defined(BUILD_GAME)
 
-    // Used by the DLL
+    // Used by the Game Module DLL
+    inline Debugger* gSharedDebuggerPtr = nullptr;
+
+    inline void SetDebugger(Debugger* ptr) {
+        gSharedDebuggerPtr = ptr;
+    }
+
+    inline Debugger& GetDebugger() {
+        if (!gSharedDebuggerPtr)
+            exit(2);
+        return *gSharedDebuggerPtr;
+    }
+
+#elif defined(BUILD_EDITOR)
+
+    // Used by the Editor Module DLL
     inline Debugger* gSharedDebuggerPtr = nullptr;
 
     inline void SetDebugger(Debugger* ptr) {

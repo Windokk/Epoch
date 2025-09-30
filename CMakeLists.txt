@@ -66,7 +66,7 @@ file(GLOB_RECURSE GAME_SOURCES
 
 add_library(GameModule SHARED ${GAME_SOURCES})
 
-
+target_compile_definitions(GameModule PRIVATE BUILD_GAME)
 
 target_include_directories(GameModule PRIVATE
   ${CMAKE_SOURCE_DIR}/src/
@@ -79,6 +79,29 @@ target_link_directories(GameModule PUBLIC
 target_link_libraries(GameModule PRIVATE Engine glfw3dll)
 elseif(UNIX)
 target_link_libraries(GameModule PRIVATE Engine)
+endif()
+
+
+# === Editor Module (editor logic) ==
+
+file(GLOB_RECURSE EDITOR_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/editor/*.cpp
+)
+
+add_library(EditorModule SHARED ${EDITOR_SOURCES})
+
+target_compile_definitions(EditorModule PRIVATE BUILD_EDITOR)
+
+target_include_directories(EditorModule PRIVATE
+  ${CMAKE_SOURCE_DIR}/src/
+)
+
+if(WIN32)
+target_link_directories(EditorModule PUBLIC
+  ${GLFW_LIB_DIR})
+target_link_libraries(EditorModule PRIVATE Engine glfw3dll)
+elseif(UNIX)
+target_link_libraries(EditorModule PRIVATE Engine)
 endif()
 
 

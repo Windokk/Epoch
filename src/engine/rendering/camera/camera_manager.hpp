@@ -82,4 +82,21 @@ namespace EPOCH::Engine::Rendering{
             std::unordered_map<std::string, std::shared_ptr<Camera>> cameras;
             std::shared_ptr<Camera> activeCamera;
     };
+
+    #if defined(BUILD_EDITOR)
+
+        // Used by the Editor Module DLL
+        inline CameraManager* gSharedCameraManagerPtr = nullptr;
+
+        inline void SetCameraManager(CameraManager* ptr) {
+            gSharedCameraManagerPtr = ptr;
+        }
+
+        inline CameraManager& GetCameraManager() {
+            if (!gSharedCameraManagerPtr)
+                exit(2);
+            return *gSharedCameraManagerPtr;
+        }
+
+    #endif
 }

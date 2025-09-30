@@ -72,4 +72,21 @@ namespace EPOCH::Engine::Core::Resources{
             std::unordered_map<std::string, std::shared_ptr<Levels::Level>> levels;
         };
 
+        #if defined(BUILD_EDITOR)
+
+            // Used by the Editor Module DLL
+            inline ResourcesManager* gSharedResourcesManagerPtr = nullptr;
+
+            inline void SetResourcesManager(ResourcesManager* ptr) {
+                gSharedResourcesManagerPtr = ptr;
+            }
+
+            inline ResourcesManager& GetResourcesManager() {
+                if (!gSharedResourcesManagerPtr)
+                    exit(2);
+                return *gSharedResourcesManagerPtr;
+            }
+
+        #endif
+
 }

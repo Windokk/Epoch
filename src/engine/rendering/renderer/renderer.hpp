@@ -146,5 +146,23 @@ namespace EPOCH::Engine{
             RendererSettings settings;
 
         };
+
+        
+#if defined(BUILD_EDITOR)
+
+    // Used by the Editor Module DLL
+    inline Renderer* gSharedRendererPtr = nullptr;
+
+    inline void SetRenderer(Renderer* ptr) {
+        gSharedRendererPtr = ptr;
+    }
+
+    inline Renderer& GetRenderer() {
+        if (!gSharedRendererPtr)
+            exit(2);
+        return *gSharedRendererPtr;
+    }
+
+#endif
     }
 }

@@ -2,7 +2,6 @@
 #include "engine/serialization/level/level_serializer.hpp"
 #include "engine/core/resources/resources_manager.hpp"
 #include "module_loader.hpp"
-#include "engine/rendering/ui/text.hpp"
 
 using namespace EPOCH::Engine;
 using namespace EPOCH::Engine::Rendering;
@@ -67,49 +66,35 @@ int main(int argc, char *argv[]) {
 
     Core::EngineCreationSettings engineSettings = ComputeEngineSettings(argc, argv);
 
-    if (!ModuleLoader::GetInstance().LoadGameModule(
-#if defined(_WIN32)
-        "libGameModule.dll"
-#else
-        "./libGameModule.so"
-#endif
-    , minDebugLevel)) {
-        return -1;
-    }
+    ModuleLoader::GetInstance().LoadGameModule(
+        #if defined(_WIN32)
+                "libGameModule.dll"
+        #else
+                "libGameModule.so"
+        #endif
+    , minDebugLevel);
+
 
     Core::EngineInstance engine{engineSettings};
+
+
+    ModuleLoader::GetInstance().LoadEditorModule(
+        #if defined(_WIN32)
+                "libEditorModule.dll"
+        #else
+                "libEditorModule.so"
+        #endif
+    );
+
 
     std::shared_ptr<Rendering::Shader> fbShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\fb\\framebuffer");
     Rendering::FrameBuffer sceneFB = {static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentHeight()), fbShader, true};
     
     auto RenderPassMain = [] { Rendering::Renderer::GetInstance().DrawScene(); };
 
-    
-    std::shared_ptr<Rendering::UI::Font> font = std::make_shared<Rendering::UI::Font>("project_resources\\fonts\\NotoSans-Regular.ttf", 45);
-    ECS::Objects::Actor a = ECS::Objects::Actor("test");
-    a.transform->SetPosition(glm::vec3(0, (float)Rendering::Renderer::GetInstance().GetCurrentHeight()-20.0f, 0));
-    a.transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
-    a.transform->SetRotation(glm::vec3(0, -90, 0));
-    std::string neuil = "FPS = 60.0";
-    std::shared_ptr<Rendering::UI::Text> fpsText = std::make_shared<Rendering::UI::Text>(font, neuil, COL_RGBA(1,1,1,1), *a.transform.get());
-    std::shared_ptr<Rendering::Shader> textShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\text\\text");
-    Rendering::FrameBuffer uiFB = {static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentHeight()), fbShader, true};
-
-
-    auto RenderPassUI = [fpsText, textShader] {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        fpsText->SetText("FPS = "+std::to_string(static_cast<int>(1/Time::TimeManager::GetInstance().GetDeltaTime())));
-        glm::mat4 projection = glm::ortho(0.0f, (float)Rendering::Renderer::GetInstance().GetCurrentWidth(), 0.0f, (float)Rendering::Renderer::GetInstance().GetCurrentHeight());
-        fpsText->Draw(textShader, projection, CameraManager::GetInstance().GetActiveCamera()->GetView());
-        glDisable(GL_BLEND);
-    };
-
     Rendering::Renderer::GetInstance().AddRenderPass(Rendering::RenderStage::Scene, RenderPassMain, std::make_shared<Rendering::FrameBuffer>(sceneFB), true, Rendering::BlendMode::Normal);
-    Rendering::Renderer::GetInstance().AddRenderPass(Rendering::RenderStage::UI, RenderPassUI, std::make_shared<FrameBuffer>(uiFB));
 
     std::shared_ptr<Levels::Level> l = Core::Resources::ResourcesManager::GetInstance().GetLevel("sponza.lvl");
-    l->AddActor(std::make_shared<Actor>(a));
     Levels::LevelManager::GetInstance().LoadLevel(l);
 
 
@@ -118,9 +103,20 @@ int main(int argc, char *argv[]) {
         if(!engine.Run()){
             break;
         };
+        
+        #if defined(_WIN32)      
+            ModuleLoader::GetInstance().TickEditorModule("libEditorModule.dll");
+        #else
+            ModuleLoader::GetInstance().TickEditorModule("libEditorModule.so");
+        #endif
     }
 
-    font->Cleanup();
+    #if defined(_WIN32)      
+        ModuleLoader::GetInstance().CleanupEditorModule("libEditorModule.dll");
+    #else
+        ModuleLoader::GetInstance().CleanupEditorModule("libEditorModule.so");
+    #endif
+
     engine.Destroy();
     std::cout << "EPOCH Engine has finished. Press Enter to exit..." << std::endl;
     std::cin.clear();
