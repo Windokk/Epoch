@@ -34,7 +34,7 @@ namespace EPOCH::Engine::Input
 
         private:
 
-            void KeyCallback(int key,  int action);
+            void KeyCallback(int key, int action);
             void MouseCallback(int button, int action);
 
             std::unordered_map<int, bool> mCurrentKeyState;

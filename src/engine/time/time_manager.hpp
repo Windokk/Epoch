@@ -72,6 +72,9 @@ namespace EPOCH::Engine::Time{
             float GetFixedDeltaTime() { return fixedDeltaTime; }
             float GetDeltaTime() { return deltaTime; }
 
+            void SetTimeSpeed(float newSpeed = 1.0f) { timeSpeed = newSpeed; }
+            float GetTimeSpeed() { return timeSpeed; }
+
             TimeStamp CurrentGlobalTime() {
                 using namespace std::chrono;
 
@@ -137,5 +140,7 @@ namespace EPOCH::Engine::Time{
             std::chrono::high_resolution_clock::time_point frameStartTime;
 
             std::chrono::high_resolution_clock::time_point appStartTime;
+
+            float timeSpeed = 1.0f;
     };
 }
