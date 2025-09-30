@@ -2,24 +2,22 @@
 
 namespace EPOCH::Engine::Rendering::UI
 {
-    Text::Text(Font& font, std::string text, glm::vec4 color, Transform transform) : font(font), transform(transform) 
+    Text::Text(std::shared_ptr<Font> font, std::string text, glm::vec4 color, Transform transform) : font(font), transform(transform) 
     {
         this->text = text;
         this->color = color;
     }
 
-    void Text::Draw(Shader& shader, glm::mat4 projection, glm::mat4 view){
+    void Text::Draw(std::shared_ptr<Shader> shader, glm::mat4 projection, glm::mat4 view){
 
         glm::vec2 cursor = glm::vec2(transform.GetPosition().x-transform.GetScale().x/2.f, transform.GetPosition().y-transform.GetScale().y/2.f);
         // activate shader and send uniforms
-        shader.Activate();
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::scale(model, transform.GetScale());
-        shader.setMat4("model", model);
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
+        shader->Activate();
+        shader->setMat4("model", transform.GetTransformMatrix());
+        shader->setMat4("view", view);
+        shader->setMat4("projection", projection);
         glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(font.GetVAO());
+        glBindVertexArray(font->GetVAO());
 
         // iterate through all characters of the text
         std::string::const_iterator c;
@@ -27,12 +25,12 @@ namespace EPOCH::Engine::Rendering::UI
         {
 
             if(*c == '\n'){
-                cursor.y -= font.GetSize();
+                cursor.y -= font->GetSize();
                 cursor.x = transform.GetPosition().x;
             }
             else{
 
-                Character ch = font.GetCharacters()[*c];
+                Character ch = font->GetCharacters()[*c];
 
                 float xpos = cursor.x + ch.bearing.x * transform.GetScale().x;
                 float ypos = cursor.y - (ch.size.y - ch.bearing.y) * transform.GetScale().y;
@@ -50,7 +48,7 @@ namespace EPOCH::Engine::Rendering::UI
                 // render glyph texture over quad
                 glBindTexture(GL_TEXTURE_2D, ch.textureID);
                 // update content of VBO memory
-                glBindBuffer(GL_ARRAY_BUFFER, font.GetVBO());
+                glBindBuffer(GL_ARRAY_BUFFER, font->GetVBO());
                 glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
                 // render quad
@@ -62,6 +60,6 @@ namespace EPOCH::Engine::Rendering::UI
         }
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
-        shader.Deactivate();
+        shader->Deactivate();
     }
 }

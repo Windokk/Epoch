@@ -85,21 +85,23 @@ int main(int argc, char *argv[]) {
     auto RenderPassMain = [] { Rendering::Renderer::GetInstance().DrawScene(); };
 
     
-    Rendering::UI::Font *font = new Rendering::UI::Font("project_resources\\fonts\\Roboto-Medium.ttf", 30);
+    std::shared_ptr<Rendering::UI::Font> font = std::make_shared<Rendering::UI::Font>("project_resources\\fonts\\NotoSans-Regular.ttf", 45);
     ECS::Objects::Actor a = ECS::Objects::Actor("test");
+    a.transform->SetPosition(glm::vec3(0, (float)Rendering::Renderer::GetInstance().GetCurrentHeight()-20.0f, 0));
     a.transform->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
-    a.transform->SetRotation(glm::vec3(0, 90, 0));
+    a.transform->SetRotation(glm::vec3(0, -90, 0));
     std::string neuil = "FPS = 60.0";
-    Rendering::UI::Text *fpsText = new Rendering::UI::Text(*font, neuil, COL_RGBA(1,1,1,1), *a.transform);
+    std::shared_ptr<Rendering::UI::Text> fpsText = std::make_shared<Rendering::UI::Text>(font, neuil, COL_RGBA(1,1,1,1), *a.transform.get());
     std::shared_ptr<Rendering::Shader> textShader = Core::Resources::ResourcesManager::GetInstance().GetShader("shaders\\text\\text");
     Rendering::FrameBuffer uiFB = {static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentWidth()), static_cast<float>(Rendering::Renderer::GetInstance().GetCurrentHeight()), fbShader, true};
-    
+
 
     auto RenderPassUI = [fpsText, textShader] {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        fpsText->SetText("FPS = "+std::to_string(static_cast<float>(1/Time::TimeManager::GetInstance().GetDeltaTime())));
-        fpsText->Draw(*textShader, CameraManager::GetInstance().GetActiveCamera()->GetProjection(), CameraManager::GetInstance().GetActiveCamera()->GetView());
+        fpsText->SetText("FPS = "+std::to_string(static_cast<int>(1/Time::TimeManager::GetInstance().GetDeltaTime())));
+        glm::mat4 projection = glm::ortho(0.0f, (float)Rendering::Renderer::GetInstance().GetCurrentWidth(), 0.0f, (float)Rendering::Renderer::GetInstance().GetCurrentHeight());
+        fpsText->Draw(textShader, projection, CameraManager::GetInstance().GetActiveCamera()->GetView());
         glDisable(GL_BLEND);
     };
 

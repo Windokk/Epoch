@@ -54,9 +54,9 @@ namespace EPOCH::Engine::Rendering::UI{
             for (unsigned char c = 0; c < 128; c++)
             {
                 // Load character glyph 
-                if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+                if (FT_Error err = FT_Load_Char(face, c, FT_LOAD_RENDER))
                 {
-                    DEBUG_ERROR("Couldn't load glyph");
+                    DEBUG_ERROR("Couldn't load glyph (Freetype error : "+std::to_string(err)+")");
                     continue;
                 }
                 // generate texture

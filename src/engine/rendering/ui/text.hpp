@@ -16,13 +16,13 @@ namespace EPOCH::Engine::Rendering::UI
     class Text{
         std::string text;
         glm::vec4 color;
-        Font font;
+        std::shared_ptr<Font> font;
         Transform transform;
 
         public:
-        Text(Font& font, std::string text, glm::vec4 color, Transform transform);
+        Text(std::shared_ptr<Font> font, std::string text, glm::vec4 color, Transform transform);
 
-        void Draw(Shader &shader, glm::mat4 projection, glm::mat4 view);
+        void Draw(std::shared_ptr<Shader> shader, glm::mat4 projection, glm::mat4 view);
 
         void SetText(std::string newText) { text = newText;}
 

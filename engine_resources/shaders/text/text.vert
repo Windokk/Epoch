@@ -20,5 +20,5 @@ void main()
     
     vec4 world = model * vec4(aPos, 1.0);
 
-    gl_Position = projection * view * world;
+    gl_Position = projection * vec4(aPos.xy, 0.0, 1.0);
 }

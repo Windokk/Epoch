@@ -1,0 +1,12 @@
+{
+    "recievesShadows":true,
+    "shader":"shaders\\mesh\\lit",
+    "uniforms":[
+        {"albedo":"textures\\grey.png"},
+        {"metallicMap":"textures\\white.png"},
+        {"roughnessMap":"textures\\grey.png"},
+        {"normalMap":"textures\\bricks_normal.jpg"},
+        {"metallic":0.01},
+        {"roughness":1.0}
+    ]
+}

@@ -31,7 +31,8 @@
         "Material__25": "materials\\Material__25",
         "roof": "materials\\roof",
         "lit_mat1": "materials\\lit_mat1",
-        "unlit": "materials\\default"
+        "unlit": "materials\\default",
+        "normal_test": "materials\\normal_test"
     },
     "actors": [
         {
@@ -190,7 +191,7 @@
                     "active": true,
                     "mesh": "cube",
                     "materials": {
-                        "0": "unlit"
+                        "0": "normal_test"
                     }
                 }
             ]
