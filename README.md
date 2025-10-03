@@ -1,4 +1,4 @@
-# EPOCH Engine
+# Epoch Engine
 
 Yet another game engine
 
