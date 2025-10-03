@@ -1,4 +1,4 @@
-<center>
+<div margin="auto">
 
 # Epoch Engine
 
@@ -13,7 +13,7 @@
 Yet another game engine
 (full of bugs)
 
-</center>
+</div>
 
 ## Screenshots
 
