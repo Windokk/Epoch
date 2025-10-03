@@ -1,18 +1,16 @@
+<h1 align="center">Epoch Engine</h1>
+
 <p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/EpochLogoDarkMode.png" width="20%">
+    <source media="(prefers-color-scheme: light)" srcset=".github/EpochLogoLightMode.png" width="20%">
+    <img alt="Fallback image description" src="default-image.png" width="20%">
+  </picture>
+</p>
 
-<h1>Epoch Engine</h1>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/EpochLogoDarkMode.png" width="20%">
-  <source media="(prefers-color-scheme: light)" srcset=".github/EpochLogoLightMode.png" width="20%">
-  <img alt="Fallback image description" src="default-image.png" width="20%">
-</picture>
-
-<br>
-
-Yet another game engine  
-(full of bugs)
-
+<p align="center">
+  Yet another game engine<br>
+  (full of bugs)
 </p>
 
 ## Screenshots
