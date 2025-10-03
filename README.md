@@ -1,19 +1,19 @@
-<div margin="auto">
+<p align="center">
 
-# Epoch Engine
+<h1>Epoch Engine</h1>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/EpochLogoDarkMode.png" width="20%">
   <source media="(prefers-color-scheme: light)" srcset=".github/EpochLogoLightMode.png" width="20%">
-  <img alt="Fallback image description" src="default-image.png">
+  <img alt="Fallback image description" src="default-image.png" width="20%">
 </picture>
 
 <br>
 
-Yet another game engine
+Yet another game engine  
 (full of bugs)
 
-</div>
+</p>
 
 ## Screenshots
 
