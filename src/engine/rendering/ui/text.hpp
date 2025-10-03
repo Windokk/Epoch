@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace EPOCH::Engine::Rendering::UI
+namespace Epoch::Engine::Rendering::UI
 {
     using namespace ECS::Components;
 

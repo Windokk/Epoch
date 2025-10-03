@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
     
     using namespace ECS::Components;
 

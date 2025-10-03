@@ -8,7 +8,7 @@
 #include "engine/inputs/input_manager.hpp"
 #include "engine/time/time_manager.hpp"
 
-namespace EPOCH::Engine::Core {
+namespace Epoch::Engine::Core {
     
     struct EngineCreationSettings{
         //WINDOW

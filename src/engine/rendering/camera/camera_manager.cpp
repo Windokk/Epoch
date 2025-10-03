@@ -1,5 +1,5 @@
 #include "camera_manager.hpp"
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
 
 }

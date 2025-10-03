@@ -4,7 +4,7 @@
 
 #include "engine/filesystem/filesystem.hpp"
 
-namespace EPOCH::Engine::Serialization{
+namespace Epoch::Engine::Serialization{
 
     class MaterialSerializer{
         public:

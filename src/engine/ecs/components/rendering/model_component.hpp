@@ -4,7 +4,7 @@
 
 #include "engine/rendering/mesh/mesh.hpp"
 
-namespace EPOCH::Engine::ECS::Components
+namespace Epoch::Engine::ECS::Components
 {
     class Model : public Component{
         public:

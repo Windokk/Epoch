@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
     
     Mesh::Mesh(const ufbx_mesh* ufbx_mesh, double scene_unit_meters, ufbx_material_list& ufbx_mats, COL_RGBA diffuse)
     {

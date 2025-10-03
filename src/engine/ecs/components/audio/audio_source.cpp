@@ -3,7 +3,7 @@
 #include "engine/ecs/objects/actors/actor.hpp"
 
 
-namespace EPOCH::Engine::ECS::Components{
+namespace Epoch::Engine::ECS::Components{
     
     void AudioSource::Update()
     {

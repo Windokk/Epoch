@@ -4,7 +4,7 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
-namespace EPOCH::Engine::ECS::Components {
+namespace Epoch::Engine::ECS::Components {
     
     Camera::Camera(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {

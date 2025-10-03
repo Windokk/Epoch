@@ -3,7 +3,7 @@
 #include "engine/filesystem/filesystem.hpp"
 #include "engine/debugging/debugger.hpp"
 
-namespace EPOCH::Engine::Rendering::UI{
+namespace Epoch::Engine::Rendering::UI{
 
     using namespace Filesystem;
     

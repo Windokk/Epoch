@@ -9,7 +9,7 @@
 
 using namespace std::chrono;
 
-namespace EPOCH::Engine::Core{
+namespace Epoch::Engine::Core{
     
     using namespace Levels;
     using namespace Engine::Rendering;

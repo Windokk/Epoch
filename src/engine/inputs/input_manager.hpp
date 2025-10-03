@@ -8,7 +8,7 @@
 #include "keys.hpp"
 #include "engine/debugging/debugger.hpp"
 
-namespace EPOCH::Engine::Input
+namespace Epoch::Engine::Input
 {
     class InputManager{
         public:

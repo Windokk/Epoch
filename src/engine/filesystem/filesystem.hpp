@@ -14,7 +14,7 @@
 
 #include "assetID.hpp"
 
-namespace EPOCH::Engine::Filesystem{
+namespace Epoch::Engine::Filesystem{
 
     enum class Type{
         T_IMAGE,

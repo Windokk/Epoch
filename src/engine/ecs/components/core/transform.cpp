@@ -6,7 +6,7 @@
 #include "engine/ecs/objects/actors/actor.hpp"
 #include "engine/ecs/components/rendering/light_component.hpp"
 
-namespace EPOCH::Engine::ECS::Components{
+namespace Epoch::Engine::ECS::Components{
 
     Transform::Transform(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {

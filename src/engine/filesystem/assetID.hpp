@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <map>
 
-namespace EPOCH::Engine::Filesystem
+namespace Epoch::Engine::Filesystem
 {
 
     class AssetID {

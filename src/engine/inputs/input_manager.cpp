@@ -1,7 +1,7 @@
 #include "input_manager.hpp"
 
 
-namespace EPOCH::Engine::Input{
+namespace Epoch::Engine::Input{
 
     InputManager gSharedInputManager;
 

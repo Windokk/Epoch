@@ -10,7 +10,7 @@
 
 using namespace nlohmann;
 
-namespace EPOCH::Engine::Serialization{
+namespace Epoch::Engine::Serialization{
     
     void LoadModelComponent(json &component, std::shared_ptr<ECS::Objects::Actor> a, json data){
         std::string mesh_name = component["mesh"];
@@ -215,7 +215,7 @@ namespace EPOCH::Engine::Serialization{
             else{
                 //Custom component/Inherited component case
                 //Note : The custom component has to be already registered
-                ECS::Components::Component* rawComponent = EPOCH::Engine::ECS::Components::GetComponentRegistry().CreateComponentByName(type);
+                ECS::Components::Component* rawComponent = Epoch::Engine::ECS::Components::GetComponentRegistry().CreateComponentByName(type);
                 if (!rawComponent) {
                     DEBUG_WARNING("Unknown component type: " + type);
                     continue;

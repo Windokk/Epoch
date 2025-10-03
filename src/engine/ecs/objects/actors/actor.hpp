@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace EPOCH::Engine::ECS::Objects{
+namespace Epoch::Engine::ECS::Objects{
 
     using namespace Components;
 

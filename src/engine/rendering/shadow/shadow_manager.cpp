@@ -5,7 +5,7 @@
 #include "engine/rendering/renderer/renderer.hpp"
 #include "engine/ecs/components/rendering/camera.hpp"
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
     
     float ComputeCascadeSplitDistance(int cascadeIndex, float nearPlane, float farPlane, int totalCascades)
     {
@@ -336,7 +336,7 @@ namespace EPOCH::Engine::Rendering{
 
     /// @brief Bind the shadow maps to a material
     /// @param material The material to bind shadow maps to
-    void ShadowManager::BindShadowMaps(std::shared_ptr<EPOCH::Engine::Rendering::Material> material)
+    void ShadowManager::BindShadowMaps(std::shared_ptr<Epoch::Engine::Rendering::Material> material)
     {
         constexpr int MAX_SHADOW_LIGHTS = 16;
         constexpr int MAX_SPOT_LIGHTS = 12;

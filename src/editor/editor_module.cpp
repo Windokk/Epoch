@@ -2,10 +2,10 @@
 #include "engine/core/resources/resources_manager.hpp"
 #include "engine/rendering/ui/text.hpp"
 
-using namespace EPOCH::Engine;
-using namespace EPOCH::Engine::Rendering;
-using namespace EPOCH::Engine::ECS::Components;
-using namespace EPOCH::Engine::ECS::Objects;
+using namespace Epoch::Engine;
+using namespace Epoch::Engine::Rendering;
+using namespace Epoch::Engine::ECS::Components;
+using namespace Epoch::Engine::ECS::Objects;
 
 std::shared_ptr<UI::Font> font;
 

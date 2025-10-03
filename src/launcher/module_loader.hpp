@@ -14,7 +14,7 @@
 #include "engine/ecs/components/core/registry/component_registry.hpp"
 #include "engine/inputs/input_manager.hpp"
 
-namespace EPOCH::Launcher{
+namespace Epoch::Launcher{
     class ModuleLoader{
 
         public:
@@ -24,14 +24,14 @@ namespace EPOCH::Launcher{
                 return instance;
             }
 
-            void LoadGameModule(const std::string& modulePath, const EPOCH::Engine::Debugging::Level minDebugLevel) {
+            void LoadGameModule(const std::string& modulePath, const Epoch::Engine::Debugging::Level minDebugLevel) {
                 #if defined(_WIN32)
                     HMODULE hLib = LoadLibraryA(modulePath.c_str());
                     if (!hLib) {
                         DEBUG_FATAL("Failed to load game module : " + modulePath);
                     }
                     
-                    using InitFunc = void(*)(EPOCH::Engine::Debugging::Debugger*, EPOCH::Engine::Debugging::Level, EPOCH::Engine::ECS::Components::ComponentRegistry*, EPOCH::Engine::Input::InputManager*);
+                    using InitFunc = void(*)(Epoch::Engine::Debugging::Debugger*, Epoch::Engine::Debugging::Level, Epoch::Engine::ECS::Components::ComponentRegistry*, Epoch::Engine::Input::InputManager*);
                     InitFunc init = reinterpret_cast<InitFunc>(
                         GetProcAddress(hLib, "InitializeSingletons"));
 
@@ -39,7 +39,7 @@ namespace EPOCH::Launcher{
                         DEBUG_FATAL("Failed to find InitializeSingletons() in .dll");
                     }
                 
-                    init(&EPOCH::Engine::Debugging::Debugger::GetInstance(), minDebugLevel, &EPOCH::Engine::ECS::Components::gSharedComponentRegistry, &EPOCH::Engine::Input::gSharedInputManager);
+                    init(&Epoch::Engine::Debugging::Debugger::GetInstance(), minDebugLevel, &Epoch::Engine::ECS::Components::gSharedComponentRegistry, &Epoch::Engine::Input::gSharedInputManager);
 
                     using RegisterFunc = void(*)();
                     RegisterFunc registerComponents = reinterpret_cast<RegisterFunc>(
@@ -57,13 +57,13 @@ namespace EPOCH::Launcher{
                         DEBUG_FATAL(std::string("Failed to load game module : ") + dlerror());
                     }
 
-                    using InitFunc = void(*)(EPOCH::Engine::Debugging::Debugger*, EPOCH::Engine::Debugging::Level, EPOCH::Engine::ECS::Components::ComponentRegistry*, EPOCH::Engine::Input::InputManager*);
+                    using InitFunc = void(*)(Epoch::Engine::Debugging::Debugger*, Epoch::Engine::Debugging::Level, Epoch::Engine::ECS::Components::ComponentRegistry*, Epoch::Engine::Input::InputManager*);
                     InitFunc init = reinterpret_cast<InitFunc>(dlsym(handle, "InitializeSingletons"));
                     if (!init) {
                         DEBUG_FATAL("Failed to find InitializeSingletons() in .so");
                     }
 
-                    init(&EPOCH::Engine::Debugging::Debugger::GetInstance(), minDebugLevel, &EPOCH::Engine::ECS::Components::gSharedComponentRegistry, &EPOCH::Engine::Input::gSharedInputManager);
+                    init(&Epoch::Engine::Debugging::Debugger::GetInstance(), minDebugLevel, &Epoch::Engine::ECS::Components::gSharedComponentRegistry, &Epoch::Engine::Input::gSharedInputManager);
 
                     using RegisterFunc = void(*)();
                     RegisterFunc registerComponents = reinterpret_cast<RegisterFunc>(dlsym(handle, "RegisterGameComponents"));
@@ -86,7 +86,7 @@ namespace EPOCH::Launcher{
                         DEBUG_FATAL("Failed to load editor module : " + modulePath);
                     }
                     
-                    using InitFunc = void(*)(EPOCH::Engine::Debugging::Debugger*, EPOCH::Engine::Rendering::Renderer*, EPOCH::Engine::Core::Resources::ResourcesManager*, EPOCH::Engine::Rendering::CameraManager*, EPOCH::Engine::Time::TimeManager*);
+                    using InitFunc = void(*)(Epoch::Engine::Debugging::Debugger*, Epoch::Engine::Rendering::Renderer*, Epoch::Engine::Core::Resources::ResourcesManager*, Epoch::Engine::Rendering::CameraManager*, Epoch::Engine::Time::TimeManager*);
                     InitFunc init = reinterpret_cast<InitFunc>(
                         GetProcAddress(hLib, "InitializeSingletons"));
 
@@ -95,10 +95,10 @@ namespace EPOCH::Launcher{
                         
                     }
                 
-                    init(&EPOCH::Engine::Debugging::Debugger::GetInstance(), &EPOCH::Engine::Rendering::Renderer::GetInstance(),
-                            &EPOCH::Engine::Core::Resources::ResourcesManager::GetInstance(),
-                            &EPOCH::Engine::Rendering::CameraManager::GetInstance(),
-                            &EPOCH::Engine::Time::TimeManager::GetInstance());
+                    init(&Epoch::Engine::Debugging::Debugger::GetInstance(), &Epoch::Engine::Rendering::Renderer::GetInstance(),
+                            &Epoch::Engine::Core::Resources::ResourcesManager::GetInstance(),
+                            &Epoch::Engine::Rendering::CameraManager::GetInstance(),
+                            &Epoch::Engine::Time::TimeManager::GetInstance());
 
                     using StartFunc = void(*)();
                     StartFunc start = reinterpret_cast<StartFunc>(
@@ -116,20 +116,20 @@ namespace EPOCH::Launcher{
                         DEBUG_FATAL(std::string("Failed to load editor module : ") + dlerror());
                     }
 
-                    using InitFunc = void(*)(EPOCH::Engine::Debugging::Debugger* debugger, 
-                                                            EPOCH::Engine::Rendering::Renderer* renderer, 
-                                                            EPOCH::Engine::Core::Resources::ResourcesManager* resourcesManager, 
-                                                            EPOCH::Engine::Rendering::CameraManager* cameraManager,
-                                                            EPOCH::Engine::Time::TimeManager* timeManager);
+                    using InitFunc = void(*)(Epoch::Engine::Debugging::Debugger* debugger, 
+                                                            Epoch::Engine::Rendering::Renderer* renderer, 
+                                                            Epoch::Engine::Core::Resources::ResourcesManager* resourcesManager, 
+                                                            Epoch::Engine::Rendering::CameraManager* cameraManager,
+                                                            Epoch::Engine::Time::TimeManager* timeManager);
                     InitFunc init = reinterpret_cast<InitFunc>(dlsym(handle, "InitializeSingletons"));
                     if (!init) {
                         DEBUG_FATAL("Failed to find InitializeSingletons() in .so");
                     }
 
-                    init(&EPOCH::Engine::Debugging::Debugger::GetInstance(), &EPOCH::Engine::Rendering::Renderer::GetInstance(),
-                            &EPOCH::Engine::Core::Resources::ResourcesManager::GetInstance(),
-                            &EPOCH::Engine::Rendering::CameraManager::GetInstance(),
-                            &EPOCH::Engine::Time::TimeManager::GetInstance());
+                    init(&Epoch::Engine::Debugging::Debugger::GetInstance(), &Epoch::Engine::Rendering::Renderer::GetInstance(),
+                            &Epoch::Engine::Core::Resources::ResourcesManager::GetInstance(),
+                            &Epoch::Engine::Rendering::CameraManager::GetInstance(),
+                            &Epoch::Engine::Time::TimeManager::GetInstance());
 
                     using StartFunc = void(*)();
                     StartFunc start = reinterpret_cast<StartFunc>(dlsym(handle, "EditorStart"));

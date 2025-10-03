@@ -13,7 +13,7 @@
 
 #include "engine/core/resources/resources_manager.hpp"
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
 
 
     void Renderer::CreateRectGeometry()

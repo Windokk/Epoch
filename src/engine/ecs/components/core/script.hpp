@@ -4,7 +4,7 @@
 
 #include "engine/events/event_system.hpp"
 
-namespace EPOCH::Engine::ECS::Components
+namespace Epoch::Engine::ECS::Components
 {
     class Script : public Component{
         public:

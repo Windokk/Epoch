@@ -1,6 +1,6 @@
 #include "text.hpp"
 
-namespace EPOCH::Engine::Rendering::UI
+namespace Epoch::Engine::Rendering::UI
 {
     Text::Text(std::shared_ptr<Font> font, std::string text, glm::vec4 color, Transform transform) : font(font), transform(transform) 
     {

@@ -10,7 +10,7 @@
 
 #include "engine/ecs/components/core/component.hpp"
 
-namespace EPOCH::Engine::ECS::Components
+namespace Epoch::Engine::ECS::Components
 {
     class Transform : public Component{
 

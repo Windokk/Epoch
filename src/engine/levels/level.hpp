@@ -9,7 +9,7 @@
 #include "engine/ecs/components/rendering/camera.hpp"
 #include "engine/ecs/components/core/script.hpp"
 
-namespace EPOCH::Engine::ECS{
+namespace Epoch::Engine::ECS{
 
     namespace Objects{
         class Actor;
@@ -22,12 +22,12 @@ namespace EPOCH::Engine::ECS{
     }
 }
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
     class Renderer;
     class Mesh;
 }
 
-namespace EPOCH::Engine::Levels{
+namespace Epoch::Engine::Levels{
 
     class Level{
 

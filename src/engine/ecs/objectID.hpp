@@ -8,7 +8,7 @@
 #include <functional>
 #include <memory>
 
-namespace EPOCH::Engine::ECS
+namespace Epoch::Engine::ECS
 {
     namespace Objects{
         class Object;
@@ -115,8 +115,8 @@ namespace EPOCH::Engine::ECS
 
 namespace std {
     template<>
-    struct hash<EPOCH::Engine::ECS::ObjectID> {
-        std::size_t operator()(const EPOCH::Engine::ECS::ObjectID& id) const noexcept {
+    struct hash<Epoch::Engine::ECS::ObjectID> {
+        std::size_t operator()(const Epoch::Engine::ECS::ObjectID& id) const noexcept {
             return std::hash<int>{}(id.GetAsInt());
         }
     };

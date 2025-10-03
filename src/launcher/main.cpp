@@ -3,12 +3,12 @@
 #include "engine/core/resources/resources_manager.hpp"
 #include "module_loader.hpp"
 
-using namespace EPOCH::Engine;
-using namespace EPOCH::Engine::Rendering;
-using namespace EPOCH::Engine::Input;
-using namespace EPOCH::Engine::ECS::Components;
-using namespace EPOCH::Engine::ECS::Objects;
-using namespace EPOCH::Launcher;
+using namespace Epoch::Engine;
+using namespace Epoch::Engine::Rendering;
+using namespace Epoch::Engine::Input;
+using namespace Epoch::Engine::ECS::Components;
+using namespace Epoch::Engine::ECS::Objects;
+using namespace Epoch::Launcher;
 
 
 Debugging::Level minDebugLevel = Debugging::Level::Log;
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     #endif
 
     engine.Destroy();
-    std::cout << "EPOCH Engine has finished. Press Enter to exit..." << std::endl;
+    std::cout << "Epoch Engine has finished. Press Enter to exit..." << std::endl;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();

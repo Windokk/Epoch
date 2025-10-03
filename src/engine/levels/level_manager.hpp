@@ -2,7 +2,7 @@
 
 #include "level.hpp"
 
-namespace EPOCH::Engine::Levels{
+namespace Epoch::Engine::Levels{
 
     class LevelManager {
         public:

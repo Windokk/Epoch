@@ -1,6 +1,6 @@
 #include "event_system.hpp"
 
-namespace EPOCH::Engine::Events{
+namespace Epoch::Engine::Events{
 
     using Handler = std::function<void(const Event&)>;
     using SubscriberMap = std::unordered_map<std::type_index, std::vector<Handler>>;

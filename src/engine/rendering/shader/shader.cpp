@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-namespace EPOCH::Engine::Rendering {
+namespace Epoch::Engine::Rendering {
 
     using namespace Filesystem;
 

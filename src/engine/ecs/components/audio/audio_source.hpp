@@ -6,7 +6,7 @@
 
 #include "engine/rendering/utils.hpp"
 
-namespace EPOCH::Engine::ECS::Components
+namespace Epoch::Engine::ECS::Components
 {
 
     class AudioSource : public Component {

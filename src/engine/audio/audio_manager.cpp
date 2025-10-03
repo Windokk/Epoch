@@ -12,7 +12,7 @@
 
 #include "engine/time/time_manager.hpp"
 
-namespace EPOCH::Engine::Audio
+namespace Epoch::Engine::Audio
 {
     using namespace Filesystem;
     using namespace Rendering;

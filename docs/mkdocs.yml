@@ -1,0 +1,28 @@
+site_name: Epoch Engine Docs
+site_url: https://windokk.github.io/epoch
+repo_url: https://github.com/Windokk/Epoch
+repo_name: Windokk/EPOCH
+copyright: Copyright &copy; 2025 - Windokk
+extra:
+  version:
+    provider: mike
+plugins:
+  - search
+  - tags
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  palette: 
+    # Palette toggle for light mode
+    - scheme: defaults
+      toggle:
+        icon: material/toggle-switch
+
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode

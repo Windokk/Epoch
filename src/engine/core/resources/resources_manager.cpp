@@ -4,7 +4,7 @@
 
 #include "engine/serialization/level/level_serializer.hpp"
 
-namespace EPOCH::Engine::Core::Resources{
+namespace Epoch::Engine::Core::Resources{
 
     using namespace Filesystem;
 

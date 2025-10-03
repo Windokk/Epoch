@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace EPOCH::Engine::Rendering {
+namespace Epoch::Engine::Rendering {
 
     FrameBuffer::FrameBuffer(float width, float height, std::shared_ptr<Shader> shader, bool multisampled = true)
     {

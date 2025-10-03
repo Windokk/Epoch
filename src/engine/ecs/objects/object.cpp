@@ -2,7 +2,7 @@
 
 #include "engine/debugging/debugger.hpp"
 
-namespace EPOCH::Engine::ECS::Objects{
+namespace Epoch::Engine::ECS::Objects{
     
     Object::Object()
     {

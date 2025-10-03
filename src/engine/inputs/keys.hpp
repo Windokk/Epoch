@@ -1,7 +1,7 @@
 
 
 
-namespace EPOCH::Engine::Input
+namespace Epoch::Engine::Input
 {
     /* Printable keys */
     #define KEY_SPACE              32

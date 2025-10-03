@@ -6,7 +6,7 @@
 
 #include "engine/debugging/debugger.hpp"
 
-namespace EPOCH::Engine::ECS::Components {
+namespace Epoch::Engine::ECS::Components {
 
     class Component;
     using ComponentFactory = Component* (*)();

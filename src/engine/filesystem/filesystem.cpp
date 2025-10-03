@@ -4,7 +4,7 @@
 
 #include "engine/debugging/debugger.hpp"
 
-namespace EPOCH::Engine::Filesystem{
+namespace Epoch::Engine::Filesystem{
 
     Path FileManager::root = Path("");
     Path FileManager::projectRoot = Path("");

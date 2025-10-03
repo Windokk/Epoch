@@ -27,11 +27,11 @@ using namespace JPH::literals;
 
 using namespace std;
 
-namespace EPOCH::Engine::ECS::Components{
+namespace Epoch::Engine::ECS::Components{
     class PhysicsBody;
 }
 
-namespace EPOCH::Engine::Physics
+namespace Epoch::Engine::Physics
 {
     
     enum PhysicsShape{

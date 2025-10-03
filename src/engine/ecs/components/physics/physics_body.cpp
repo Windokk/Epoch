@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace EPOCH::Engine::ECS::Components{
+namespace Epoch::Engine::ECS::Components{
     PhysicsBody::PhysicsBody(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)
     {
         

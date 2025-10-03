@@ -1,6 +1,6 @@
 #include "debug.hpp"
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
     
     constexpr int LAT_SEGMENTS = 12;
     constexpr int LONG_SEGMENTS = 24;

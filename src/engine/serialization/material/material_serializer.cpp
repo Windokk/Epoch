@@ -6,7 +6,7 @@
 
 using namespace nlohmann;
 
-namespace EPOCH::Engine::Serialization{
+namespace Epoch::Engine::Serialization{
 
     using namespace Core::Resources;
     using namespace Rendering;

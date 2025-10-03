@@ -8,11 +8,11 @@
 #define CASCADES_PER_LIGHT 3
 #define NUM_CASCADES (MAX_DIRECTIONAL_LIGHTS * CASCADES_PER_LIGHT)
 
-namespace EPOCH::Engine::ECS::Components{
+namespace Epoch::Engine::ECS::Components{
     class Camera;
 }
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
 
     class Shader;
 
@@ -42,7 +42,7 @@ namespace EPOCH::Engine::Rendering{
         void ResolveShadowMaps();
         void UnregisterLight(int lightIndex);
         void RenderShadowMaps(const std::unordered_map<int, std::pair<glm::mat4, Rendering::Mesh *>> &meshes, std::shared_ptr<ECS::Components::Camera> cam);
-        void BindShadowMaps(std::shared_ptr<EPOCH::Engine::Rendering::Material> material);
+        void BindShadowMaps(std::shared_ptr<Epoch::Engine::Rendering::Material> material);
 
     private:
         std::vector<ShadowMap> shadowMaps;

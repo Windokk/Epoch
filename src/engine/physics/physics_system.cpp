@@ -6,7 +6,7 @@
 
 #include "engine/ecs/objects/actors/actor.hpp"
 
-namespace EPOCH::Engine::Physics {
+namespace Epoch::Engine::Physics {
 
     // Constants
     static constexpr uint cMaxBodies = 1024;

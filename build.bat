@@ -1,5 +1,5 @@
 cmake -S . -B build -G "MinGW Makefiles"
 cd build
 cmake --build .
-start /wait EPOCH.exe
+start /wait Epoch.exe
 echo %ERRORLEVEL%

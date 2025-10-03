@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <memory>
 
-namespace EPOCH::Engine::Rendering {
+namespace Epoch::Engine::Rendering {
 
     using UniformValue = std::variant<float, int, glm::vec2, glm::vec3, glm::vec4, glm::mat4, std::shared_ptr<Texture>>;
 

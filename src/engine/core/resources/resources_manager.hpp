@@ -6,7 +6,7 @@
 #include "engine/rendering/mesh/mesh.hpp"
 #include "engine/levels/level.hpp"
 
-namespace EPOCH::Engine::Core::Resources{
+namespace Epoch::Engine::Core::Resources{
 
     class ResourcesManager{
         public:

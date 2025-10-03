@@ -1,8 +1,19 @@
+<center>
+
 # Epoch Engine
 
-Yet another game engine
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/EpochLogoDarkMode.png" width="20%">
+  <source media="(prefers-color-scheme: light)" srcset=".github/EpochLogoLightMode.png" width="20%">
+  <img alt="Fallback image description" src="default-image.png">
+</picture>
 
+<br>
+
+Yet another game engine
 (full of bugs)
+
+</center>
 
 ## Screenshots
 

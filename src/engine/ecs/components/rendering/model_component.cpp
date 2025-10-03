@@ -6,7 +6,7 @@
 
 #include "engine/core/resources/resources_manager.hpp"
 
-namespace EPOCH::Engine::ECS::Components{
+namespace Epoch::Engine::ECS::Components{
     
 
     Model::Model(Objects::Actor *parent, uint32_t local_id) : Component(parent, local_id)

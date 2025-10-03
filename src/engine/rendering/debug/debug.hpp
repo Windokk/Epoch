@@ -2,7 +2,7 @@
 
 #include "engine/rendering/material/material.hpp"
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
 
     class DebugShape{
         public:

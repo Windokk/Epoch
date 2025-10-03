@@ -5,7 +5,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace EPOCH::Engine::Rendering::UI
+namespace Epoch::Engine::Rendering::UI
 {
     
     struct Character {

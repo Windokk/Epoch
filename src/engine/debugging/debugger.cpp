@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <ctime>
 
-namespace EPOCH::Engine::Debugging{
+namespace Epoch::Engine::Debugging{
 
     void Debugger::EnableTimestamp()
     {
@@ -54,7 +54,7 @@ namespace EPOCH::Engine::Debugging{
             logFile << output << std::endl;
 
         if (level == Level::Fatal){
-            std::cout << "EPOCH Engine has crashed. Press Enter to exit..." << std::endl;
+            std::cout << "Epoch Engine has crashed. Press Enter to exit..." << std::endl;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();

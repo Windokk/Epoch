@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace EPOCH::Engine::Debugging{
+namespace Epoch::Engine::Debugging{
     enum class Level {
         Log = 0,
         Info = 1,
@@ -82,8 +82,8 @@ namespace EPOCH::Engine::Debugging{
 
 }
 
-#define DEBUG_LOG(msg)       EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Log,    msg, __FILE__, __LINE__)
-#define DEBUG_INFO(msg)      EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Info,   msg, __FILE__, __LINE__)
-#define DEBUG_WARNING(msg)   EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Warning,msg, __FILE__, __LINE__)
-#define DEBUG_ERROR(msg)     EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Error,  msg, __FILE__, __LINE__)
-#define DEBUG_FATAL(msg)     EPOCH::Engine::Debugging::GetDebugger().Log(EPOCH::Engine::Debugging::Level::Fatal,  msg, __FILE__, __LINE__)
+#define DEBUG_LOG(msg)       Epoch::Engine::Debugging::GetDebugger().Log(Epoch::Engine::Debugging::Level::Log,    msg, __FILE__, __LINE__)
+#define DEBUG_INFO(msg)      Epoch::Engine::Debugging::GetDebugger().Log(Epoch::Engine::Debugging::Level::Info,   msg, __FILE__, __LINE__)
+#define DEBUG_WARNING(msg)   Epoch::Engine::Debugging::GetDebugger().Log(Epoch::Engine::Debugging::Level::Warning,msg, __FILE__, __LINE__)
+#define DEBUG_ERROR(msg)     Epoch::Engine::Debugging::GetDebugger().Log(Epoch::Engine::Debugging::Level::Error,  msg, __FILE__, __LINE__)
+#define DEBUG_FATAL(msg)     Epoch::Engine::Debugging::GetDebugger().Log(Epoch::Engine::Debugging::Level::Fatal,  msg, __FILE__, __LINE__)

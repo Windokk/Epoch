@@ -4,7 +4,7 @@
 #include <mutex>
 #include <thread>
 
-namespace EPOCH::Engine::Time{
+namespace Epoch::Engine::Time{
 
     struct TimeStamp{
         int milliseconds;

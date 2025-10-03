@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
 
     enum class LightType{
         Directional = 0,

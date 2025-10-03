@@ -4,7 +4,7 @@
 
 #include "engine/rendering/renderer/renderer.hpp"
 
-namespace EPOCH::Engine::ECS::Components
+namespace Epoch::Engine::ECS::Components
 {
     class Light : public Component{
         public:

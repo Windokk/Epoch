@@ -6,7 +6,7 @@
 #include "engine/rendering/renderer/renderer.hpp"
 #include <glm/gtx/string_cast.hpp>
 
-namespace EPOCH::Engine::Rendering{
+namespace Epoch::Engine::Rendering{
     
     LightManager::LightManager()
     {

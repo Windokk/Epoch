@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <map>
 
-namespace EPOCH::Engine::Audio
+namespace Epoch::Engine::Audio
 {
     class Sound;
 

@@ -1,6 +1,6 @@
 #include "component.hpp"
 
-namespace EPOCH::Engine::ECS::Components {
+namespace Epoch::Engine::ECS::Components {
 
     Component::Component(Objects::Actor *parent, uint32_t local_id)
     {

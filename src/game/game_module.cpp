@@ -3,9 +3,9 @@
 
 #include "engine/inputs/input_manager.hpp"
 
-using namespace EPOCH::Engine;
-using namespace EPOCH::Engine::ECS::Components;
-using namespace EPOCH::Engine::Input;
+using namespace Epoch::Engine;
+using namespace Epoch::Engine::ECS::Components;
+using namespace Epoch::Engine::Input;
 
 extern "C" __declspec(dllexport) void InitializeSingletons(Debugging::Debugger* debugger, Debugging::Level minDebugLevel, ComponentRegistry* compReg, InputManager* inputMan) {
     SetDebugger(debugger);

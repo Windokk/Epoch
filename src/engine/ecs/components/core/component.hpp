@@ -6,7 +6,7 @@
 
 using namespace nlohmann;
 
-namespace EPOCH::Engine::ECS{
+namespace Epoch::Engine::ECS{
     namespace Objects{
         class Actor;
     }
