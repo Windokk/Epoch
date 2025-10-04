@@ -191,7 +191,7 @@
                     "active": true,
                     "mesh": "cube",
                     "materials": {
-                        "0": "normal_test"
+                        "0": "unlit"
                     }
                 }
             ]

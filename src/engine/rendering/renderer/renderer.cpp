@@ -184,6 +184,11 @@ namespace Epoch::Engine::Rendering{
                 }),
             drawList.end()
         );
+
+        std::stable_partition(drawList.begin(), drawList.end(),
+        [](const DrawCommand& cmd) {
+            return cmd.mat->renderMode != RenderMode::TRANSLUCENT;
+        });
     }
 
     void Renderer::BeginFrame()
@@ -221,6 +226,29 @@ namespace Epoch::Engine::Rendering{
 
             if(settings.enableShadows && cmd.mat->recievesShadows)
                 shadowMan->BindShadowMaps(cmd.mat);
+
+            switch (cmd.mat->renderMode)
+            {
+                case TRANSLUCENT:
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    cmd.mat->SetParameter("masked", false);
+                    break;
+
+                case MASKED:
+                    cmd.mat->SetParameter("masked", true);
+                    glDisable(GL_BLEND);
+                    break;
+
+                case OPAQUE:
+                    cmd.mat->SetParameter("masked", false);
+                    glDisable(GL_BLEND);
+                    break;
+                    
+                default:
+                    break;
+            }
+
             cmd.mat->SetParameter("projection", CameraManager::GetInstance().GetActiveCamera()->GetProjection());
             cmd.mat->SetParameter("view", CameraManager::GetInstance().GetActiveCamera()->GetView());
             cmd.mat->SetParameter("model", cmd.tr->GetTransformMatrix());
@@ -318,9 +346,7 @@ namespace Epoch::Engine::Rendering{
 
                     break;
                 }
-                case RenderStage::Background:
                 case RenderStage::Scene:
-                case RenderStage::Debug:
                 default:{
                     if(!pass.target)
                         DEBUG_ERROR("Couldn't render pass without framebuffer");

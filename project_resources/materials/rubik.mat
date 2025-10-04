@@ -1,5 +1,6 @@
 {
     "recievesShadows":true,
+    "renderMode": "opaque",
     "shader":"shaders\\mesh\\lit",
     "uniforms":[
         {"albedo":"textures\\initialShadingGroup_Base_Color.png"},

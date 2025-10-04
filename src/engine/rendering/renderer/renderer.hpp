@@ -32,10 +32,8 @@ namespace Epoch::Engine{
         };
 
         enum class RenderStage {
-            Background,
             Scene,
             PostProcess,
-            Debug,
             UI
         };
 

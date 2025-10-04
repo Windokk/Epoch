@@ -21,7 +21,7 @@
 
 - PBR shaders/materials
 - Light system : Directionnal, Spot, Point
-- Shadow maps : CSM, PCF
+- Shadow maps : Directionnal CSM, PCF (for all shadow maps)
 - Model component (ECS)
 
 #### UI
@@ -93,7 +93,7 @@
 - Time queries (delta, fixedDelta, current global (world) time, current app time)
 - Timespeed (for physics calculations, particles and custom classes)
 
-## ROADMAP
+## ROADMAP ALPHA (November/December 2025)
 
 ### Editor
 
@@ -108,7 +108,9 @@
 
 ### Rendering
 
-- [ ] Transparency
+- [x] Transparency
+- [ ] Wireframe rendering
+- [ ] Forward+ renderer
 - [ ] FBX importer (multiple meshes)
 - [ ] Skyboxes
 - [ ] LODs

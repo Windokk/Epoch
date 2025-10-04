@@ -9,10 +9,26 @@ in vec3 worldNormal;
 
 uniform bool useTexture;
 uniform sampler2D diffuse;
+uniform bool useCustomColor;
+uniform vec4 customColor;
+
+uniform bool masked;
 
 void main(){
     if(useTexture){
-        fragColor = texture(diffuse, texCoord);
+        vec4 baseColor = texture(diffuse, texCoord);
+        
+        if (masked && baseColor.a < 0.5)
+            discard;
+
+        fragColor = baseColor;
+    }
+    else if(useCustomColor){
+        
+        if (masked && customColor.a < 0.5)
+            discard;
+
+        fragColor = customColor;
     }
     else{
         fragColor = color;

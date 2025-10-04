@@ -30,6 +30,8 @@ uniform int lightNB;
 
 uniform vec3 camPos;
 
+uniform bool masked;
+
 // Shadow maps
 
 #define MAX_DIRECTIONAL_LIGHTS 3
@@ -204,7 +206,11 @@ vec3 computeLightDisney(Light light, vec3 L, vec3 V, vec3 N, vec3 baseColor, flo
 }
 
 void main() {
-    vec3 baseColor = texture(albedo, texCoord).rgb;
+    vec4 baseColor = texture(albedo, texCoord);
+
+    if (masked && baseColor.a < 0.5)
+        discard;
+
     float metallicValue = texture(metallicMap, texCoord).r * metallic;
     float roughnessValue = texture(roughnessMap, texCoord).r * roughness;
 
@@ -272,10 +278,10 @@ void main() {
 
         }
 
-        result += computeLightDisney(l, L, V, worldNormal, baseColor, roughnessValue, metallicValue, shadow, attenuation);
+        result += computeLightDisney(l, L, V, worldNormal, baseColor.rgb, roughnessValue, metallicValue, shadow, attenuation);
     }
 
-    vec3 color = baseColor * 0.05 + result;
+    vec4 color = baseColor * 0.05 + vec4(result, baseColor.a);
 
-    fragColor = vec4(color, 1.0);
+    fragColor = vec4(color);
 }

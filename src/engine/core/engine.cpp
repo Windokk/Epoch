@@ -80,15 +80,15 @@ namespace Epoch::Engine::Core{
         DEBUG_INFO(std::string("GPU Renderer : ") + reinterpret_cast<const char*>(renderer));
         DEBUG_INFO(std::string("OpenGL Version : ") + reinterpret_cast<const char*>(version));
 
-        // GLFW context version (you asked for)
+        // GLFW context version
         int major, minor, rev;
         glfwGetVersion(&major, &minor, &rev);
         DEBUG_INFO("GLFW Version : " + std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(rev));
 
         // Monitor and resolution
-        int count;
+        int count = 0;
         GLFWmonitor** monitors = glfwGetMonitors(&count);
-        DEBUG_INFO("Connected Monitors: " + count);
+        DEBUG_INFO("Connected Monitors: " + std::to_string(count));
 
         for (int i = 0; i < count; ++i) {
             const GLFWvidmode* mode = glfwGetVideoMode(monitors[i]);

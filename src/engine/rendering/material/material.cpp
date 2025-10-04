@@ -30,12 +30,14 @@ namespace Epoch::Engine::Rendering{
         }
     }
 
-    Material::Material()
+    Material::Material(std::shared_ptr<Shader> shader, bool recievesShadows, RenderMode mode)
     {
+        this->Init(shader, recievesShadows, mode);
     }
  
-    void Material::Init(std::shared_ptr<Shader> shader, bool recievesShadows)
+    void Material::Init(std::shared_ptr<Shader> shader, bool recievesShadows, RenderMode mode)
     {
+        this->renderMode = mode;
         this->recievesShadows = recievesShadows;
         this->shader = shader;
 

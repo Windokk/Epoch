@@ -18,8 +18,6 @@ namespace Epoch::Engine::Serialization{
         try {
             json data = json::parse(src);
 
-            std::shared_ptr<Material> mat = std::make_shared<Material>();
-
             std::shared_ptr<Shader> shader = ResourcesManager::GetInstance().GetShader(data["shader"]);
 
             if(!shader){
@@ -27,7 +25,29 @@ namespace Epoch::Engine::Serialization{
                 return nullptr;
             }
 
-            mat->Init(shader, data["recievesShadows"]);
+            if(!data.contains("recievesShadows")){
+                DEBUG_ERROR("Material doesn't specify required field : recievesShadows");
+                return nullptr;
+            }
+            
+            if (!data.contains("renderMode") || !data["renderMode"].is_string()) {
+                DEBUG_ERROR("Material doesn't specify required field: renderMode");
+                return nullptr;
+            }
+
+            const std::string& mode = data["renderMode"];
+            if (mode != "opaque" && mode != "translucent" && mode != "masked") {
+                DEBUG_ERROR("Unknown value \"" + mode + "\" for field \"renderMode\"");
+                return nullptr;
+            }
+
+            RenderMode renderMode = OPAQUE;
+            if(mode == "translucent")
+                renderMode = TRANSLUCENT;
+            else if(mode == "masked")
+                renderMode = MASKED;
+            
+            std::shared_ptr<Material> mat = std::make_shared<Material>(shader, data["recievesShadows"], renderMode);
 
             for(auto& uniform : data["uniforms"]){
                 for (auto it = uniform.begin(); it != uniform.end(); ++it) {

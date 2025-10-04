@@ -17,7 +17,6 @@ namespace Epoch::Engine::Core::Resources{
                     if (textures.find(textureName) != textures.end()) {
                         break;
                     }
-                    DEBUG_LOG("Loading texture : "+textureName);
                     LoadTexture(textureName, infos.path);
                     DEBUG_LOG("Loaded texture : "+textureName);
                     break;
@@ -156,7 +155,7 @@ namespace Epoch::Engine::Core::Resources{
     {
         std::shared_ptr<Rendering::Material> mat = Serialization::MaterialSerializer::ImportMaterial(path);
         if(!mat){
-            DEBUG_ERROR("Unknown error during material import.");
+            DEBUG_ERROR("Error during material import.");
         }
         materials.emplace(name, mat);
         return mat;
